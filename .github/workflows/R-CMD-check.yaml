@@ -11,8 +11,6 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       BPCELLS_REF: adc4a3c30f60a03522f58947d733d7d77a6eb2cf
-      R_LIB_FOR_PAK: ${{ runner.temp }}/Library
-      R_LIBS_USER: ${{ runner.temp }}/Library
 
     steps:
       - uses: actions/checkout@v4
@@ -21,6 +19,14 @@ jobs:
         with:
           r-version: release
           use-public-rspm: true
+
+      - name: Configure R library
+        run: |
+          mkdir -p "${RUNNER_TEMP}/Library"
+          {
+            echo "R_LIB_FOR_PAK=${RUNNER_TEMP}/Library"
+            echo "R_LIBS_USER=${RUNNER_TEMP}/Library"
+          } >> "$GITHUB_ENV"
 
       - name: Install BPCells system dependencies
         run: |
@@ -54,8 +60,6 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       BPCELLS_REF: adc4a3c30f60a03522f58947d733d7d77a6eb2cf
-      R_LIB_FOR_PAK: ${{ runner.temp }}/Library
-      R_LIBS_USER: ${{ runner.temp }}/Library
 
     steps:
       - uses: actions/checkout@v4
@@ -63,6 +67,14 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: release
+
+      - name: Configure R library
+        run: |
+          mkdir -p "${RUNNER_TEMP}/Library"
+          {
+            echo "R_LIB_FOR_PAK=${RUNNER_TEMP}/Library"
+            echo "R_LIBS_USER=${RUNNER_TEMP}/Library"
+          } >> "$GITHUB_ENV"
 
       - name: Install BPCells system dependencies
         run: |
