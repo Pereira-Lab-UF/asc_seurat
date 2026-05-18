@@ -4,53 +4,82 @@
 Markers identification and differential expression analysis
 ***********************************************************
 
-.. note::
+After integrated clustering, Asc-Seurat v3 exposes marker testing in
+**Step 3: Differential Expression / Marker Identification (Optional)**.
+The integrated workflow supports the same core options as the
+single-sample workflow, plus sample-aware tests for multi-sample
+objects.
 
-   **New in v3:** as in the single-sample workflow, selected DE genes
-   can be sent directly from the results table to the integrated
-   visualization module (see :ref:`expression_visualization_int`).
+Selected marker genes can be sent directly from the results table to
+the integrated visualization module (see
+:ref:`expression_visualization_int`). You can also download the results
+as a CSV file for external use.
 
-.. TODO(v3-screenshots): capture the v3 integrated DE results table and
-   update the ``DE_one_sample_*_int.png`` screenshots.
+Analysis modes
+==============
 
-After clustering the cells, users may be interested in identifying genes specifically expressed in one cluster (markers) or in genes that are differentially expressed among clusters of interest. Asc-Seurat can apply multiple algorithms to identify gene markers for individual clusters or identify differentially expressed genes (DEGs) among clusters. **Moreover, when using an integrated dataset containing multiple samples, it is possible to identify DEGs among samples for each cluster.**
+The integrated DE panel can:
 
-.. note::
+- find markers for all clusters;
+- find markers for one selected cluster;
+- compare two selected clusters;
+- test differential expression between conditions within a selected
+  cluster;
+- find conserved markers across samples for a selected cluster.
 
-	When searching for markers of a cluster or DEGs among clusters using an integrated dataset, the search will attempt to find markers or DEGs conserved among samples.
+All modes share the statistical test selector, adjusted p-value cutoff,
+log2 fold-change threshold, minimum fraction of cells expressing the
+gene, and the option to return only positive markers.
 
-Asc-Seurat allows users to filter gene markers and DEGs by the fold change and minimal percentage of cells expressing a gene in the cluster(s). Moreover, users can define a significance level to exclude genes based on the adjusted p-value (see below).
-
-.. figure:: images/DE_one_sample_1_int.png
+.. figure:: images/v3/v3_de_int_all_clusters.png
+   :alt: Asc-Seurat v3 integrated DE settings for all clusters.
    :width: 100%
    :align: center
 
-   Example of Asc-Seurat's interface showing the settings to the search for gene markers for each of the clusters and conserved among samples.
+   Settings for finding marker genes for all clusters in the integrated
+   object.
 
-.. figure:: images/DE_one_sample_2_int.png
+.. figure:: images/v3/v3_de_int_one_cluster.png
+   :alt: Asc-Seurat v3 integrated DE settings for one cluster.
    :width: 100%
    :align: center
 
-   Example of Asc-Seurat's interface showing the settings to the search for gene markers for a specific cluster and conserved among samples.
+   Settings for finding markers for one selected cluster.
 
-.. figure:: images/DE_one_sample_3_int.png
+.. figure:: images/v3/v3_de_int_compare_clusters.png
+   :alt: Asc-Seurat v3 integrated DE settings for comparing clusters.
    :width: 100%
    :align: center
 
-   Example of Asc-Seurat's interface showing the settings to search for DEGs genes among clusters 0 and 1.
+   Settings for comparing two selected clusters.
 
-.. figure:: images/DE_one_sample_4_int.png
-  :width: 100%
-  :align: center
-
-  Example of Asc-Seurat's interface showing the settings to search for DEGs among samples for a specific cluster (cluster 0).
-
-An iterative table will be available after executing the search for marker or DEGs, showing the significant genes. Moreover, users can download the list of significant markers or DEGs as a csv file.
-
-.. figure:: images/DEG_table_int.png
+.. figure:: images/v3/v3_de_int_conditions.png
+   :alt: Asc-Seurat v3 integrated DE settings for condition testing.
    :width: 100%
    :align: center
 
-   The ten most significant markers identified for cluster 4 of the PBMC integrated dataset (the clustering is shown in :ref:`clustering`).
+   Settings for testing differential expression between sample
+   conditions within a selected cluster.
 
-The list of genes in the csv can then be used to visualize their gene expression in a series of plots, as shown in the section :ref:`expression_visualization_int`.
+.. figure:: images/v3/v3_de_int_conserved.png
+   :alt: Asc-Seurat v3 integrated DE settings for conserved markers.
+   :width: 100%
+   :align: center
+
+   Settings for finding conserved markers across samples.
+
+Marker table
+============
+
+After the search runs, Asc-Seurat displays an interactive marker table.
+The table can be searched, paged, and downloaded as CSV. The selected
+genes can also be passed directly to **Step 4: Gene Expression
+Visualization** without re-uploading a marker list.
+
+.. figure:: images/v3/v3_de_int_marker_table.png
+   :alt: Asc-Seurat v3 integrated marker table.
+   :width: 100%
+   :align: center
+
+   Marker table generated for cluster 0 of the integrated WT and rhd6
+   example samples.

@@ -3,8 +3,8 @@
 Trajectory inference
 ====================
 
-Asc-Seurat v3 removes the Dynverse dependency and replaces it with three
-supported methods that share the same Shiny controls:
+Asc-Seurat supports three trajectory methods that share the same Shiny
+controls:
 
 - **Slingshot** (default) — fits lineages on the clustered UMAP
   embedding. Start and end clusters can guide lineage orientation, and
@@ -37,13 +37,13 @@ For all three methods you can:
 - export the trajectory object.
 
 .. figure:: images/v3/v3_trajectory.png
-   :alt: v3 Trajectory Inference tab.
+   :alt: Trajectory Inference tab.
    :width: 100%
    :align: center
 
-   v3 Trajectory Inference tab. Upload a clustered Seurat RDS or provide
-   a server path, pick **Slingshot**, **PAGA**, or **Monocle 3**, and set
-   a root/start cluster before running inference.
+   Trajectory Inference tab. Upload a clustered Seurat RDS or provide
+   a server path, pick **Slingshot**, **PAGA**, or **Monocle 3**, and
+   set a root/start cluster before running inference.
 
 Trajectory gene discovery
 -------------------------

@@ -4,114 +4,143 @@
 Clustering
 **********
 
-.. note::
+After filtering the data to remove low-quality cells, Asc-Seurat v3
+normalizes the object, runs PCA, clusters the cells, and builds the
+embeddings used for downstream interpretation. In the Single Sample
+workflow these actions are split across two cards:
 
-   **New in v3:** after clustering, the Single Sample tab lets you
-   **rename clusters** directly from the UI — useful for assigning
-   biological labels (e.g. "T cells", "B cells") before moving on to
-   differential expression and visualization.
+- **Step 3: Normalization & PCA** prepares the object and creates the
+  PCA elbow plot.
+- **Step 4: Clustering & Visualization** runs clustering and displays
+  the UMAP/tSNE summaries.
 
-.. TODO(v3-screenshots): capture the v3 clustering tab with the cluster-
-   rename control under the redesigned editorial UI; update
-   ``clustering.png``.
+After clustering, the Single Sample tab also lets you **rename
+clusters** directly from the UI. This is useful for assigning
+biological labels, such as ``T cells`` or ``B cells``, before moving on
+to differential expression and marker visualization.
 
-After filtering the data to remove low-quality cells, Asc-Seurat allows clustering the remaining cells according to their expression profiles. However, before clustering, a series of steps are executed, including normalization, scaling (if using LogNormalization), and dimensional reduction via PCA.
-
-Moreover, users need to decide how many dimensions are to be used during the clustering after executing the PCA. Asc-Seurat provides an elbow plot to inform this decision. Below are instructions on how to perform the clustering depending on the normalization method of choice.
-
-Normalization
-=============
-
-LogNormalization
-----------------
-
-Asc-Seurat allows the normalization using Seurat's `LogNormalize <https://satijalab.org/seurat/reference/LogNormalize.html>`_ function. Users have the option to change the scaling factor if necessary, but it is typically not needed. In the same window (see the image below), users can select what method should be used to identify the most variable genes and how many of the most variable genes should be used during the dimension reduction (PCA).
-
-The most variable genes exhibit high cell-to-cell variation in the dataset and therefore are more informative. We use Seurat's function `FindVariableFeatures <https://satijalab.org/seurat/reference/FindVariableFeatures.html>`_. The default setting should work well for the majority of cases.
-
-.. figure:: images/normalization_settings.png
-   :alt: Quality control.
-   :width: 100%
-   :align: center
-
-SCTransform
------------
-
-The second option of normalization provided by Asc-Seurat is Seurat's Seurat's `SCTransform <https://satijalab.org/seurat/reference/SCTransform.html>`_. When using this normalization, it is unnecessary to set the scale factor or identify the most variable genes (See image below).
-
-.. figure:: images/normalization_settings_SCT.png
-   :alt: SCTransform.
-   :width: 80%
-   :align: center
-
-.. note::
-
-    Currently, the recommendation of Seurat's team is to use the standard "RNA" assay when performing differential expression (D.E) analysis and for data visualization, even when using SCTransform (See `here <https://github.com/satijalab/seurat/discussions/4032>`_). Therefore, Asc-Seurat will use the SCTransformed data ("SCT" assay) until the clustering step only.
-
-    To use the "RNA" assay after SCTransform, Asc-Seurat will automatically perform the LogNormalization and scaling of the data in the RNA assay by applying the default parameters.
-
-
-Dimensional reduction (PCA)
+Step 3: Normalization & PCA
 ===========================
 
-The PCA will be executed using Seurat's function `RunPCA <https://satijalab.org/seurat/reference/RunPCA.html>`_ and, after its conclusion, an `elbow plot <https://satijalab.org/seurat/reference/ElbowPlot.html>`_ is generated automatically, to help users to decide how many PCs should be included to inform the clustering step.
+The normalization card supports Seurat's
+`LogNormalize <https://satijalab.org/seurat/reference/LogNormalize.html>`_
+workflow and `SCTransform v2 <https://satijalab.org/seurat/reference/SCTransform.html>`_.
+Choose the method, set the number of variable features, optionally
+score cell cycle, and click :guilabel:`Run Normalization + PCA`.
 
-Users can use this plot to select the PCs with the highest standard deviation (more informative PCs). Also, users should set the number of PCs to include during clustering in the windows at the plot's right side.
-
-In the example below, only the first 10 PCs are selected. Not that the resulting plot will be slightly different depending on the normalization method. Below we show the plot obtained using the LogNormalization.
-
-.. figure:: images/pca.png
+.. figure:: images/v3/v3_clustering_step3_controls.png
+   :alt: Asc-Seurat v3 Step 3 controls for normalization and PCA.
    :width: 100%
    :align: center
 
-   Elbow plot provided to help to select the most informative PCs. For the PBMC dataset, and using the LogNormalization method, we chose the ten first PCs.
+   Step 3 combines normalization settings, optional cell-cycle scoring,
+   and the command that runs PCA.
 
-Clustering of cells
-====================
+For **LogNormalize**, the scale factor is shown directly in the
+Normalization card. The default ``10000`` is appropriate for most
+single-cell datasets, but it can be changed when needed. Asc-Seurat
+then calls Seurat's
+`FindVariableFeatures <https://satijalab.org/seurat/reference/FindVariableFeatures.html>`_
+using the requested number of variable features.
 
-The next step is the clustering of the cells. For that, Asc-Seurat used both `FindNeighbors <https://satijalab.org/seurat/reference/FindNeighbors.html>`_ and `FindClusters <https://satijalab.org/seurat/reference/FindClusters.html>`_ functions of the Seurat package.
+For **SCTransform v2**, Asc-Seurat runs variance-stabilizing
+normalization and uses the requested number of variable features. When
+metadata columns are available, the interface also allows variables to
+be regressed out. If cell-cycle scoring is enabled, users can score
+human or mouse cell-cycle genes and optionally regress the scores during
+scaling.
 
-Before the execution, however, users need to set a value for the resolution parameter. The resolution is an important parameter to evaluate because it determines the profile and number of clusters identified for a dataset. Selecting larger values will favor splitting cells into more clusters while choosing a smaller value has the opposite effect. Quoting from `Seurat's tutorial: <https://satijalab.org/seurat/archive/v1.4/pbmc3k_tutorial.html>`_ "We find that setting this parameter between 0.6-1.2 typically returns good results for single-cell datasets of around 3K cells. Optimal resolution often increases for larger datasets".
+.. note::
+
+   When SCTransform is selected, Asc-Seurat uses the ``SCT`` assay for
+   PCA and clustering, while also preparing normalized ``RNA`` assay
+   values for downstream differential expression and expression
+   visualization.
+
+Choosing PCA dimensions
+=======================
+
+After :guilabel:`Run Normalization + PCA` completes, Asc-Seurat shows
+an elbow plot and a **PCA Dimensions** card in the same Step 3 section.
+Use the elbow plot to choose how many principal components should be
+used for clustering. The selected value is carried into Step 4.
+
+.. figure:: images/v3/v3_clustering_pca_elbow.png
+   :alt: Asc-Seurat v3 PCA elbow plot and PC selection card.
+   :width: 100%
+   :align: center
+
+   The elbow plot helps identify a reasonable number of PCs for the
+   clustering step. The demo dataset shown here uses the default value
+   of ``30`` PCs.
+
+Step 4: Clustering & Visualization
+==================================
+
+The clustering card uses the selected PCs from Step 3. Set the
+**Clustering resolution** and click :guilabel:`Run Clustering`.
+Internally, Asc-Seurat uses Seurat's
+`FindNeighbors <https://satijalab.org/seurat/reference/FindNeighbors.html>`_,
+`FindClusters <https://satijalab.org/seurat/reference/FindClusters.html>`_,
+and dimensionality-reduction plotting functions.
+
+Resolution controls the number of clusters. Larger values generally
+split cells into more clusters; smaller values merge them into broader
+groups. For datasets of a few thousand cells, values around ``0.4`` to
+``1.2`` are common starting points, but the best value depends on the
+biological question and marker-gene interpretation.
 
 .. tip::
 
-	There is no easy way to define an optimal value for the resolution parameter. Users need to try different values and evaluate the resulting clusters according to the expectation for their cells population. Visualizing the expression profile of cell-type-specific markers can provide a hint if the chosen value is too small or too large.
+   There is no single optimal resolution. Try a small set of values and
+   evaluate whether known marker genes, expected cell states, and
+   downstream differential expression agree with the resulting cluster
+   structure.
 
-.. figure:: images/clustering.png
-   :alt: Quality control.
+After clustering, the Single Sample workflow displays a UMAP plot and a
+tSNE plot colored by cluster.
+
+.. figure:: images/v3/v3_clustering_umap_tsne.png
+   :alt: Asc-Seurat v3 UMAP and tSNE cluster visualizations.
    :width: 100%
    :align: center
 
-   Plot showing the clustering of the PBMC dataset after LogNormalization, using 10 PCs and a resolution value of 0.5.
+   UMAP and tSNE plots generated from the Asc-Seurat v3 demo dataset
+   after normalization and clustering.
 
-After the execution of the clustering step, two plots are generated for cluster visualization. The first plot is generated using the Uniform Manifold Approximation and Projection (UMAP) technique (left). The second deploys the t-distributed Stochastic Neighbor Embedding (t-SNE) method (right).
+Asc-Seurat also reports the number of cells assigned to each cluster.
+The clustered object can be downloaded from the same section, and plot
+download controls are available for exported figures.
+
+Renaming clusters
+=================
+
+Once clustering has completed, expand **Rename clusters (optional)** to
+replace numeric cluster IDs with biological labels. Click
+:guilabel:`Apply New Names` to update the cluster identities stored in
+the active object.
 
 .. _target_to_ref_excluding_clusters_one:
 
 Selecting clusters of interest
-------------------------------
+==============================
 
-In some cases, it is interesting to select or exclude some clusters of cells from the dataset before executing the subsequent steps. This process is helpful, for example, when users desire to explore a developmental trajectory of a specific group of cell types.
+The **Cluster Selection / Exclusion (optional)** card can be used to
+keep or remove specific clusters before continuing with downstream
+analysis. Enable **Reanalyze subset?**, choose whether to **Select** or
+**Exclude** clusters, and click :guilabel:`Reanalyze Subset`.
 
-Asc-Seurat makes this step simple. Users only need to select the cluster(s) to keep or exclude and start reanalysis of the remaining cells by clicking on :guilabel:`Reanalyze after selection/exclusion of clusters` (see below).
+When **Recompute PCA and clusters** is selected, Asc-Seurat creates a
+new subset object, recomputes normalization and PCA, and shows an
+updated elbow plot. Review the new elbow plot, keep or adjust the
+number of PCs in Step 3, and click :guilabel:`Run Clustering` again.
 
-.. figure:: images/excluding_cells_p1.png
-   :alt: Quality control.
-   :width: 100%
-   :align: center
-
-   Asc-Seurat makes it easy to select or exclude a cluster (or clusters) of cells. In this example, we exclude all cells belonging to cluster 0.
-
-Asc-Seurat will then execute the steps with the new set of cells up to the PCA. Then, **users need to evaluate the elbow plot and decide the number of PCs to cluster the new set of cells**. Users can either keep the same value for the resolution parameter or modify it before clicking on :guilabel:`Run the clustering analysis` to start the clustering once more.
-
-.. figure:: images/excluding_cells_p2.png
-  :alt: Quality control.
-  :width: 100%
-  :align: center
-
-  Clustering of the PBMC dataset after excluding cells belonging to cluster 0 from the original dataset.
-
+When **Keep current reduction and clusters** is selected, Asc-Seurat
+keeps the current embeddings and cluster labels for the selected subset.
+This is useful for quickly carrying a subset forward without rerunning
+the full clustering workflow.
 
 .. warning::
 
-	The cluster's numbering will change every time that cluster(s) are selected or excluded.
+   Cluster numbering can change after selecting or excluding clusters,
+   especially when PCA and clustering are recomputed for the subset.

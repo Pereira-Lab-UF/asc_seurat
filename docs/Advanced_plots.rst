@@ -4,58 +4,66 @@
 Advanced plots
 **************
 
-.. note::
-
-   The Advanced plots tab (stacked violin, multi-gene dot plot)
-   carries over from v2 unchanged. The UI chrome has been refreshed
-   for v3; the inputs, outputs, and file formats are identical.
+The **Advanced Plots** tool visualizes multiple genes at once from a
+clustered Seurat object. It can use an uploaded RDS file, the current
+Single Sample object, or the current Integration object.
 
 .. figure:: images/v3/v3_advanced_plots.png
-   :alt: v3 Advanced Plots tab.
+   :alt: Advanced Plots tab.
    :width: 100%
    :align: center
 
-   v3 Advanced Plots tab. Upload a clustered RDS and a marker gene
-   list, pick stacked violin or multi-gene dot plot, and download the
-   result with adjustable size / DPI / format.
+   Advanced Plots tab. Choose the data source, upload a gene list, pick
+   stacked violin or multi-gene dot plot, and configure download
+   settings.
 
-As shown in the sections describing the expression visualization tools (:ref:`here <expression_visualization>` and :ref:`here <expression_visualization_int>`), Asc-Seurat provides a diversity of plots to explore your dataset. However, it focuses on exploring each gene individually, not providing tools to visualize the expression of multiple genes at once.
+The expression visualization tools (:ref:`single sample
+<expression_visualization>`, :ref:`integrated
+<expression_visualization_int>`) focus on the standard Step 6 / Step 4
+workflow. The **Advanced Plots** tab complements those modules by
+plotting many marker genes in one stacked violin plot or one
+multi-gene dot plot.
 
-Starting on v2.0, Asc-Seurat also provides the capacity of generating dot plots and "stacked violin plots" comparing multiple genes.
+Gene list format
+================
 
-Using an rds file containing the clustered data as input, users must provide a csv or tsv file in the same format described in the :ref:`expression visualization <expression_visualization_int>` section. Next, using the grouping variable, column two of the csv (or tsv), select the sets of genes to be used in the plot. Both violing and dot plot will be generated.
+Upload a CSV or TSV marker-gene file. The first column should contain
+gene IDs. A second column is optional and can be used as a grouping
+variable when organizing the gene list. The tool keeps only genes that
+are present in the selected Seurat object.
 
-Stacked Violin plot
+Use **Genes to plot** to include all matching genes or only the first
+``N`` genes from the uploaded file. After the first plot is generated,
+the ordering panel lets you adjust the display order of genes and
+clusters before regenerating the plot.
+
+Stacked violin plot
 ===================
 
-Stacked violin plots are a popular way to represent the expression of gene markers but are not provided by Seurat. Asc-Seurat's version of the stacked violin plot is built by adapting the code initially posted on the blog "`DNA CONFESSES DATA SPEAK <https://divingintogeneticsandgenomics.rbind.io/post/stacked-violin-plot-for-visualizing-single-cell-data-in-seurat/>`_", by Dr. Ming Tang.
+Stacked violin plots show the distribution of expression for several
+genes across clusters in a compact vertical layout. Asc-Seurat builds
+this plot with ``scCustomize::Stacked_VlnPlot``.
 
-Note that the genes (y-axis) **will be displayed following the order of the grouping variable (column two of your file) selected by the user**. Once the plot is generated, users can choose the order of the clusters to show on the x-axis. For example, we show the expression profile of the three most significant gene markers identified for each cluster of the PBMC dataset.
+.. figure:: images/v3/v3_advanced_stacked_violin.png
+   :alt: Asc-Seurat v3 stacked violin plot.
+   :width: 100%
+   :align: center
 
-An arbitrary order of the clusters is used in the plot, demonstrating how users can customize the result.
+   Stacked violin plot generated from the Asc-Seurat v3 demo clustered
+   PBMC object using common marker genes.
 
-.. figure:: images/advanced_plots_interface.png
-  :alt: Stacked_violin_plot_PBMC
-  :width: 80%
-  :align: center
+Multi-gene dot plot
+===================
 
-  Interface for generating multiple genes plot. Note that users can select the order that genes (y-axis) and clusters (x-axis) are shown; see the red arrows in the image.
+The multi-gene dot plot summarizes the same gene set by average
+expression and the percentage of cells expressing each gene in each
+cluster. Asc-Seurat builds this plot with
+``scCustomize::DotPlot_scCustom``.
 
-  .. figure:: images/Stacked_violin_plot_PBMC.png
-    :alt: Multigenes_dot_plot
-    :width: 80%
-    :align: center
+.. figure:: images/v3/v3_advanced_dot_plot.png
+   :alt: Asc-Seurat v3 multi-gene dot plot.
+   :width: 100%
+   :align: center
 
-    Stacked violin plot showing the three most significant markers of each cluster of the PBMC dataset. Observe that some of the significant markers are not specific for the cluster but present a higher level of expression than the other clusters.
-
-Multiple-genes Dot plot
-=======================
-
-A multiple-genes dot plot will be generated following the same order selected for the stacked violin plot.
-
-.. figure:: images/Multigenes_dot_plot.png
-  :alt: Multigenes_dot_plot
-  :width: 80%
-  :align: center
-
-  Multiple-genes dot plot showing the three most significant markers of each cluster of the PBMC dataset. Observe that some of the significant markers are not specific for the cluster but present a higher level of expression than the other clusters.
+   Multi-gene dot plot generated from the same marker list and demo
+   clustered PBMC object.

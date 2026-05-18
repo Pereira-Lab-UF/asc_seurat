@@ -9,70 +9,21 @@ application. The full integration workflow is contained in this tab:
 sample declaration, per-sample QC, normalization, integration method,
 clustering, and the integrated visualization handoff.
 
-.. note::
-
-   **New in v3:** integration uses Seurat v5's
-   `IntegrateLayers <https://satijalab.org/seurat/reference/integratelayers>`_
-   framework. **RPCA** is the default integration method, and **Harmony**
-   is also available from the same tab. Asc-Seurat v3 intentionally does
-   not expose CCA, FastMNN, or scVI in the Shiny workflow because they
-   are slower or add heavier dependencies; integrated RDS objects saved
-   by Asc-Seurat v2 still load.
-
-.. note::
-
-   **The configuration CSV file is gone.** v2 required uploading a CSV
-   listing every sample and its QC parameters. v3 declares the samples
-   directly in the UI: pick the number of samples, type the sample names
-   and paths inline, and set the QC values for each sample on the same
-   page.
+Integration uses Seurat v5's
+`IntegrateLayers <https://satijalab.org/seurat/reference/integratelayers>`_
+framework. **RPCA** is the default method and **Harmony** is also
+available from the same tab. Samples are declared directly in the UI —
+pick the number of samples, type their names and paths inline, and set
+the QC values for each on the same page.
 
 .. figure:: images/v3/v3_integration.png
-   :alt: v3 Integration tab.
+   :alt: Integration tab.
    :width: 100%
    :align: center
 
-   v3 Integration tab. Declare the number of samples and their paths in
+   Integration tab. Declare the number of samples and their paths in
    *Load Samples*, set per-sample QC in the middle column, and pick
    **RPCA (Seurat v5)** or **Harmony** in *Integration Method*.
-
-Format of the dataset
-=====================
-
-Asc-Seurat v3 reads the same input formats as the Single Sample tab:
-10X Genomics directories (``matrix.mtx.gz`` + ``barcodes.tsv.gz`` +
-``features.tsv.gz``), 10X HDF5 files (``.h5``), and AnnData files
-(``.h5ad``). For raw count matrices that come in a different format,
-`write10xCounts() <https://rdrr.io/github/MarioniLab/DropletUtils/man/write10xCounts.html>`_
-in the `DropletUtils <https://bioconductor.org/packages/release/bioc/html/DropletUtils.html>`_
-package is the easiest way to convert to the 10X directory layout.
-
-Where to put the samples
-========================
-
-Each sample lives in its own directory. Relative paths in the sample
-table are resolved against the working directory shown beneath the
-*Load Samples* card. Absolute paths are also accepted and are useful
-for data stored elsewhere on the machine. To follow the Asc-Seurat v2
-convention, place each sample under a subdirectory of ``data/``, for
-example::
-
-   data/
-   ├── example_PBMC_control/
-   │   ├── barcodes.tsv.gz
-   │   ├── features.tsv.gz
-   │   └── matrix.mtx.gz
-   └── example_PBMC_treatment/
-       ├── barcodes.tsv.gz
-       ├── features.tsv.gz
-       └── matrix.mtx.gz
-
-.. note::
-
-   The integration of samples can be biased if the parameters are not
-   chosen appropriately. We still recommend exploring each sample
-   separately in the **Single Sample** tab to choose appropriate
-   filtering thresholds before running the integration.
 
 Declaring the samples
 =====================

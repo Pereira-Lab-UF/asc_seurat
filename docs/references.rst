@@ -5,8 +5,9 @@ References
 **********
 
 Asc-Seurat is built on the work of many other people and relies on a
-diversity of R packages. These packages, in turn, have many dependencies.
-Here we list all packages that Asc-Seurat v3 directly calls.
+diversity of R packages. These packages, in turn, have many
+dependencies. Here we list all packages that Asc-Seurat directly
+calls.
 
 Analytical core
 ===============
@@ -87,11 +88,3 @@ Bioconductor
 * celldex: https://bioconductor.org/packages/release/data/experiment/html/celldex.html
 * SingleCellExperiment: https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html
 * slingshot: https://bioconductor.org/packages/release/bioc/html/slingshot.html
-
-.. note::
-
-   **Packages removed in v3:**
-   Asc-Seurat v2.x used **Dynverse** (dynplot, dynwrap, dynfeature) for trajectory
-   inference and **biomaRt** for online gene-ID mapping. Dynverse has been
-   replaced with Slingshot, PAGA, and Monocle 3; bundled GO enrichment has been
-   removed to keep the app lighter. See :ref:`migrating` for details.

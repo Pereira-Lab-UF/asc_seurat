@@ -4,7 +4,7 @@
 Getting started
 ***************
 
-The fastest way to evaluate Asc-Seurat v3 is to use the built-in **Demo**
+The fastest way to evaluate Asc-Seurat is to use the built-in **Demo**
 tab, which auto-loads a small PBMC dataset and lets you walk through the
 whole single-sample workflow without supplying any data of your own.
 
@@ -21,24 +21,24 @@ If you are using the Docker image:
 
 .. code-block:: bash
 
-   docker pull kirstlab/asc_seurat:3
-   docker run --rm -p 3838:3838 kirstlab/asc_seurat:3
+   docker pull pereiralabbio/asc-seurat:3 && \\
+   docker run --rm -d --name asc-seurat -p 3838:3838 pereiralabbio/asc-seurat:3 && open http://localhost:3838
 
 then open ``http://localhost:3838`` in a browser.
 
 .. figure:: images/v3/v3_home.png
-   :alt: Asc-Seurat v3 home screen.
+   :alt: Asc-Seurat home screen.
    :width: 100%
    :align: center
 
-   The v3 home screen. Click **Try it with Demo Data** or use the top
+   The home screen. Click **Try it with Demo Data** or use the top
    navigation to jump straight to a workflow.
 
 The Demo tab
 ============
 
-New in v3, the **Demo** tab auto-loads a 2,000-cell subset of the PBMC
-3k reference dataset that ships with the package. It is the recommended
+The **Demo** tab auto-loads a 2,000-cell subset of the PBMC 3k
+reference dataset that ships with the package. It is the recommended
 starting point for first-time users: the dataset is small enough to
 finish every step in a few minutes while still exercising QC,
 normalization, clustering, differential expression, and visualization.
@@ -51,11 +51,10 @@ Suggested first run:
 3. Step through QC, Normalize & Cluster, and DE / Visualization with
    the default settings.
 4. From the DE results table, send a gene set directly into the
-   visualization module (new in v3) to inspect markers without
-   re-importing a CSV.
+   visualization module to inspect markers without re-importing a CSV.
 
 .. figure:: images/v3/v3_demo.png
-   :alt: v3 Demo tab with example dataset loaded.
+   :alt: Demo tab with example dataset loaded.
    :width: 100%
    :align: center
 
@@ -66,7 +65,7 @@ Suggested first run:
 Top-level navigation
 ====================
 
-The v3 navigation bar groups the workflows into:
+The navigation bar groups the workflows into:
 
 - **Home** — landing page with the Demo button and a quick-start guide.
 - **Single Sample** — load, QC, cluster, and explore one sample.
@@ -87,7 +86,3 @@ Once you are comfortable with the demo, load your own dataset:
 - For **multiple samples (integration)**, see :ref:`loading_data_int`.
 - For **trajectory inference**, see :ref:`trajectory_inference`.
 - For **cell-type annotation**, see :doc:`annotation`.
-
-If you are migrating from Asc-Seurat v2.x, please read :doc:`migrating`
-first — the input formats are the same, but several internal methods
-have changed.

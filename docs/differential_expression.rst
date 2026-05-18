@@ -4,45 +4,61 @@
 Markers identification and differential expression analysis
 ***********************************************************
 
-.. note::
+After clustering the cells, users may be interested in identifying
+genes specifically expressed in one cluster (markers) or in genes that
+are differentially expressed between clusters or conditions of
+interest. Asc-Seurat v3 exposes these options in **Step 5:
+Differential Expression / Marker Identification (Optional)**. The
+module uses Seurat's `FindMarkers
+<https://satijalab.org/seurat/reference/FindMarkers.html>`_ and
+`FindAllMarkers
+<https://satijalab.org/seurat/reference/FindAllMarkers.html>`_
+workflows.
 
-   **New in v3:** once a DE table is available, you can send selected
-   genes **directly to the visualization module** without exporting and
-   re-importing a CSV. The CSV export still works and remains the
-   recommended format for sharing gene lists outside the app.
+Once a DE table is available, you can send selected genes **directly
+to the visualization module** without exporting and re-importing a
+CSV. The CSV export still works and is the recommended format for
+sharing gene lists outside the app.
 
-.. TODO(v3-screenshots): capture the v3 DE results table with the
-   "send to visualization" control and replace the ``DE_one_sample_*``
-   screenshots.
+Asc-Seurat lets users choose the analysis type, statistical test,
+adjusted p-value cutoff, log2 fold-change threshold, and minimum
+fraction of cells expressing a gene. The same panel can search markers
+for all clusters, one selected cluster, two selected clusters, or
+conditions stored in the object's metadata.
 
-After clustering the cells, users may be interested in identifying genes specifically expressed in one cluster (markers) or in genes that are differentially expressed among clusters of interest. Asc-Seurat can apply multiple algorithms to identify gene markers for individual clusters or to identify differentially expressed genes (DEGs) among clusters, using Seurat's functions `FindMarkers <https://satijalab.org/seurat/reference/FindMarkers.html>`_ and `FindAllMarkers <https://satijalab.org/seurat/reference/FindConservedMarkers.html>`_.
-
-Asc-Seurat allows users to filter gene markers and DEGs by the fold change and minimal percentage of cells expressing a gene in the cluster(s). Moreover, users can define a significance level to exclude genes based on the adjusted p-value (see below).
-
-.. figure:: images/DE_one_sample_1.png
-   :width: 65%
-   :align: center
-
-   Example of Asc-Seurat's interface showing the settings to the search for gene markers for each of the clusters using the Wilcox test.
-
-.. figure:: images/DE_one_sample_2.png
-   :width: 65%
-   :align: center
-
-   Example of Asc-Seurat's interface showing the settings to the search for markers for a specific cluster (cluster 0).
-
-.. figure:: images/DE_one_sample_3.png
-   :width: 65%
-   :align: center
-
-   Example of Asc-Seurat's interface showing the settings to search for DEGs genes among clusters 0, 2, and 3.
-
-An iterative table will be available after executing the search for marker or DEGs, showing the significant genes. Moreover, users can download the list of significant markers or DEGs as a csv file.
-
-.. figure:: images/DEG_table.png
+.. figure:: images/v3/v3_de_all_clusters.png
+   :alt: Asc-Seurat v3 settings for finding markers for all clusters.
    :width: 100%
    :align: center
 
-   List of the ten most significant markers identified for cluster 3 of the PBMC dataset (as defined in :ref:`clustering`).
+   Settings for finding marker genes for all clusters using the Wilcoxon
+   test and the default filtering thresholds.
 
-The list of genes in the csv can then be used to visualize their gene expression in a series of plots, as shown in the section :ref:`expression_visualization`.
+.. figure:: images/v3/v3_de_one_cluster.png
+   :alt: Asc-Seurat v3 settings for finding markers for one cluster.
+   :width: 100%
+   :align: center
+
+   Settings for finding markers for one selected cluster.
+
+.. figure:: images/v3/v3_de_compare_clusters.png
+   :alt: Asc-Seurat v3 settings for comparing two clusters.
+   :width: 100%
+   :align: center
+
+   Settings for comparing two selected clusters.
+
+After the search runs, Asc-Seurat displays an interactive marker table.
+Users can search within the table and download the significant markers
+or DEGs as a CSV file.
+
+.. figure:: images/v3/v3_de_marker_table.png
+   :alt: Asc-Seurat v3 marker genes result table.
+   :width: 100%
+   :align: center
+
+   Marker-gene table generated from the Asc-Seurat v3 demo dataset.
+
+The list of genes in the CSV can then be used to visualize expression
+patterns in a series of plots, as shown in the section
+:ref:`expression_visualization`.

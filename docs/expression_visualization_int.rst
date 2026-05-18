@@ -13,7 +13,7 @@ Gene sources
 Use :guilabel:`Upload file` for a custom CSV or TSV marker list with one gene
 per row and an optional second column for gene groups.
 
-Use :guilabel:`Use de novo marker genes detected in Step 5` to visualize genes
+Use :guilabel:`Use de novo marker genes detected in Step 3` to visualize genes
 directly from the integrated differential-expression results. When cluster
 markers are available, choose the cluster and the number of top genes to plot.
 

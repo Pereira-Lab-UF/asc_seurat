@@ -1,7 +1,479 @@
-.wy-side-nav-search, .wy-nav-top {
-    background: #6d368f;
+/* ──────────────────────────────────────────────────────────────────────────
+ * Asc-Seurat docs — Editorial Lab Notebook theme overlay
+ *
+ * Re-skins sphinx_rtd_theme to match the v3 app: parchment paper background,
+ * deep-emerald single accent, Fraunces serif display, Inter Tight sans,
+ * hairline borders, no rainbow chrome.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+    --asc-paper:        #f7f5ee;
+    --asc-paper-warm:   #f1ede0;
+    --asc-surface:      #ffffff;
+    --asc-ink:          #1c1b18;
+    --asc-ink-soft:     #3d3c39;
+    --asc-muted:        #6e6c66;
+    --asc-muted-soft:   #94928a;
+    --asc-rule:         #e6e3d6;
+    --asc-rule-soft:    #efece2;
+    --asc-accent:       #0c6e4a;
+    --asc-accent-ink:   #074a32;
+    --asc-accent-soft:  #e3efe9;
+    --asc-accent-glow:  rgba(12, 110, 74, 0.12);
+    --asc-rust:         #a4341d;
+    --asc-amber:        #a36b1c;
+    --asc-display:      "Fraunces", "Iowan Old Style", Palatino, "Times New Roman", serif;
+    --asc-sans:         "Inter Tight", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --asc-mono:         "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --asc-content-max:  1280px;
 }
 
-.wy-menu > .caption > span.caption-text {
-  color: #cb7cfc;
+/* ── Page background: subtle paper grain ────────────────────────────────── */
+html, body, .wy-body-for-nav { background-color: var(--asc-paper); }
+.wy-nav-content-wrap {
+    background-color: var(--asc-paper);
+    background-image:
+        radial-gradient(rgba(28, 27, 24, 0.03) 1px, transparent 1px),
+        radial-gradient(rgba(28, 27, 24, 0.02) 1px, transparent 1px);
+    background-size: 7px 7px, 11px 11px;
+    background-position: 0 0, 4px 4px;
 }
+.wy-nav-content {
+    background-color: transparent;
+    color: var(--asc-ink);
+    font-family: var(--asc-sans);
+    max-width: var(--asc-content-max);
+    padding: 2.25rem 2.5rem 3rem;
+    letter-spacing: -0.005em;
+}
+
+/* ── Typography ─────────────────────────────────────────────────────────── */
+body, p, li, dd, dt, td, th, .rst-content, .rst-content p, .rst-content li {
+    font-family: var(--asc-sans);
+    color: var(--asc-ink);
+}
+.rst-content { font-size: 0.96rem; line-height: 1.62; }
+.rst-content p { line-height: 1.62; }
+
+h1, h2, h3, h4, h5, h6,
+.rst-content h1, .rst-content h2, .rst-content h3,
+.rst-content h4, .rst-content h5, .rst-content h6 {
+    font-family: var(--asc-display);
+    font-weight: 600;
+    color: var(--asc-ink);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+}
+.rst-content h1 { font-size: 2.4rem; margin-top: 0; margin-bottom: 1.1rem; }
+.rst-content h1::after {
+    content: "";
+    display: block;
+    width: 64px;
+    height: 1px;
+    background: var(--asc-accent);
+    margin: 0.85rem 0 0;
+}
+.rst-content h2 { font-size: 1.7rem; margin-top: 2.4rem; padding-bottom: 0.35rem;
+                  border-bottom: 1px solid var(--asc-rule); }
+.rst-content h3 { font-size: 1.32rem; margin-top: 1.9rem; }
+.rst-content h4 { font-size: 1.1rem; }
+
+a, .rst-content a {
+    color: var(--asc-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--asc-accent-glow);
+    transition: border-color .2s ease, color .2s ease;
+}
+a:hover, .rst-content a:hover {
+    color: var(--asc-accent-ink);
+    border-bottom-color: var(--asc-accent);
+    text-decoration: none;
+}
+a:visited, .rst-content a:visited { color: var(--asc-accent); }
+
+/* ── Inline code + code blocks ──────────────────────────────────────────── */
+code, kbd, pre, samp, .rst-content code, .rst-content tt {
+    font-family: var(--asc-mono);
+    font-size: 0.875em;
+}
+.rst-content code.literal,
+.rst-content tt.literal,
+.rst-content code,
+.rst-content tt {
+    background: var(--asc-paper-warm);
+    border: 1px solid var(--asc-rule);
+    color: var(--asc-accent-ink);
+    padding: 0.08em 0.38em;
+    border-radius: 0.25rem;
+    font-weight: 500;
+}
+.rst-content pre,
+.rst-content div[class^="highlight"],
+.rst-content div[class*=" highlight-"],
+.rst-content pre.literal-block,
+html.writer-html5 .rst-content div[class*=highlight] {
+    background: var(--asc-surface);
+    border: 1px solid var(--asc-rule);
+    border-radius: 0.45rem;
+    box-shadow: none;
+}
+.rst-content div[class^="highlight"] pre,
+.rst-content pre.literal-block {
+    background: transparent;
+    border: 0;
+    color: var(--asc-ink-soft);
+    padding: 0.85rem 1rem;
+    font-size: 0.86rem;
+    line-height: 1.55;
+}
+
+/* Pygments overrides — quiet, ink-on-paper palette */
+.highlight .k, .highlight .kn, .highlight .kr, .highlight .kd { color: #6d3a8f; }   /* keywords */
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .sb { color: var(--asc-accent-ink); } /* strings */
+.highlight .c, .highlight .c1, .highlight .cm { color: var(--asc-muted); font-style: italic; }
+.highlight .n, .highlight .nv, .highlight .na { color: var(--asc-ink); }
+.highlight .o { color: var(--asc-ink-soft); }
+.highlight .mi, .highlight .mf { color: var(--asc-rust); }
+.highlight .nb { color: var(--asc-amber); }
+
+/* ── Sidebar / navigation ───────────────────────────────────────────────── */
+.wy-nav-side {
+    background: var(--asc-paper-warm);
+    border-right: 1px solid var(--asc-rule);
+}
+
+.wy-side-nav-search,
+.wy-side-nav-search.fixed {
+    background: var(--asc-paper-warm) !important;
+    border-bottom: 1px solid var(--asc-rule);
+    padding: 1rem 0.9rem 0.9rem;
+}
+.wy-side-nav-search > a,
+.wy-side-nav-search .wy-dropdown > a {
+    color: var(--asc-ink) !important;
+    font-family: var(--asc-display);
+    font-weight: 600;
+    font-size: 1.18rem;
+    letter-spacing: -0.01em;
+}
+.wy-side-nav-search > a:hover { background: transparent; }
+.wy-side-nav-search > div.version {
+    color: var(--asc-muted) !important;
+    font-family: var(--asc-sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 0.35rem;
+}
+.wy-side-nav-search input[type=text] {
+    border: 1px solid var(--asc-rule);
+    background: var(--asc-surface);
+    color: var(--asc-ink);
+    border-radius: 0.35rem;
+    font-family: var(--asc-sans);
+    font-size: 0.88rem;
+    padding: 0.45rem 0.6rem;
+    box-shadow: none;
+}
+.wy-side-nav-search input[type=text]:focus {
+    border-color: var(--asc-accent);
+    box-shadow: 0 0 0 3px var(--asc-accent-glow);
+    outline: none;
+}
+
+.wy-menu-vertical {
+    background: var(--asc-paper-warm);
+}
+.wy-menu-vertical p.caption {
+    color: var(--asc-muted) !important;
+    font-family: var(--asc-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    padding: 1.1rem 1.2rem 0.4rem;
+    margin: 0;
+}
+.wy-menu-vertical p.caption > span.caption-text {
+    color: var(--asc-muted) !important;
+}
+
+.wy-menu-vertical a,
+.wy-menu-vertical li.toctree-l1 > a,
+.wy-menu-vertical li.toctree-l2 > a,
+.wy-menu-vertical li.toctree-l3 > a {
+    color: var(--asc-ink-soft);
+    font-family: var(--asc-sans);
+    font-size: 0.9rem;
+    border-bottom: none;
+    padding: 0.45rem 1.2rem;
+    transition: background-color .15s ease, color .15s ease;
+}
+.wy-menu-vertical a:hover {
+    background: var(--asc-rule-soft);
+    color: var(--asc-ink);
+}
+
+/* current page: emerald sliver on the left, no garish blue */
+.wy-menu-vertical li.current { background: transparent; }
+.wy-menu-vertical li.current > a,
+.wy-menu-vertical li.toctree-l1.current > a {
+    background: var(--asc-surface);
+    color: var(--asc-ink);
+    font-weight: 600;
+    border: 1px solid var(--asc-rule);
+    border-left: 3px solid var(--asc-accent);
+    border-right: 0;
+    padding-left: calc(1.2rem - 3px);
+}
+.wy-menu-vertical li.toctree-l2.current > a,
+.wy-menu-vertical li.toctree-l3.current > a {
+    background: var(--asc-accent-soft);
+    color: var(--asc-accent-ink);
+    font-weight: 600;
+    border-left: 3px solid var(--asc-accent);
+    padding-left: calc(2.4rem - 3px);
+}
+.wy-menu-vertical li.current > ul,
+.wy-menu-vertical li.toctree-l1.current > ul {
+    background: transparent;
+}
+.wy-menu-vertical li.toctree-l2 > a { padding-left: 2.4rem; }
+.wy-menu-vertical li.toctree-l3 > a { padding-left: 3.4rem; font-size: 0.85rem; }
+
+/* Mobile top bar */
+.wy-nav-top {
+    background: var(--asc-paper-warm);
+    color: var(--asc-ink);
+    border-bottom: 1px solid var(--asc-rule);
+    font-family: var(--asc-display);
+    font-weight: 600;
+}
+.wy-nav-top a { color: var(--asc-ink); }
+.wy-nav-top i { color: var(--asc-accent); }
+
+/* ── Admonitions (note / warning / tip) ─────────────────────────────────── */
+.rst-content .admonition,
+.rst-content .note,
+.rst-content .tip,
+.rst-content .hint,
+.rst-content .important,
+.rst-content .warning,
+.rst-content .danger,
+.rst-content .caution,
+.rst-content .attention,
+.rst-content .seealso {
+    background: var(--asc-paper-warm);
+    border: 1px solid var(--asc-rule);
+    border-left: 3px solid var(--asc-accent);
+    border-radius: 0.4rem;
+    color: var(--asc-ink-soft);
+    box-shadow: none;
+    padding: 0;
+    overflow: hidden;
+}
+.rst-content .admonition-title,
+.rst-content .note .admonition-title,
+.rst-content .tip .admonition-title,
+.rst-content .hint .admonition-title,
+.rst-content .important .admonition-title,
+.rst-content .warning .admonition-title,
+.rst-content .danger .admonition-title,
+.rst-content .caution .admonition-title,
+.rst-content .attention .admonition-title,
+.rst-content .seealso .admonition-title {
+    background: transparent !important;
+    color: var(--asc-ink) !important;
+    font-family: var(--asc-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    padding: 0.65rem 1rem 0.2rem;
+}
+.rst-content .admonition > p:not(.admonition-title),
+.rst-content .admonition > .last,
+.rst-content .admonition .last {
+    padding: 0 1rem 0.85rem;
+    margin: 0;
+}
+.rst-content .warning,
+.rst-content .caution,
+.rst-content .attention { border-left-color: var(--asc-amber); }
+.rst-content .danger    { border-left-color: var(--asc-rust); }
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+.rst-content table.docutils,
+.rst-content table.field-list,
+.wy-table-responsive table {
+    border-collapse: collapse;
+    border: 1px solid var(--asc-rule);
+    border-radius: 0.4rem;
+    overflow: hidden;
+    background: var(--asc-surface);
+    font-size: 0.9rem;
+}
+.rst-content table.docutils thead th,
+.wy-table-responsive table thead th {
+    background: var(--asc-paper-warm) !important;
+    color: var(--asc-muted) !important;
+    font-family: var(--asc-sans);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    border-bottom: 1px solid var(--asc-rule) !important;
+    border-top: 0 !important;
+    padding: 0.55rem 0.85rem;
+}
+.rst-content table.docutils td,
+.wy-table-responsive table td {
+    border-color: var(--asc-rule) !important;
+    color: var(--asc-ink-soft);
+    padding: 0.55rem 0.85rem;
+    background: transparent !important;
+}
+.rst-content table.docutils tr:nth-child(2n-1) td,
+.wy-table-responsive table tr:nth-child(2n-1) td {
+    background: var(--asc-rule-soft) !important;
+}
+
+/* ── Images / figures ───────────────────────────────────────────────────── */
+.rst-content img { max-width: 100%; border-radius: 0.3rem; }
+.rst-content figure { margin: 1.4rem 0; }
+.rst-content figcaption,
+.rst-content .caption-text {
+    color: var(--asc-muted);
+    font-size: 0.82rem;
+    font-style: italic;
+    margin-top: 0.45rem;
+}
+
+/* ── Blockquotes ────────────────────────────────────────────────────────── */
+.rst-content blockquote {
+    border-left: 3px solid var(--asc-rule);
+    background: transparent;
+    color: var(--asc-ink-soft);
+    margin: 1.2rem 0;
+    padding: 0.2rem 1.1rem;
+    font-style: italic;
+}
+
+/* ── Buttons (prev/next nav, btn-neutral) ───────────────────────────────── */
+.btn,
+.btn-neutral,
+.btn-info,
+.rst-content .btn {
+    background: var(--asc-surface) !important;
+    color: var(--asc-ink) !important;
+    border: 1px solid var(--asc-rule) !important;
+    border-radius: 0.4rem !important;
+    box-shadow: none !important;
+    font-family: var(--asc-sans);
+    font-weight: 500;
+    padding: 0.45rem 0.95rem;
+    text-shadow: none;
+    transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+.btn:hover,
+.btn-neutral:hover,
+.btn-info:hover {
+    background: var(--asc-paper-warm) !important;
+    border-color: var(--asc-ink-soft) !important;
+    color: var(--asc-ink) !important;
+}
+.btn .fa, .btn-neutral .fa, .btn-info .fa { color: var(--asc-accent); }
+
+.rst-content .footer { color: var(--asc-muted); }
+footer { color: var(--asc-muted); font-size: 0.82rem; }
+footer hr { border-top: 1px solid var(--asc-rule); }
+footer .rst-footer-buttons { margin: 1.2rem 0; }
+
+/* ── Search results / highlight ─────────────────────────────────────────── */
+.rst-content .highlighted {
+    background: var(--asc-accent-soft);
+    color: var(--asc-accent-ink);
+    border-bottom: 1px solid var(--asc-accent);
+    padding: 0 0.15em;
+    font-weight: 600;
+}
+
+/* ── Selection ──────────────────────────────────────────────────────────── */
+::selection { background: var(--asc-accent-soft); color: var(--asc-accent-ink); }
+
+/* ── Scrollbar (subtle, parchment) ──────────────────────────────────────── */
+.wy-nav-side::-webkit-scrollbar { width: 8px; }
+.wy-nav-side::-webkit-scrollbar-track { background: transparent; }
+.wy-nav-side::-webkit-scrollbar-thumb {
+    background: var(--asc-rule);
+    border-radius: 999px;
+}
+.wy-nav-side::-webkit-scrollbar-thumb:hover { background: var(--asc-muted-soft); }
+
+/* ── Versions selector (RTD widget at bottom of sidebar) ────────────────── */
+.rst-versions {
+    background: var(--asc-ink) !important;
+    color: var(--asc-paper) !important;
+    border-top: 1px solid var(--asc-rule);
+    font-family: var(--asc-sans);
+}
+.rst-versions .rst-current-version {
+    background: var(--asc-ink) !important;
+    color: var(--asc-paper) !important;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+.rst-versions .rst-current-version .fa-book,
+.rst-versions .rst-current-version .fa { color: var(--asc-accent); }
+.rst-versions .rst-other-versions {
+    background: var(--asc-ink-soft) !important;
+    color: var(--asc-paper-warm) !important;
+}
+.rst-versions a { color: var(--asc-accent-soft) !important; border-bottom: none; }
+
+/* ── Definition lists ───────────────────────────────────────────────────── */
+.rst-content dl dt {
+    font-family: var(--asc-display);
+    font-weight: 600;
+    color: var(--asc-ink);
+    background: transparent;
+    border: 0;
+    padding: 0;
+}
+.rst-content dl dd { color: var(--asc-ink-soft); }
+
+/* ── Misc cleanups ──────────────────────────────────────────────────────── */
+.rst-content .guilabel,
+.rst-content .menuselection {
+    background: var(--asc-paper-warm);
+    border: 1px solid var(--asc-rule);
+    color: var(--asc-accent-ink);
+    border-radius: 0.25rem;
+    padding: 0.08em 0.4em;
+    font-family: var(--asc-sans);
+    font-size: 0.85em;
+    font-weight: 500;
+}
+.rst-content kbd {
+    background: var(--asc-surface);
+    border: 1px solid var(--asc-rule);
+    border-bottom-width: 2px;
+    border-radius: 0.3rem;
+    color: var(--asc-ink);
+    padding: 0.05em 0.45em;
+    font-size: 0.82em;
+}
+
+/* ── Headerlink anchors (¶) ─────────────────────────────────────────────── */
+.rst-content .headerlink {
+    color: var(--asc-muted-soft);
+    border-bottom: 0;
+    font-weight: 400;
+    visibility: hidden;
+}
+.rst-content h1:hover .headerlink,
+.rst-content h2:hover .headerlink,
+.rst-content h3:hover .headerlink,
+.rst-content h4:hover .headerlink { visibility: visible; }
+.rst-content .headerlink:hover { color: var(--asc-accent); }
