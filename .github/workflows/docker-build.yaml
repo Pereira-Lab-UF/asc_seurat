@@ -9,19 +9,16 @@ on:
         type: boolean
         default: false
   push:
-    branches: [main]
     tags:
       - 'v*'
-  pull_request:
 
 env:
   IMAGE_NAME: pereiralabbio/asc-seurat
 
 # Decide once, in YAML, whether this run should push.
 # A run pushes when:
-#   - it is on the default branch or a `v*` tag, AND
-#   - either it's a push/release event, or workflow_dispatch with push_image=true.
-# Pull requests never push.
+#   - it is a push event on a `v*` tag, OR
+#   - it is a workflow_dispatch with push_image=true.
 # The actual login step also gates on the Docker Hub secrets being present.
 jobs:
   build:
@@ -55,9 +52,9 @@ jobs:
           want_push="false"
           case "${{ github.event_name }}" in
             push)
-              if [ "${{ github.ref }}" = "refs/heads/main" ] || [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-                want_push="true"
-              fi
+              # The on: filter already restricts pushes to v* tags, so
+              # any push event here is a release.
+              want_push="true"
               ;;
             workflow_dispatch)
               if [ "${{ inputs.push_image }}" = "true" ]; then
@@ -173,9 +170,13 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.IMAGE_NAME }}
+          # This job only runs on v* tag pushes or manual workflow_dispatch
+          # with push_image=true (gated by the build job's `should_push`
+          # output), so every run is a release. Always apply latest + 3
+          # alongside the explicit version tag.
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=3,enable={{is_default_branch}}
+            type=raw,value=latest
+            type=raw,value=3
             type=ref,event=tag
             type=sha,prefix=sha-
 
