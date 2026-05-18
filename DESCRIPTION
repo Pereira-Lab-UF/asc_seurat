@@ -1,0 +1,80 @@
+Package: ascseurat
+Title: Analytical Single Cell Seurat-Based Web Application
+Version: 3.0.0
+Authors@R: c(
+    person("Felipe", "Marques de Almeida",
+           email = "almeidafmarques@outlook.com",
+           role = c("aut", "cre")),
+    person("Wendell", "Pereira",
+           role = "aut"),
+    person("Marcelo", "Kirst",
+           role = "aut")
+    )
+Description: Asc-Seurat (Analytical Single Cell Seurat-Based Web Application) is
+    an interactive Shiny application for the analysis of single-cell RNA sequencing
+    (scRNA-seq) data. It provides a guided, step-by-step interface for quality control,
+    normalization, clustering, differential expression, trajectory inference, and
+    cell-type annotation, all powered by the Seurat v5 framework.
+License: GPL-3
+URL: https://github.com/Pereira-Lab-UF/asc_seurat,
+    https://pereira-lab-uf.github.io/asc_seurat/
+BugReports: https://github.com/Pereira-Lab-UF/asc_seurat/issues
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Depends:
+    R (>= 4.3.0)
+Imports:
+    shiny (>= 1.8.0),
+    bslib (>= 0.7.0),
+    sass,
+    Seurat (>= 5.0.0),
+    SeuratObject (>= 5.0.0),
+    scCustomize,
+    slingshot,
+    harmony,
+    SingleCellExperiment,
+    DelayedMatrixStats,
+    ggplot2,
+    dplyr,
+    patchwork,
+    reactable,
+    DT,
+    shinyWidgets,
+    shinyFeedback,
+    shinycssloaders,
+    reticulate (>= 1.41.0),
+    methods,
+    stats,
+    utils,
+    grDevices
+Suggests:
+    hdf5r,
+    metap,
+    monocle3,
+    PseudotimeDE,
+    scMaSigPro,
+    tradeSeq,
+    anndataR,
+    SummarizedExperiment,
+    scDblFinder,
+    SingleR,
+    celldex,
+    knitr,
+    rmarkdown,
+    pkgdown,
+    roxygen2,
+    rcmdcheck,
+    shinytest2,
+    testthat (>= 3.0.0),
+    withr,
+    callr
+Remotes:
+    bnprks/BPCells/r,
+    cole-trapnell-lab/monocle3,
+    dsong-lab/PseudotimeDE,
+    samuel-marsh/scCustomize,
+    BioBam/scMaSigPro
+Config/testthat/edition: 3
+biocViews: SingleCell, RNASeq, GeneExpression, Clustering,
+    DifferentialExpression, QualityControl
+Config/roxygen2/version: 8.0.0

@@ -1,0 +1,52 @@
+name: R-CMD-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check-ubuntu:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            any::rcmdcheck
+            any::pak
+          needs: check
+
+      - name: Run R CMD check
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--no-build-vignettes"), error_on = "warning")
+        shell: Rscript {0}
+
+  smoke-macos:
+    runs-on: macos-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+
+      - name: Install package and load app
+        run: |
+          install.packages("pak", repos = "https://cran.r-project.org")
+          pak::local_install(dependencies = TRUE)
+          library(ascseurat)
+          app_dir <- system.file("app", package = "ascseurat")
+          stopifnot(nzchar(app_dir), file.exists(file.path(app_dir, "app.R")))
+        shell: Rscript {0}

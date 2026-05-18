@@ -1,0 +1,3 @@
+sample_name,data_path
+WT,arabidopsis_mutant_scRNAseq/Ryu_et_al_2019_PMID_30718350_Arabidopsis_WT/filtered_gene_bc_matrices/TAIR10
+rhd6,arabidopsis_mutant_scRNAseq/Ryu_et_al_2019_PMID_30718350_Arabidopsis_rhd6/filtered_gene_bc_matrices/TAIR10

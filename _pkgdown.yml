@@ -1,0 +1,30 @@
+template:
+  bootstrap: 5
+
+url: https://pereira-lab-uf.github.io/asc_seurat/
+
+destination: docs/pkgdown
+
+home:
+  title: Asc-Seurat
+  description: Analytical single-cell Seurat-based web application
+
+reference:
+  - title: Launching the app
+    contents:
+      - run_app
+      - setup_paga
+  - title: Shiny modules
+    contents:
+      - starts_with("mod_")
+
+articles:
+  - title: Getting started
+    navbar: Get started
+    contents:
+      - get-started
+      - single-sample-workflow
+      - multi-sample-integration
+      - trajectory-inference
+      - functional-annotation
+      - migrating-from-v2
