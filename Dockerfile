@@ -4,7 +4,7 @@ ARG TARGETARCH
 
 LABEL maintainer="Felipe Marques de Almeida <almeidafmarques@outlook.com>"
 LABEL description="Asc-Seurat v3: Interactive scRNA-seq analysis"
-LABEL version="3.0.0"
+LABEL version="3.0.2"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV RETICULATE_PYTHON=/opt/venv/bin/python
@@ -119,6 +119,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libproj25 \
     libpython3.12t64 \
     libudunits2-0 \
+    libuv1t64 \
+    libwebpmux3 \
     pandoc \
     python3 \
     && rm -rf /var/lib/apt/lists/*

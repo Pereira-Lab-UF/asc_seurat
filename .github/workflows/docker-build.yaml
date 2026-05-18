@@ -100,15 +100,35 @@ jobs:
       - name: Runtime smoke test (${{ matrix.platform }})
         run: |
           docker rm -f ascseurat-ci 2>/dev/null || true
-          docker run -d --rm --name ascseurat-ci -p 3838:3838 ascseurat-ci:${{ github.sha }}-${{ matrix.tag }}
-          trap 'docker kill ascseurat-ci 2>/dev/null || true' EXIT
-          for i in $(seq 1 60); do
+          docker run -d --name ascseurat-ci -p 3838:3838 ascseurat-ci:${{ github.sha }}-${{ matrix.tag }}
+          cleanup() {
+            exit_code=$?
+            if [ "$exit_code" -ne 0 ]; then
+              docker logs ascseurat-ci 2>/dev/null || true
+            fi
+            docker rm -f ascseurat-ci 2>/dev/null || true
+            exit "$exit_code"
+          }
+          trap cleanup EXIT
+          for i in $(seq 1 150); do
+            if [ "$(docker inspect -f '{{.State.Running}}' ascseurat-ci 2>/dev/null)" != "true" ]; then
+              echo "Container exited before Asc-Seurat became ready."
+              exit 1
+            fi
             if curl -fsS http://127.0.0.1:3838 > /tmp/ascseurat.html; then
-              break
+              grep -q "Asc-Seurat v3" /tmp/ascseurat.html
+              docker exec ascseurat-ci R -q -e 'pkgs <- c("shiny", "httpuv", "bslib", "Seurat", "SeuratObject", "reticulate", "monocle3", "PseudotimeDE", "tradeSeq", "BPCells", "scMaSigPro", "ragg"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing)) stop("Missing R packages: ", paste(missing, collapse = ", ")); cat("runtime package namespace check ok\n")'
+              missing_libs="$(docker exec ascseurat-ci bash -lc 'export LD_LIBRARY_PATH=/usr/local/lib/R/lib:${LD_LIBRARY_PATH:-}; find /usr/local/lib/R/site-library -name "*.so" -print0 | xargs -0 -r ldd 2>/dev/null | grep "not found" || true')"
+              if [ -n "$missing_libs" ]; then
+                echo "$missing_libs"
+                exit 1
+              fi
+              exit 0
             fi
             sleep 2
           done
-          grep -q "Asc-Seurat v3" /tmp/ascseurat.html
+          echo "Timed out waiting for Asc-Seurat to respond."
+          exit 1
 
       # Push to Docker Hub by digest only (no tag yet). The `merge` job
       # below combines the per-arch digests into a single multi-arch

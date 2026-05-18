@@ -69,18 +69,32 @@ Recommended for users who already work in R and want a lighter install than the 
 
 From inside an R or R Studio session:
 
+Install the HDF5 system dependency first:
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install -y libhdf5-dev pkg-config
+
+# macOS
+brew install hdf5 pkg-config
+```
+
 ```r
 install.packages(c("pak", "remotes"))
-remotes::install_github("bnprks/BPCells/r")
+remotes::install_github("bnprks/BPCells/r", upgrade = "never")
 pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)
 ```
 
-The middle line pre-installs [BPCells](https://github.com/bnprks/BPCells) (a hard dependency of `monocle3`) via `remotes`, which works around a known `pak` issue with GitHub sub-directory packages.
+The middle line pre-installs [BPCells](https://github.com/bnprks/BPCells) (a hard dependency of `monocle3`) via `remotes`, which works around a known `pak` issue with GitHub sub-directory packages. If BPCells still fails through `remotes`, install it from [R-universe](https://bnprks.r-universe.dev/BPCells) before running `pak::pkg_install()`:
+
+```r
+install.packages("BPCells", repos = c("https://bnprks.r-universe.dev", "https://cloud.r-project.org"))
+```
 
 Or, from a terminal:
 
 ```bash
-Rscript -e 'if (!requireNamespace("pak", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)'
+Rscript -e 'if (!requireNamespace("pak", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r", upgrade = "never"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)'
 ```
 
 Then, in the R session, launch the app:

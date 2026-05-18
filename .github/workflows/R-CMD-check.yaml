@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      BPCELLS_REF: adc4a3c30f60a03522f58947d733d7d77a6eb2cf
+      R_LIB_FOR_PAK: ${{ runner.temp }}/Library
+      R_LIBS_USER: ${{ runner.temp }}/Library
 
     steps:
       - uses: actions/checkout@v4
@@ -19,11 +22,21 @@ jobs:
           r-version: release
           use-public-rspm: true
 
+      - name: Install BPCells system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential git libhdf5-dev pkg-config
+
       - name: Pre-install BPCells (pak sub-dir remote workaround)
         run: |
-          install.packages("remotes", repos = "https://cloud.r-project.org")
-          remotes::install_github("bnprks/BPCells/r")
-        shell: Rscript {0}
+          Rscript -e 'lib <- Sys.getenv("R_LIB_FOR_PAK"); dir.create(lib, recursive = TRUE, showWarnings = FALSE); .libPaths(c(lib, .libPaths())); repos <- Sys.getenv("RSPM", unset = "https://cloud.r-project.org"); install.packages(c("Rcpp", "RcppEigen", "magrittr", "rlang", "vctrs", "lifecycle", "stringr", "tibble", "dplyr", "tidyr", "readr", "ggplot2", "scales", "patchwork", "scattermore", "ggrepel", "RColorBrewer", "hexbin"), lib = lib, repos = repos, dependencies = c("Depends", "Imports", "LinkingTo"))'
+          git init /tmp/BPCells
+          cd /tmp/BPCells
+          git remote add origin https://github.com/bnprks/BPCells.git
+          git fetch --depth 1 origin "${BPCELLS_REF}"
+          git checkout --detach FETCH_HEAD
+          R CMD INSTALL --library="${R_LIB_FOR_PAK}" r
+          Rscript -e 'lib <- Sys.getenv("R_LIB_FOR_PAK"); .libPaths(c(lib, .libPaths())); stopifnot(requireNamespace("BPCells", quietly = TRUE)); cat("BPCells", as.character(utils::packageVersion("BPCells")), "ready\n")'
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -40,6 +53,9 @@ jobs:
     runs-on: macos-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      BPCELLS_REF: adc4a3c30f60a03522f58947d733d7d77a6eb2cf
+      R_LIB_FOR_PAK: ${{ runner.temp }}/Library
+      R_LIBS_USER: ${{ runner.temp }}/Library
 
     steps:
       - uses: actions/checkout@v4
@@ -48,16 +64,29 @@ jobs:
         with:
           r-version: release
 
+      - name: Install BPCells system dependencies
+        run: |
+          brew install hdf5 pkg-config
+          {
+            echo "HDF5_DIR=$(brew --prefix hdf5)"
+            echo "PKG_CONFIG_PATH=$(brew --prefix hdf5)/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+          } >> "$GITHUB_ENV"
+
       - name: Pre-install BPCells (pak sub-dir remote workaround)
         run: |
-          install.packages("remotes", repos = "https://cloud.r-project.org")
-          remotes::install_github("bnprks/BPCells/r")
-        shell: Rscript {0}
+          Rscript -e 'lib <- Sys.getenv("R_LIB_FOR_PAK"); dir.create(lib, recursive = TRUE, showWarnings = FALSE); .libPaths(c(lib, .libPaths())); repos <- Sys.getenv("RSPM", unset = "https://cloud.r-project.org"); install.packages(c("Rcpp", "RcppEigen", "magrittr", "rlang", "vctrs", "lifecycle", "stringr", "tibble", "dplyr", "tidyr", "readr", "ggplot2", "scales", "patchwork", "scattermore", "ggrepel", "RColorBrewer", "hexbin"), lib = lib, repos = repos, dependencies = c("Depends", "Imports", "LinkingTo"))'
+          git init /tmp/BPCells
+          cd /tmp/BPCells
+          git remote add origin https://github.com/bnprks/BPCells.git
+          git fetch --depth 1 origin "${BPCELLS_REF}"
+          git checkout --detach FETCH_HEAD
+          R CMD INSTALL --library="${R_LIB_FOR_PAK}" r
+          Rscript -e 'lib <- Sys.getenv("R_LIB_FOR_PAK"); .libPaths(c(lib, .libPaths())); stopifnot(requireNamespace("BPCells", quietly = TRUE)); cat("BPCells", as.character(utils::packageVersion("BPCells")), "ready\n")'
 
       - name: Install package and load app
         run: |
           install.packages("pak", repos = "https://cran.r-project.org")
-          pak::local_install(dependencies = TRUE)
+          pak::local_install(dependencies = TRUE, upgrade = FALSE)
           library(ascseurat)
           app_dir <- system.file("app", package = "ascseurat")
           stopifnot(nzchar(app_dir), file.exists(file.path(app_dir, "app.R")))
