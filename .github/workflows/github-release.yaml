@@ -1,0 +1,49 @@
+name: github-release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: create GitHub release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release from tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = context.ref.replace("refs/tags/", "");
+            const { owner, repo } = context.repo;
+
+            try {
+              await github.rest.repos.getReleaseByTag({ owner, repo, tag });
+              core.notice(`Release ${tag} already exists; skipping.`);
+              return;
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
+
+            const notes = await github.rest.repos.generateReleaseNotes({
+              owner,
+              repo,
+              tag_name: tag,
+              target_commitish: context.sha
+            });
+
+            await github.rest.repos.createRelease({
+              owner,
+              repo,
+              tag_name: tag,
+              name: `Asc-Seurat ${tag}`,
+              body: notes.data.body,
+              draft: false,
+              prerelease: tag.includes("-")
+            });
+

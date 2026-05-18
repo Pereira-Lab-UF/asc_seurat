@@ -1,0 +1,36 @@
+{
+  "title": "Asc-Seurat: Analytical single-cell Seurat-based web application",
+  "upload_type": "software",
+  "description": "Asc-Seurat is an interactive Shiny application for single-cell RNA-seq analysis. It provides a guided interface for quality control, normalization, clustering, differential expression, trajectory inference, cell-type annotation, and visualization using the Seurat framework.",
+  "creators": [
+    {
+      "name": "Almeida, Felipe M."
+    },
+    {
+      "name": "Pereira, Wendell J.",
+      "affiliation": "University of Florida"
+    },
+    {
+      "name": "Kirst, Marcelo"
+    }
+  ],
+  "access_right": "open",
+  "license": "gpl-3.0-only",
+  "keywords": [
+    "single-cell RNA-seq",
+    "scRNA-seq",
+    "Seurat",
+    "Shiny",
+    "bioinformatics",
+    "trajectory inference",
+    "differential expression"
+  ],
+  "related_identifiers": [
+    {
+      "scheme": "doi",
+      "identifier": "10.1186/s12859-021-04472-2",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-article"
+    }
+  ]
+}
