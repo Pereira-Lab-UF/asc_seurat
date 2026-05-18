@@ -35,14 +35,26 @@ jobs:
 
       - name: Pre-install BPCells (pak sub-dir remote workaround)
         run: |
-          Rscript -e 'lib <- Sys.getenv("R_LIB_FOR_PAK"); dir.create(lib, recursive = TRUE, showWarnings = FALSE); .libPaths(c(lib, .libPaths())); repos <- Sys.getenv("RSPM", unset = "https://cloud.r-project.org"); install.packages(c("Rcpp", "RcppEigen", "magrittr", "rlang", "vctrs", "lifecycle", "stringr", "tibble", "dplyr", "tidyr", "readr", "ggplot2", "scales", "patchwork", "scattermore", "ggrepel", "RColorBrewer", "hexbin"), lib = lib, repos = repos, dependencies = c("Depends", "Imports", "LinkingTo"))'
-          git init /tmp/BPCells
-          cd /tmp/BPCells
-          git remote add origin https://github.com/bnprks/BPCells.git
-          git fetch --depth 1 origin "${BPCELLS_REF}"
-          git checkout --detach FETCH_HEAD
-          R CMD INSTALL --library="${R_LIB_FOR_PAK}" r
-          Rscript -e 'lib <- Sys.getenv("R_LIB_FOR_PAK"); .libPaths(c(lib, .libPaths())); stopifnot(requireNamespace("BPCells", quietly = TRUE)); cat("BPCells", as.character(utils::packageVersion("BPCells")), "ready\n")'
+          Rscript - <<'EOF'
+          lib <- Sys.getenv("R_LIB_FOR_PAK")
+          dir.create(lib, recursive = TRUE, showWarnings = FALSE)
+          .libPaths(c(lib, .libPaths()))
+          repos <- Sys.getenv("RSPM", unset = "https://cloud.r-project.org")
+          install.packages("remotes", lib = lib, repos = repos)
+          remotes::install_github(
+            "bnprks/BPCells",
+            subdir = "r",
+            ref = Sys.getenv("BPCELLS_REF"),
+            lib = lib,
+            upgrade = "never",
+            dependencies = c("Depends", "Imports", "LinkingTo"),
+            build_vignettes = FALSE
+          )
+          desc <- utils::packageDescription("BPCells")
+          stopifnot(requireNamespace("BPCells", quietly = TRUE))
+          stopifnot(identical(desc$RemoteSha, Sys.getenv("BPCELLS_REF")))
+          cat("BPCells", as.character(utils::packageVersion("BPCells")), "ready\n")
+          EOF
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -86,14 +98,26 @@ jobs:
 
       - name: Pre-install BPCells (pak sub-dir remote workaround)
         run: |
-          Rscript -e 'lib <- Sys.getenv("R_LIB_FOR_PAK"); dir.create(lib, recursive = TRUE, showWarnings = FALSE); .libPaths(c(lib, .libPaths())); repos <- Sys.getenv("RSPM", unset = "https://cloud.r-project.org"); install.packages(c("Rcpp", "RcppEigen", "magrittr", "rlang", "vctrs", "lifecycle", "stringr", "tibble", "dplyr", "tidyr", "readr", "ggplot2", "scales", "patchwork", "scattermore", "ggrepel", "RColorBrewer", "hexbin"), lib = lib, repos = repos, dependencies = c("Depends", "Imports", "LinkingTo"))'
-          git init /tmp/BPCells
-          cd /tmp/BPCells
-          git remote add origin https://github.com/bnprks/BPCells.git
-          git fetch --depth 1 origin "${BPCELLS_REF}"
-          git checkout --detach FETCH_HEAD
-          R CMD INSTALL --library="${R_LIB_FOR_PAK}" r
-          Rscript -e 'lib <- Sys.getenv("R_LIB_FOR_PAK"); .libPaths(c(lib, .libPaths())); stopifnot(requireNamespace("BPCells", quietly = TRUE)); cat("BPCells", as.character(utils::packageVersion("BPCells")), "ready\n")'
+          Rscript - <<'EOF'
+          lib <- Sys.getenv("R_LIB_FOR_PAK")
+          dir.create(lib, recursive = TRUE, showWarnings = FALSE)
+          .libPaths(c(lib, .libPaths()))
+          repos <- Sys.getenv("RSPM", unset = "https://cloud.r-project.org")
+          install.packages("remotes", lib = lib, repos = repos)
+          remotes::install_github(
+            "bnprks/BPCells",
+            subdir = "r",
+            ref = Sys.getenv("BPCELLS_REF"),
+            lib = lib,
+            upgrade = "never",
+            dependencies = c("Depends", "Imports", "LinkingTo"),
+            build_vignettes = FALSE
+          )
+          desc <- utils::packageDescription("BPCells")
+          stopifnot(requireNamespace("BPCells", quietly = TRUE))
+          stopifnot(identical(desc$RemoteSha, Sys.getenv("BPCELLS_REF")))
+          cat("BPCells", as.character(utils::packageVersion("BPCells")), "ready\n")
+          EOF
 
       - name: Install package and load app
         run: |

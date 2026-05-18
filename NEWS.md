@@ -5,8 +5,8 @@
 * Docker runtime now includes `libuv1t64` for Shiny/httpuv and `libwebpmux3`
   for ragg graphics devices.
 * GitHub Actions now pre-install `BPCells` from the pinned Git commit using
-  `R CMD INSTALL` after installing HDF5 system libraries, avoiding pak's
-  GitHub sub-directory remote failure in R-CMD-check and pkgdown.
+  `remotes::install_github()` after installing HDF5 system libraries, avoiding
+  pak's GitHub sub-directory remote failure in R-CMD-check and pkgdown.
 * Docker smoke tests now preserve container logs on failure.
 
 # ascseurat 3.0.1
