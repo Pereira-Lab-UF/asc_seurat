@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     cmake \
     curl \
-    gdal-bin \
     gfortran \
     git \
     libabsl-dev \
@@ -33,6 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libnode-dev \
     libpng-dev \
     libproj-dev \
+    libpython3.12-dev \
     libssl-dev \
     libtiff5-dev \
     libudunits2-dev \
@@ -85,10 +85,6 @@ RUN git init /tmp/monocle3 \
     && rm -rf /tmp/monocle3
 RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install("dsong-lab/PseudotimeDE", ask = FALSE, upgrade = FALSE)'
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpython3.12t64 \
-    && rm -rf /var/lib/apt/lists/*
-
 RUN R -q -e 'library(reticulate); use_python(Sys.getenv("RETICULATE_PYTHON"), required = TRUE); py_run_string("import scanpy, anndata"); print(py_config())'
 RUN R -q -e 'stopifnot(requireNamespace("PseudotimeDE", quietly = TRUE)); stopifnot(requireNamespace("monocle3", quietly = TRUE)); stopifnot(requireNamespace("tradeSeq", quietly = TRUE))'
 RUN R -q -e 'pkgs <- c("shiny", "bslib", "Seurat", "SeuratObject", "scCustomize", "slingshot", "harmony", "SingleCellExperiment", "SummarizedExperiment", "DelayedMatrixStats", "ggplot2", "dplyr", "patchwork", "reactable", "DT", "shinyWidgets", "shinyFeedback", "shinycssloaders", "reticulate", "sass", "hdf5r", "metap", "monocle3", "PseudotimeDE", "scMaSigPro", "tradeSeq", "anndataR", "scDblFinder", "SingleR", "celldex", "BPCells"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing)) stop("Missing R packages: ", paste(missing, collapse = ", "))'
@@ -106,34 +102,23 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH="/opt/venv/bin:${PATH}"
 ENV RETICULATE_PYTHON=/opt/venv/bin/python
 
+# Runtime-only shared libraries needed by the installed R packages.
+# Many runtime libs (libcairo2, libcurl4t64, libfontconfig1, libfreetype6,
+# libfribidi0, libgfortran5, libharfbuzz0b, libpng16-16t64, libssl3t64,
+# libtiff6, libx11-6, libxml2) ship in rocker/r-ver:4.5.3 already and are
+# not listed here. Everything below is added on top of that base.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
-    cmake \
     curl \
-    gdal-bin \
-    libabsl-dev \
-    libcairo2-dev \
-    libcurl4-openssl-dev \
-    libfftw3-dev \
-    libfontconfig1-dev \
-    libfreetype6-dev \
-    libfribidi-dev \
-    libgdal-dev \
-    libgeos-dev \
-    libgfortran5 \
-    libglpk-dev \
-    libgit2-dev \
-    libharfbuzz-dev \
-    libhdf5-dev \
-    libnode-dev \
-    libpng-dev \
-    libproj-dev \
+    libfftw3-double3 \
+    libgdal34t64 \
+    libgeos-c1t64 \
+    libgit2-1.7 \
+    libglpk40 \
+    libhdf5-103-1t64 \
+    libproj25 \
     libpython3.12t64 \
-    libssl-dev \
-    libtiff5-dev \
-    libudunits2-dev \
-    libx11-dev \
-    libxml2-dev \
+    libudunits2-0 \
     pandoc \
     python3 \
     && rm -rf /var/lib/apt/lists/*

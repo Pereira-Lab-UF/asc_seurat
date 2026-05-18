@@ -17,18 +17,156 @@ on:
 env:
   IMAGE_NAME: pereiralabbio/asc-seurat
 
+# Decide once, in YAML, whether this run should push.
+# A run pushes when:
+#   - it is on the default branch or a `v*` tag, AND
+#   - either it's a push/release event, or workflow_dispatch with push_image=true.
+# Pull requests never push.
+# The actual login step also gates on the Docker Hub secrets being present.
 jobs:
-  docker:
-    runs-on: ubuntu-latest
+  build:
+    name: build (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            tag: amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            tag: arm64
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
-
+    outputs:
+      should_push: ${{ steps.dockerhub.outputs.available }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Decide whether to push
+        id: dockerhub
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          want_push="false"
+          case "${{ github.event_name }}" in
+            push)
+              if [ "${{ github.ref }}" = "refs/heads/main" ] || [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+                want_push="true"
+              fi
+              ;;
+            workflow_dispatch)
+              if [ "${{ inputs.push_image }}" = "true" ]; then
+                want_push="true"
+              fi
+              ;;
+          esac
+          if [ "$want_push" = "true" ] && [ -n "$DOCKERHUB_USERNAME" ] && [ -n "$DOCKERHUB_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            if [ "$want_push" = "true" ]; then
+              echo "::notice::Docker Hub secrets not configured; building and smoke-testing without push."
+            fi
+          fi
+
+      - uses: docker/login-action@v4
+        if: steps.dockerhub.outputs.available == 'true'
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Validate build configuration
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./Dockerfile
+          call: check
+
+      # Build the per-arch image locally on the same-arch runner so we can
+      # smoke test it. Native build, no QEMU, ~30–45 min for a cold cache.
+      - name: Build local image (${{ matrix.platform }})
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: ${{ matrix.platform }}
+          load: true
+          tags: ascseurat-ci:${{ github.sha }}-${{ matrix.tag }}
+          cache-from: type=gha,scope=${{ matrix.tag }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.tag }}
+
+      - name: Runtime smoke test (${{ matrix.platform }})
+        run: |
+          docker rm -f ascseurat-ci 2>/dev/null || true
+          docker run -d --rm --name ascseurat-ci -p 3838:3838 ascseurat-ci:${{ github.sha }}-${{ matrix.tag }}
+          trap 'docker kill ascseurat-ci 2>/dev/null || true' EXIT
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3838 > /tmp/ascseurat.html; then
+              break
+            fi
+            sleep 2
+          done
+          grep -q "Asc-Seurat v3" /tmp/ascseurat.html
+
+      # Push to Docker Hub by digest only (no tag yet). The `merge` job
+      # below combines the per-arch digests into a single multi-arch
+      # manifest under the real tags (latest, 3, sha-…). Cache reuse means
+      # this is almost-instant on top of the local build above.
+      - name: Push by digest (${{ matrix.platform }})
+        id: push
+        if: steps.dockerhub.outputs.available == 'true'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: ${{ matrix.platform }}
+          outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=${{ matrix.tag }}
+
+      - name: Stage digest for merge job
+        if: steps.dockerhub.outputs.available == 'true'
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.push.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest artifact
+        if: steps.dockerhub.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ matrix.tag }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # Combine the per-arch digests into one multi-arch manifest under the
+  # real release tags. Skipped on PRs and when Docker Hub secrets are absent.
+  merge:
+    name: merge multi-arch manifest
+    needs: build
+    if: needs.build.outputs.should_push == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Download digest artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
 
       - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Docker metadata
         id: meta
@@ -41,66 +179,14 @@ jobs:
             type=ref,event=tag
             type=sha,prefix=sha-
 
-      - name: Validate build configuration
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: ./Dockerfile
-          call: check
-
-      - name: Build local image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64
-          load: true
-          tags: ascseurat-ci:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Runtime smoke test
+      - name: Create and push manifest list
+        working-directory: /tmp/digests
         run: |
-          docker rm -f ascseurat-ci 2>/dev/null || true
-          docker run -d --rm --name ascseurat-ci -p 3838:3838 ascseurat-ci:${{ github.sha }}
-          trap 'docker kill ascseurat-ci 2>/dev/null || true' EXIT
-          for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:3838 > /tmp/ascseurat.html; then
-              break
-            fi
-            sleep 2
-          done
-          grep -q "Asc-Seurat v3" /tmp/ascseurat.html
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.IMAGE_NAME }}@sha256:%s ' *)
 
-      - name: Check Docker Hub credentials
-        id: dockerhub
-        if: github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.push_image) && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Inspect pushed manifest
         run: |
-          if [ -n "$DOCKERHUB_USERNAME" ] && [ -n "$DOCKERHUB_TOKEN" ]; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Docker Hub secrets are not configured, so the image build was tested but not pushed."
-          fi
-
-      - uses: docker/login-action@v4
-        if: steps.dockerhub.outputs.available == 'true'
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Push release image
-        if: steps.dockerhub.outputs.available == 'true'
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tag=$(jq -r '.tags[0]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          docker buildx imagetools inspect "$tag"
