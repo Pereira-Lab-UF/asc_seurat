@@ -1,3 +1,26 @@
+# ascseurat 3.0.1
+
+## Install and distribution
+
+* README install instructions now pre-install `BPCells` via `remotes` before
+  running `pak::pkg_install`. Works around a `pak` 0.9.5 issue with GitHub
+  sub-directory remotes that blocked the install of `monocle3` and its
+  downstream packages.
+* Docker image runtime stage slimmed: dropped compile-time `*-dev` packages
+  and now relies on the runtime shared libraries already shipped in the
+  `rocker/r-ver:4.5.3` (Ubuntu 24.04) base. Local image is ~4.8 GB.
+* Docker build CI split into native `linux/amd64` and `linux/arm64` jobs
+  (no more QEMU emulation) and now triggers only on `v*` release tags or
+  manual workflow dispatch.
+* Docker Hub multi-arch manifest: `pereiralabbio/asc-seurat:3` and `:latest`
+  now resolve transparently to the native variant on Apple Silicon and x86.
+* GitHub releases auto-archive to Zenodo.
+
+## Docs
+
+* Read the Docs site rewritten to match the v3 editorial UI and to drop
+  the v2 migration-narrative framing throughout.
+
 # ascseurat 3.0.0
 
 ## Major changes
