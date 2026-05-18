@@ -70,14 +70,17 @@ Recommended for users who already work in R and want a lighter install than the 
 From inside an R or R Studio session:
 
 ```r
-install.packages("pak")
+install.packages(c("pak", "remotes"))
+remotes::install_github("bnprks/BPCells/r")
 pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)
 ```
+
+The middle line pre-installs [BPCells](https://github.com/bnprks/BPCells) (a hard dependency of `monocle3`) via `remotes`, which works around a known `pak` issue with GitHub sub-directory packages.
 
 Or, from a terminal:
 
 ```bash
-Rscript -e 'if (!requireNamespace("pak", quietly = TRUE)) install.packages("pak", repos = "https://cloud.r-project.org"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)'
+Rscript -e 'if (!requireNamespace("pak", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)'
 ```
 
 Then, in the R session, launch the app:
