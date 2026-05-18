@@ -58,7 +58,7 @@ There are two supported ways to install Asc-Seurat. **Docker is the recommended 
 Requirements: [Docker](https://docs.docker.com/get-docker/) must be installed and running on your machine. Then, in a terminal, run:
 
 ```bash
-docker pull kirstlab/asc_seurat:3 && docker run --rm -p 3838:3838 kirstlab/asc_seurat:3
+docker pull pereiralabbio/asc-seurat:3 && docker run --rm -p 3838:3838 pereiralabbio/asc-seurat:3
 ```
 
 Then open <http://localhost:3838> in your browser. That's it.
