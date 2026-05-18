@@ -26,5 +26,4 @@ articles:
       - single-sample-workflow
       - multi-sample-integration
       - trajectory-inference
-      - functional-annotation
       - migrating-from-v2

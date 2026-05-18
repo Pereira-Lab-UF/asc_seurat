@@ -32,7 +32,6 @@ jobs:
         with:
           extra-packages: |
             any::rcmdcheck
-            any::pak
             any::testthat
           dependencies: '"hard"'
           needs: check
