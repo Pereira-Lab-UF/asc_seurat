@@ -116,6 +116,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgit2-1.7 \
     libglpk40 \
     libhdf5-103-1t64 \
+    libnode109 \
     libproj25 \
     libpython3.12t64 \
     libudunits2-0 \
