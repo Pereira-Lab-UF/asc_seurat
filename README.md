@@ -5,11 +5,11 @@
 **Asc-Seurat** is a web application for single-cell RNA-seq analysis, built around [Seurat v5](https://satijalab.org/seurat/). It walks you through the full scRNA-seq data analysis workflow: quality control, normalization, clustering, differential expression, trajectory inference, cell-type annotation, and publication-ready visualization.
 
 **The new release (v3) is a full modernization of the app.** It includes improvements on the interface, removal of outdated tools, easier installation (either as an R package or a Docker image), while maintaining the easy-to-use, end-to-end workflow that made it accessible to users without programming experience.
-<break/>
+<br/>
 <p align="center"> <img src="docs/images/v3/v3_home.png" width="820" alt="Asc-Seurat v3 home screen"> <br/><em>Asc-Seurat v3 home screen.</em>
 </p>
 
----
+***
 
 ## Table of contents
 
@@ -25,7 +25,7 @@
 - [Citation](#citation)
 - [License](#license)
 
----
+***
 
 ## What you can do with Asc-Seurat
 
@@ -47,7 +47,7 @@
 - **Refreshed UI** with a built-in Demo to get users familiar with the interface and workflow.
 - **Quality-of-life additions.** Bookmarking, session reports, optional doublet removal, cluster renaming.
 
----
+***
 
 ## Quick start
 
@@ -111,7 +111,7 @@ PAGA uses Python's [Scanpy](https://scanpy.readthedocs.io/) stack via [`reticula
 ascseurat::setup_paga()
 ```
 
----
+***
 
 ## First run: the Demo tab
 
@@ -124,28 +124,27 @@ You don't need your own data to try Asc-Seurat. After launching:
 <p align="center"> <img src="docs/images/v3/v3_demo.png" width="820" alt="v3 Demo tab auto-loading an example dataset"> <br/><em>The Demo tab auto-loads a PBMC dataset so first-time users can complete the full workflow without supplying data.</em>
 </p>
 
----
+***
 
 ## Resource and configuration notes
 
-!!! warning Resource requirements
-    Single-cell analysis is memory-intensive. Larger datasets need more RAM whether you use Docker or the R package. We recommend at least 8GB for datasets up to ~20,000 cells, and 16GB or more for larger datasets.
+> **Resource requirements:** Single-cell analysis is memory-intensive. Larger datasets need more RAM whether you use Docker or the R package. We recommend at least 8GB for datasets up to ~20,000 cells, and 16GB or more for larger datasets.
 
----
+***
 ## Documentation
 
 - **User documentation**: <https://asc-seurat.readthedocs.io/en/latest/>
 - **Source code**: <https://github.com/Pereira-Lab-UF/asc_seurat>
 - **Issue tracker**: <https://github.com/Pereira-Lab-UF/asc_seurat/issues>
 
----
+***
 
 ## Citation
 
 If you use Asc-Seurat in your research, please cite the original paper:
 
 > Pereira WJ, Almeida FM, Balmant KM, Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M. [Asc-Seurat: analytical single-cell Seurat-based web application](https://doi.org/10.1186/s12859-021-04472-2). *BMC Bioinformatics* 22, 556 (2021).
----
+***
 
 ## License
 
