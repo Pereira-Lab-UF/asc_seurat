@@ -1,5 +1,53 @@
 # Changelog
 
+## ascseurat 3.0.6
+
+### Install and distribution
+
+- ARM64 Docker builds now switch Ubuntu ports package sources to an
+  HTTPS mirror before `apt-get update`, avoiding release failures when
+  `ports.ubuntu.com` is unreachable over plain HTTP on GitHub runners.
+
+## ascseurat 3.0.5
+
+### Install and distribution
+
+- Docker builds now retry transient Ubuntu apt mirror and CRAN/RSPM
+  download failures before failing release builds.
+- macOS CI now retries CRAN bootstrap installs for `remotes` and `pak`,
+  with a longer timeout for large binary downloads.
+
+## ascseurat 3.0.4
+
+### Install and distribution
+
+- GitHub Actions now pre-install `BPCells` with `remotes` before handing
+  the rest of the dependency graph to `pak`, avoiding the GitHub
+  sub-directory archive unpacking failure that broke pkgdown and R CMD
+  check.
+- macOS CI now installs and exports OpenSSL/HDF5 build paths before
+  source package compilation, fixing Bioconductor packages that link
+  against `libssl`.
+- Docker release publishing now downloads per-architecture digest
+  artifacts by name before creating the multi-arch manifest.
+
+## ascseurat 3.0.3
+
+### Install and distribution
+
+- R packages used by app features are now declared as runtime
+  dependencies. Local R installs therefore install `PseudotimeDE`,
+  Monocle 3, SingleR, scDblFinder, and other app packages automatically,
+  while docs now list the system compiler/HDF5 prerequisites that users
+  still need to install.
+- README and ReadTheDocs installation instructions now direct users to
+  either Docker or the R-session install commands, with the BPCells HDF5
+  prerequisite and macOS GNU Fortran requirement called out explicitly.
+- Docker usage docs now explain bind mounts for local data paths, and
+  the app strips pasted path quotes before resolving local files.
+- macOS package-check smoke tests install the official R GNU Fortran
+  runtime before building source packages that link Fortran libraries.
+
 ## ascseurat 3.0.2
 
 ### Install and distribution

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ascseurat</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,40 @@
       <small>Source: <a href="https://github.com/Pereira-Lab-UF/asc_seurat/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.0.6" id="ascseurat-306">ascseurat 3.0.6<a class="anchor" aria-label="anchor" href="#ascseurat-306"></a></h2>
+<div class="section level3">
+<h3 id="install-and-distribution-3-0-6">Install and distribution<a class="anchor" aria-label="anchor" href="#install-and-distribution-3-0-6"></a></h3>
+<ul><li>ARM64 Docker builds now switch Ubuntu ports package sources to an HTTPS mirror before <code>apt-get update</code>, avoiding release failures when <code>ports.ubuntu.com</code> is unreachable over plain HTTP on GitHub runners.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.0.5" id="ascseurat-305">ascseurat 3.0.5<a class="anchor" aria-label="anchor" href="#ascseurat-305"></a></h2>
+<div class="section level3">
+<h3 id="install-and-distribution-3-0-5">Install and distribution<a class="anchor" aria-label="anchor" href="#install-and-distribution-3-0-5"></a></h3>
+<ul><li>Docker builds now retry transient Ubuntu apt mirror and CRAN/RSPM download failures before failing release builds.</li>
+<li>macOS CI now retries CRAN bootstrap installs for <code>remotes</code> and <code>pak</code>, with a longer timeout for large binary downloads.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.0.4" id="ascseurat-304">ascseurat 3.0.4<a class="anchor" aria-label="anchor" href="#ascseurat-304"></a></h2>
+<div class="section level3">
+<h3 id="install-and-distribution-3-0-4">Install and distribution<a class="anchor" aria-label="anchor" href="#install-and-distribution-3-0-4"></a></h3>
+<ul><li>GitHub Actions now pre-install <code>BPCells</code> with <code>remotes</code> before handing the rest of the dependency graph to <code>pak</code>, avoiding the GitHub sub-directory archive unpacking failure that broke pkgdown and R CMD check.</li>
+<li>macOS CI now installs and exports OpenSSL/HDF5 build paths before source package compilation, fixing Bioconductor packages that link against <code>libssl</code>.</li>
+<li>Docker release publishing now downloads per-architecture digest artifacts by name before creating the multi-arch manifest.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.0.3" id="ascseurat-303">ascseurat 3.0.3<a class="anchor" aria-label="anchor" href="#ascseurat-303"></a></h2>
+<div class="section level3">
+<h3 id="install-and-distribution-3-0-3">Install and distribution<a class="anchor" aria-label="anchor" href="#install-and-distribution-3-0-3"></a></h3>
+<ul><li>R packages used by app features are now declared as runtime dependencies. Local R installs therefore install <code>PseudotimeDE</code>, Monocle 3, SingleR, scDblFinder, and other app packages automatically, while docs now list the system compiler/HDF5 prerequisites that users still need to install.</li>
+<li>README and ReadTheDocs installation instructions now direct users to either Docker or the R-session install commands, with the BPCells HDF5 prerequisite and macOS GNU Fortran requirement called out explicitly.</li>
+<li>Docker usage docs now explain bind mounts for local data paths, and the app strips pasted path quotes before resolving local files.</li>
+<li>macOS package-check smoke tests install the official R GNU Fortran runtime before building source packages that link Fortran libraries.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.0.2" id="ascseurat-302">ascseurat 3.0.2<a class="anchor" aria-label="anchor" href="#ascseurat-302"></a></h2>
 <div class="section level3">

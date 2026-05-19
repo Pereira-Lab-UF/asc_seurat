@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">ascseurat</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -144,35 +144,52 @@
 <p>Requirements: <a href="https://docs.docker.com/get-docker/" class="external-link">Docker</a> must be installed and running on your machine. Then, in a terminal, run:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">docker</span> pull pereiralabbio/asc-seurat:3 <span class="kw">&amp;&amp;</span> <span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-p</span> 3838:3838 pereiralabbio/asc-seurat:3</span></code></pre></div>
 <p>Then open <a href="http://localhost:3838" class="external-link uri">http://localhost:3838</a> in your browser. That’s it.</p>
+<p>Docker containers cannot see arbitrary host paths unless those paths are mounted when the container starts. The easiest pattern is to launch the container from the folder that contains your data and mount that current folder into Asc-Seurat’s <code>data/</code> directory:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"/path/to/folder/that/contains/your/data"</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-p</span> 3838:3838 <span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">-v</span> <span class="st">"</span><span class="va">$PWD</span><span class="st">:/home/ascseurat/data:ro"</span> <span class="dt">\</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  pereiralabbio/asc-seurat:3</span></code></pre></div>
+<p>Then enter paths relative to the app workdir, for example <code>data/sample/filtered_feature_bc_matrix</code>. If the mounted folder itself is the 10X matrix directory, enter <code>data/</code>.</p>
+<p>If you prefer to paste normal absolute paths from anywhere under your home directory on macOS or Linux, mount your home directory at the same path inside the container:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-p</span> 3838:3838 <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">-v</span> <span class="st">"</span><span class="va">$HOME</span><span class="st">:</span><span class="va">$HOME</span><span class="st">:ro"</span> <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  pereiralabbio/asc-seurat:3</span></code></pre></div>
+<p>Then enter the normal absolute path in Asc-Seurat, for example <code>/Users/you/project/sample/filtered_feature_bc_matrix</code>, without wrapping the path in quotes. To expose external drives on macOS, also mount <code>/Volumes:/Volumes:ro</code>. On Windows, mount a folder to a Linux container path such as <code>/home/ascseurat/data</code> and enter <code>data/...</code> in the app.</p>
 </div>
 <div class="section level3">
 <h3 id="option-2--r-package-from-github">Option 2 — R package from GitHub<a class="anchor" aria-label="anchor" href="#option-2--r-package-from-github"></a>
 </h3>
 <p>Recommended for users who already work in R and want a lighter install than the Docker image. Requires <strong>R ≥ 4.3.0</strong>.</p>
-<p>From inside an R or R Studio session:</p>
-<p>Install the HDF5 system dependency first:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Ubuntu/Debian</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">sudo</span> apt-get install <span class="at">-y</span> libhdf5-dev pkg-config</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># macOS</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="ex">brew</span> install hdf5 pkg-config</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>From a terminal, install the system dependencies first. Asc-Seurat installs the R packages automatically, but native packages still need compilers and HDF5 available on the machine.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Ubuntu/Debian</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">sudo</span> apt-get install <span class="at">-y</span> build-essential gfortran libhdf5-dev pkg-config</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># macOS</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="ex">xcode-select</span> <span class="at">--install</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="ex">brew</span> install hdf5 pkg-config</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-LO</span> https://mac.r-project.org/tools/gfortran-14.2-universal.pkg</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="fu">sudo</span> installer <span class="at">-pkg</span> gfortran-14.2-universal.pkg <span class="at">-target</span> /</span></code></pre></div>
+<p>Follow the upstream <a href="https://github.com/bnprks/BPCells#r-installation" class="external-link">BPCells R installation instructions</a> if you need more detail on the HDF5 requirement.</p>
+<p>Then, from inside an R or R Studio session:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pak"</span>, <span class="st">"remotes"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"bnprks/BPCells/r"</span>, upgrade <span class="op">=</span> <span class="st">"never"</span><span class="op">)</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"Pereira-Lab-UF/asc_seurat"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>The middle line pre-installs <a href="https://github.com/bnprks/BPCells" class="external-link">BPCells</a> (a hard dependency of <code>monocle3</code>) via <code>remotes</code>, which works around a known <code>pak</code> issue with GitHub sub-directory packages. If BPCells still fails through <code>remotes</code>, install it from <a href="https://bnprks.r-universe.dev/BPCells" class="external-link">R-universe</a> before running <code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install()</a></code>:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BPCells"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://bnprks.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Or, from a terminal:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'if (!requireNamespace("pak", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r", upgrade = "never"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)'</span></span></code></pre></div>
-<p>Then, in the R session, launch the app:</p>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"bnprks/BPCells/r"</span>, upgrade <span class="op">=</span> <span class="st">"never"</span><span class="op">)</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Pereira-Lab-UF/asc_seurat"</span>,</span>
+<span>  dependencies <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Depends"</span>, <span class="st">"Imports"</span>, <span class="st">"LinkingTo"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The middle line pre-installs <a href="https://github.com/bnprks/BPCells#r-installation" class="external-link">BPCells</a> (a hard dependency of <code>monocle3</code>) via <code>remotes</code>, which works around a known <code>pak</code> issue with GitHub sub-directory packages. The <code>pak</code> command installs every R package declared as an app runtime dependency in <code>DESCRIPTION</code>, including <code>PseudotimeDE</code>; it avoids only developer, documentation, and test-only packages. On macOS, <code>PseudotimeDE</code> requires the official R GNU Fortran toolchain above. The error <code>library 'emutls_w' not found</code> means that toolchain is missing or mismatched.</p>
+<p>If BPCells still fails through <code>remotes</code>, install it from <a href="https://bnprks.r-universe.dev/BPCells" class="external-link">R-universe</a> before running <code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install()</a></code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BPCells"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://bnprks.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Then, in the R session, launch the app:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">ascseurat</span><span class="fu">::</span><span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="python-dependencies-for-paga-only-needed-if-you-are-installing-the-package-and-dependencies-manually">Python dependencies for PAGA (only needed if you are installing the package and dependencies manually).<a class="anchor" aria-label="anchor" href="#python-dependencies-for-paga-only-needed-if-you-are-installing-the-package-and-dependencies-manually"></a>
 </h4>
 <p>PAGA uses Python’s <a href="https://scanpy.readthedocs.io/" class="external-link">Scanpy</a> stack via <a href="https://rstudio.github.io/reticulate/" class="external-link"><code>reticulate</code></a>. A one-liner prepares and verifies a managed Python environment:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">ascseurat</span><span class="fu">::</span><span class="fu"><a href="reference/setup_paga.html">setup_paga</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>

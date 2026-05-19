@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ascseurat</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,9 +87,10 @@ through <code>PseudotimeDE-fast</code> as the recommended default, or
 through the alternate <code>scMaSigPro</code> and longer-running
 <code>tradeSeq</code> options.</li>
 </ul>
-<p>Docker images include these trajectory dependencies. R package users
-can install <code>PseudotimeDE</code> with
-<code>remotes::install_git("https://github.com/dsong-lab/PseudotimeDE.git")</code>.</p>
+<p>Docker images include these trajectory dependencies. The R package
+install also installs the required R trajectory packages; only the
+Python stack for PAGA is prepared separately with
+<code><a href="../reference/setup_paga.html">ascseurat::setup_paga()</a></code>.</p>
 <p>Use a clustered Seurat object from the Single Sample or Integration
 workflows as input to this tab.</p>
   </main>

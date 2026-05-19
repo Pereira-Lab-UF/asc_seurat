@@ -1,7 +1,10 @@
 # Get started
 
 Asc-Seurat v3 can be launched either from Docker or from the GitHub R
-package.
+package. For the R package install, follow the upstream [BPCells R
+installation
+instructions](https://github.com/bnprks/BPCells#r-installation) first so
+the HDF5 system dependency is available.
 
 ``` r
 # install.packages(c("pak", "remotes"))

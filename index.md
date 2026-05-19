@@ -91,45 +91,90 @@ docker pull pereiralabbio/asc-seurat:3 && docker run --rm -p 3838:3838 pereirala
 
 Then open <http://localhost:3838> in your browser. That’s it.
 
+Docker containers cannot see arbitrary host paths unless those paths are
+mounted when the container starts. The easiest pattern is to launch the
+container from the folder that contains your data and mount that current
+folder into Asc-Seurat’s `data/` directory:
+
+``` bash
+cd "/path/to/folder/that/contains/your/data"
+docker run --rm -p 3838:3838 \
+  -v "$PWD:/home/ascseurat/data:ro" \
+  pereiralabbio/asc-seurat:3
+```
+
+Then enter paths relative to the app workdir, for example
+`data/sample/filtered_feature_bc_matrix`. If the mounted folder itself
+is the 10X matrix directory, enter `data/`.
+
+If you prefer to paste normal absolute paths from anywhere under your
+home directory on macOS or Linux, mount your home directory at the same
+path inside the container:
+
+``` bash
+docker run --rm -p 3838:3838 \
+  -v "$HOME:$HOME:ro" \
+  pereiralabbio/asc-seurat:3
+```
+
+Then enter the normal absolute path in Asc-Seurat, for example
+`/Users/you/project/sample/filtered_feature_bc_matrix`, without wrapping
+the path in quotes. To expose external drives on macOS, also mount
+`/Volumes:/Volumes:ro`. On Windows, mount a folder to a Linux container
+path such as `/home/ascseurat/data` and enter `data/...` in the app.
+
 ### Option 2 — R package from GitHub
 
 Recommended for users who already work in R and want a lighter install
 than the Docker image. Requires **R ≥ 4.3.0**.
 
-From inside an R or R Studio session:
-
-Install the HDF5 system dependency first:
+From a terminal, install the system dependencies first. Asc-Seurat
+installs the R packages automatically, but native packages still need
+compilers and HDF5 available on the machine.
 
 ``` bash
 # Ubuntu/Debian
-sudo apt-get install -y libhdf5-dev pkg-config
+sudo apt-get install -y build-essential gfortran libhdf5-dev pkg-config
 
 # macOS
+xcode-select --install
 brew install hdf5 pkg-config
+curl -LO https://mac.r-project.org/tools/gfortran-14.2-universal.pkg
+sudo installer -pkg gfortran-14.2-universal.pkg -target /
 ```
+
+Follow the upstream [BPCells R installation
+instructions](https://github.com/bnprks/BPCells#r-installation) if you
+need more detail on the HDF5 requirement.
+
+Then, from inside an R or R Studio session:
 
 ``` r
 install.packages(c("pak", "remotes"))
 remotes::install_github("bnprks/BPCells/r", upgrade = "never")
-pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)
+pak::pkg_install(
+  "Pereira-Lab-UF/asc_seurat",
+  dependencies = c("Depends", "Imports", "LinkingTo")
+)
 ```
 
 The middle line pre-installs
-[BPCells](https://github.com/bnprks/BPCells) (a hard dependency of
-`monocle3`) via `remotes`, which works around a known `pak` issue with
-GitHub sub-directory packages. If BPCells still fails through `remotes`,
-install it from [R-universe](https://bnprks.r-universe.dev/BPCells)
-before running
+[BPCells](https://github.com/bnprks/BPCells#r-installation) (a hard
+dependency of `monocle3`) via `remotes`, which works around a known
+`pak` issue with GitHub sub-directory packages. The `pak` command
+installs every R package declared as an app runtime dependency in
+`DESCRIPTION`, including `PseudotimeDE`; it avoids only developer,
+documentation, and test-only packages. On macOS, `PseudotimeDE` requires
+the official R GNU Fortran toolchain above. The error
+`library 'emutls_w' not found` means that toolchain is missing or
+mismatched.
+
+If BPCells still fails through `remotes`, install it from
+[R-universe](https://bnprks.r-universe.dev/BPCells) before running
 [`pak::pkg_install()`](https://pak.r-lib.org/reference/pkg_install.html):
 
 ``` r
 install.packages("BPCells", repos = c("https://bnprks.r-universe.dev", "https://cloud.r-project.org"))
-```
-
-Or, from a terminal:
-
-``` bash
-Rscript -e 'if (!requireNamespace("pak", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r", upgrade = "never"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)'
 ```
 
 Then, in the R session, launch the app:
