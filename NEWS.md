@@ -1,3 +1,12 @@
+# ascseurat 3.0.5
+
+## Install and distribution
+
+* Docker builds now retry transient Ubuntu apt mirror and CRAN/RSPM download
+  failures before failing release builds.
+* macOS CI now retries CRAN bootstrap installs for `remotes` and `pak`, with a
+  longer timeout for large binary downloads.
+
 # ascseurat 3.0.4
 
 ## Install and distribution

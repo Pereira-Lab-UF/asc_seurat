@@ -48,7 +48,13 @@ jobs:
         env:
           BPCELLS_REF: adc4a3c30f60a03522f58947d733d7d77a6eb2cf
         run: |
-          install.packages("remotes", repos = "https://cloud.r-project.org")
+          options(timeout = 600, repos = c(CRAN = "https://cran.rstudio.com"))
+          for (attempt in seq_len(5)) {
+            try(install.packages("remotes", repos = getOption("repos")), silent = TRUE)
+            if (requireNamespace("remotes", quietly = TRUE)) break
+            if (attempt == 5) stop("Failed to install remotes")
+            Sys.sleep(15 * attempt)
+          }
           remotes::install_github(
             "bnprks/BPCells",
             ref = Sys.getenv("BPCELLS_REF"),
@@ -112,7 +118,13 @@ jobs:
         env:
           BPCELLS_REF: adc4a3c30f60a03522f58947d733d7d77a6eb2cf
         run: |
-          install.packages("remotes", repos = "https://cloud.r-project.org")
+          options(timeout = 600, repos = c(CRAN = "https://cran.rstudio.com"))
+          for (attempt in seq_len(5)) {
+            try(install.packages("remotes", repos = getOption("repos")), silent = TRUE)
+            if (requireNamespace("remotes", quietly = TRUE)) break
+            if (attempt == 5) stop("Failed to install remotes")
+            Sys.sleep(15 * attempt)
+          }
           remotes::install_github(
             "bnprks/BPCells",
             ref = Sys.getenv("BPCELLS_REF"),
@@ -124,7 +136,13 @@ jobs:
 
       - name: Install package and load app
         run: |
-          install.packages("pak", repos = "https://cran.r-project.org")
+          options(timeout = 600, repos = c(CRAN = "https://cran.rstudio.com"))
+          for (attempt in seq_len(5)) {
+            try(install.packages("pak", repos = getOption("repos")), silent = TRUE)
+            if (requireNamespace("pak", quietly = TRUE)) break
+            if (attempt == 5) stop("Failed to install pak")
+            Sys.sleep(15 * attempt)
+          }
           pak::local_install(dependencies = c("Depends", "Imports", "LinkingTo"), upgrade = FALSE)
           library(ascseurat)
           app_dir <- system.file("app", package = "ascseurat")
