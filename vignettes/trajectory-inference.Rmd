@@ -20,7 +20,8 @@ Trajectory inference in Asc-Seurat v3 is offline-first:
   `PseudotimeDE-fast` as the recommended default, or through the alternate
   `scMaSigPro` and longer-running `tradeSeq` options.
 
-Docker images include these trajectory dependencies. R package users can install
-`PseudotimeDE` with `remotes::install_git("https://github.com/dsong-lab/PseudotimeDE.git")`.
+Docker images include these trajectory dependencies. The R package install also
+installs the required R trajectory packages; only the Python stack for PAGA is
+prepared separately with `ascseurat::setup_paga()`.
 
 Use a clustered Seurat object from the Single Sample or Integration workflows as input to this tab.

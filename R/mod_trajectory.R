@@ -1309,8 +1309,9 @@ pseudotimede_available <- function() {
 
 pseudotimede_install_message <- function() {
     paste(
-        "PseudotimeDE-fast is not installed in this R library.",
+        "PseudotimeDE-fast is not installed; it is required for trajectory differential expression.",
         "The Docker image includes it.",
+        "On macOS, install the official R GNU Fortran toolchain first: https://mac.r-project.org/tools/.",
         "For a local R package install, run:",
         "remotes::install_git('https://github.com/dsong-lab/PseudotimeDE.git')"
     )

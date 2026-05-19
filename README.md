@@ -99,17 +99,24 @@ path such as `/home/ascseurat/data` and enter `data/...` in the app.
 
 Recommended for users who already work in R and want a lighter install than the Docker image. Requires **R ≥ 4.3.0**.
 
-From inside an R or R Studio session:
-
-Follow the upstream [BPCells R installation instructions](https://github.com/bnprks/BPCells#r-installation) first. In particular, install the HDF5 system dependency before installing BPCells:
+From a terminal, install the system dependencies first. Asc-Seurat installs the R packages
+automatically, but native packages still need compilers and HDF5 available on
+the machine.
 
 ```bash
 # Ubuntu/Debian
-sudo apt-get install -y libhdf5-dev pkg-config
+sudo apt-get install -y build-essential gfortran libhdf5-dev pkg-config
 
 # macOS
+xcode-select --install
 brew install hdf5 pkg-config
+curl -LO https://mac.r-project.org/tools/gfortran-14.2-universal.pkg
+sudo installer -pkg gfortran-14.2-universal.pkg -target /
 ```
+
+Follow the upstream [BPCells R installation instructions](https://github.com/bnprks/BPCells#r-installation) if you need more detail on the HDF5 requirement.
+
+Then, from inside an R or R Studio session:
 
 ```r
 install.packages(c("pak", "remotes"))
@@ -120,7 +127,7 @@ pak::pkg_install(
 )
 ```
 
-The middle line pre-installs [BPCells](https://github.com/bnprks/BPCells#r-installation) (a hard dependency of `monocle3`) via `remotes`, which works around a known `pak` issue with GitHub sub-directory packages. The `dependencies` argument intentionally installs only required runtime packages; `dependencies = TRUE` also installs optional `Suggests` packages such as `PseudotimeDE`, which may require a working Fortran toolchain on macOS.
+The middle line pre-installs [BPCells](https://github.com/bnprks/BPCells#r-installation) (a hard dependency of `monocle3`) via `remotes`, which works around a known `pak` issue with GitHub sub-directory packages. The `pak` command installs every R package declared as an app runtime dependency in `DESCRIPTION`, including `PseudotimeDE`; it avoids only developer, documentation, and test-only packages. On macOS, `PseudotimeDE` requires the official R GNU Fortran toolchain above. The error `library 'emutls_w' not found` means that toolchain is missing or mismatched.
 
 If BPCells still fails through `remotes`, install it from [R-universe](https://bnprks.r-universe.dev/BPCells) before running `pak::pkg_install()`:
 

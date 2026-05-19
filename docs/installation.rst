@@ -65,23 +65,27 @@ Option 2 — R package from GitHub
 
 Requires **R ≥ 4.3.0** and Rstudio is recommended.
 
-From inside an R session:
-
-Follow the upstream `BPCells R installation instructions <https://github.com/bnprks/BPCells#r-installation>`_
-first. In particular, install the HDF5 system dependency before installing
-``BPCells``:
+From a terminal, install the system dependencies first. Asc-Seurat installs the R packages
+automatically, but native packages still need compilers and HDF5 available on
+the machine.
 
 .. code-block:: bash
 
    # Ubuntu/Debian
-   sudo apt-get install -y libhdf5-dev pkg-config
+   sudo apt-get install -y build-essential gfortran libhdf5-dev pkg-config
 
    # macOS
+   xcode-select --install
    brew install hdf5 pkg-config
+   curl -LO https://mac.r-project.org/tools/gfortran-14.2-universal.pkg
+   sudo installer -pkg gfortran-14.2-universal.pkg -target /
 
-Then install ``BPCells`` before installing Asc-Seurat. ``BPCells`` is
-required by the trajectory stack, and installing it first avoids a known
-``pak`` failure with GitHub sub-directory packages.
+Follow the upstream `BPCells R installation instructions <https://github.com/bnprks/BPCells#r-installation>`_
+if you need more detail on the HDF5 requirement.
+
+Then, from inside an R session, install ``BPCells`` before installing
+Asc-Seurat. ``BPCells`` is required by the trajectory stack, and installing it
+first avoids a known ``pak`` failure with GitHub sub-directory packages.
 
 .. code-block:: r
 
@@ -92,10 +96,12 @@ required by the trajectory stack, and installing it first avoids a known
      dependencies = c("Depends", "Imports", "LinkingTo")
    )
 
-The ``dependencies`` argument intentionally installs only required runtime
-packages. Do not use ``dependencies = TRUE`` for the default install unless
-you also want optional ``Suggests`` packages; on macOS that can force source
-builds such as ``PseudotimeDE`` that need a working Fortran toolchain.
+The ``pak`` command installs every R package declared as an app runtime
+dependency in ``DESCRIPTION``, including ``PseudotimeDE``. It avoids only
+developer, documentation, and test-only packages. On macOS,
+``PseudotimeDE`` requires the official R GNU Fortran toolchain above. The
+error ``library 'emutls_w' not found`` means that toolchain is missing or
+mismatched.
 
 If the GitHub install of ``BPCells`` is rate-limited or unavailable, use
 the BPCells R-universe repository first, then run the Asc-Seurat install:

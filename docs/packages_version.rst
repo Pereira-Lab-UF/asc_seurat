@@ -23,9 +23,11 @@ first so the HDF5 system dependency is available, then install
 
 This explicit ``BPCells`` step avoids a known ``pak`` failure with the
 GitHub sub-directory package used by BPCells. The explicit ``dependencies``
-value keeps the default install to required runtime packages;
-``dependencies = TRUE`` also installs optional ``Suggests`` packages such
-as ``PseudotimeDE`` and may require a working Fortran toolchain on macOS.
+value installs every package declared as an app runtime dependency in
+``DESCRIPTION``, including ``PseudotimeDE``; it avoids only developer,
+documentation, and test-only packages. On macOS, ``PseudotimeDE`` requires
+the official R GNU Fortran toolchain from
+`R for macOS tools <https://mac.r-project.org/tools/>`_.
 
 To capture the exact versions on your machine for a methods section or
 a bug report, run ``sessionInfo()`` after launching the app:

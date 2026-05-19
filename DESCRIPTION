@@ -43,11 +43,6 @@ Imports:
     shinyFeedback,
     shinycssloaders,
     reticulate (>= 1.41.0),
-    methods,
-    stats,
-    utils,
-    grDevices
-Suggests:
     hdf5r,
     metap,
     monocle3,
@@ -59,6 +54,11 @@ Suggests:
     scDblFinder,
     SingleR,
     celldex,
+    methods,
+    stats,
+    utils,
+    grDevices
+Suggests:
     knitr,
     rmarkdown,
     pkgdown,

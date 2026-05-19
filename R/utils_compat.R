@@ -519,6 +519,10 @@ load_input_data <- function(path, project = "AscSeurat",
 
         "10x_h5" = {
             message("Loading 10X Genomics h5 file...")
+            if (!requireNamespace("hdf5r", quietly = TRUE)) {
+                stop("Reading 10X .h5 files requires the 'hdf5r' package.",
+                     call. = FALSE)
+            }
             data <- Seurat::Read10X_h5(filename = path)
             Seurat::CreateSeuratObject(
                 counts = data,

@@ -7,6 +7,10 @@
 * Package GitHub Actions now install only hard/runtime dependencies, avoiding
   pak's optional GitHub sub-directory remote path for `BPCells`; the Docker
   release workflow remains the full optional-stack runtime gate.
+* R packages used by app features are now declared as runtime dependencies.
+  Local R installs therefore install `PseudotimeDE`, Monocle 3, SingleR,
+  scDblFinder, and other app packages automatically, while docs now list the
+  system compiler/HDF5 prerequisites that users still need to install.
 * Docker smoke tests now preserve container logs on failure.
 
 # ascseurat 3.0.1

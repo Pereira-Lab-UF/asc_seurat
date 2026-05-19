@@ -79,14 +79,11 @@ step groups significant trajectory-variable genes into modules.
 Installing the Python and R dependencies
 ----------------------------------------
 
-The Docker image bundles the trajectory and DE dependencies. R package
-users should install them on demand:
+The Docker image bundles the trajectory and DE dependencies. The R package
+install also installs the required R trajectory packages; only the Python
+stack for PAGA is prepared separately:
 
 - **PAGA**: requires ``scanpy``. Run ``ascseurat::setup_paga()`` from
   R to verify or prepare the Python environment.
-- **Monocle 3**: install from CRAN/Bioconductor (``BiocManager::install
-  ("monocle3")``) or from GitHub.
-- **PseudotimeDE-fast**: install from GitHub with
-  ``remotes::install_git("https://github.com/dsong-lab/PseudotimeDE.git")``.
-- **scMaSigPro** and **tradeSeq**: install from their respective
-  Bioconductor / GitHub locations.
+- **Monocle 3**, **PseudotimeDE-fast**, **scMaSigPro**, and
+  **tradeSeq** are declared as app runtime dependencies.
