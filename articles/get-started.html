@@ -74,7 +74,8 @@
 <p>Asc-Seurat v3 can be launched either from Docker or from the GitHub R
 package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<code class="sourceCode R"><span><span class="co"># install.packages(c("pak", "remotes"))</span></span>
+<span><span class="co"># remotes::install_github("bnprks/BPCells/r", upgrade = "never")</span></span>
 <span><span class="co"># pak::pkg_install("Pereira-Lab-UF/asc_seurat")</span></span>
 <span><span class="co"># ascseurat::run_app()</span></span></code></pre></div>
 <p>For a quick first run, use the built-in 300-cell PBMC demo
