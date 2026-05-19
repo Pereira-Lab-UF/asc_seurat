@@ -10,7 +10,8 @@ vignette: >
 Asc-Seurat v3 can be launched either from Docker or from the GitHub R package.
 
 ```r
-# install.packages("pak")
+# install.packages(c("pak", "remotes"))
+# remotes::install_github("bnprks/BPCells/r", upgrade = "never")
 # pak::pkg_install("Pereira-Lab-UF/asc_seurat")
 # ascseurat::run_app()
 ```

@@ -34,9 +34,32 @@ Requires **R ≥ 4.3.0** and Rstudio is recommended.
 
 From inside an R session:
 
+Install the HDF5 system dependency first if it is not already present:
+
+.. code-block:: bash
+
+   # Ubuntu/Debian
+   sudo apt-get install -y libhdf5-dev pkg-config
+
+   # macOS
+   brew install hdf5 pkg-config
+
+Then install ``BPCells`` before installing Asc-Seurat. ``BPCells`` is
+required by the trajectory stack, and installing it first avoids a known
+``pak`` failure with GitHub sub-directory packages.
+
 .. code-block:: r
 
-   install.packages("pak")
+   install.packages(c("pak", "remotes"))
+   remotes::install_github("bnprks/BPCells/r", upgrade = "never")
+   pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)
+
+If the GitHub install of ``BPCells`` is rate-limited or unavailable, use
+the BPCells R-universe repository first, then run the Asc-Seurat install:
+
+.. code-block:: r
+
+   install.packages("BPCells", repos = c("https://bnprks.r-universe.dev", "https://cloud.r-project.org"))
    pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)
 
 Then launch the app:
@@ -49,7 +72,7 @@ Or, from a terminal:
 
 .. code-block:: bash
 
-   Rscript -e 'if (!requireNamespace("pak", quietly = TRUE)) install.packages("pak", repos = "https://cloud.r-project.org"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)'
+   Rscript -e 'if (!requireNamespace("pak", quietly = TRUE) || !requireNamespace("remotes", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r", upgrade = "never"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)'
 
 Python dependencies for PAGA
 ----------------------------
