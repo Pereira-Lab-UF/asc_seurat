@@ -135,12 +135,6 @@ If BPCells still fails through `remotes`, install it from [R-universe](https://b
 install.packages("BPCells", repos = c("https://bnprks.r-universe.dev", "https://cloud.r-project.org"))
 ```
 
-Or, from a terminal:
-
-```bash
-Rscript -e 'if (!requireNamespace("pak", quietly = TRUE) || !requireNamespace("remotes", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r", upgrade = "never"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = c("Depends", "Imports", "LinkingTo"))'
-```
-
 Then, in the R session, launch the app:
 
 ```r

@@ -120,12 +120,6 @@ Then launch the app:
 
    ascseurat::run_app()
 
-Or, from a terminal:
-
-.. code-block:: bash
-
-   Rscript -e 'if (!requireNamespace("pak", quietly = TRUE) || !requireNamespace("remotes", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r", upgrade = "never"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = c("Depends", "Imports", "LinkingTo"))'
-
 Python dependencies for PAGA
 ----------------------------
 
