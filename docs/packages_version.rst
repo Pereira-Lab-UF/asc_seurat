@@ -16,10 +16,16 @@ first so the HDF5 system dependency is available, then install
 
    install.packages(c("pak", "remotes"))
    remotes::install_github("bnprks/BPCells/r", upgrade = "never")
-   pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)
+   pak::pkg_install(
+     "Pereira-Lab-UF/asc_seurat",
+     dependencies = c("Depends", "Imports", "LinkingTo")
+   )
 
 This explicit ``BPCells`` step avoids a known ``pak`` failure with the
-GitHub sub-directory package used by BPCells.
+GitHub sub-directory package used by BPCells. The explicit ``dependencies``
+value keeps the default install to required runtime packages;
+``dependencies = TRUE`` also installs optional ``Suggests`` packages such
+as ``PseudotimeDE`` and may require a working Fortran toolchain on macOS.
 
 To capture the exact versions on your machine for a methods section or
 a bug report, run ``sessionInfo()`` after launching the app:

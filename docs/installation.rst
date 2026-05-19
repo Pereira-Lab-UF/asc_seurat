@@ -87,7 +87,15 @@ required by the trajectory stack, and installing it first avoids a known
 
    install.packages(c("pak", "remotes"))
    remotes::install_github("bnprks/BPCells/r", upgrade = "never")
-   pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)
+   pak::pkg_install(
+     "Pereira-Lab-UF/asc_seurat",
+     dependencies = c("Depends", "Imports", "LinkingTo")
+   )
+
+The ``dependencies`` argument intentionally installs only required runtime
+packages. Do not use ``dependencies = TRUE`` for the default install unless
+you also want optional ``Suggests`` packages; on macOS that can force source
+builds such as ``PseudotimeDE`` that need a working Fortran toolchain.
 
 If the GitHub install of ``BPCells`` is rate-limited or unavailable, use
 the BPCells R-universe repository first, then run the Asc-Seurat install:
@@ -95,7 +103,10 @@ the BPCells R-universe repository first, then run the Asc-Seurat install:
 .. code-block:: r
 
    install.packages("BPCells", repos = c("https://bnprks.r-universe.dev", "https://cloud.r-project.org"))
-   pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)
+   pak::pkg_install(
+     "Pereira-Lab-UF/asc_seurat",
+     dependencies = c("Depends", "Imports", "LinkingTo")
+   )
 
 Then launch the app:
 
@@ -107,7 +118,7 @@ Or, from a terminal:
 
 .. code-block:: bash
 
-   Rscript -e 'if (!requireNamespace("pak", quietly = TRUE) || !requireNamespace("remotes", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r", upgrade = "never"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)'
+   Rscript -e 'if (!requireNamespace("pak", quietly = TRUE) || !requireNamespace("remotes", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r", upgrade = "never"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = c("Depends", "Imports", "LinkingTo"))'
 
 Python dependencies for PAGA
 ----------------------------

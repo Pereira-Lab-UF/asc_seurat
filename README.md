@@ -114,10 +114,15 @@ brew install hdf5 pkg-config
 ```r
 install.packages(c("pak", "remotes"))
 remotes::install_github("bnprks/BPCells/r", upgrade = "never")
-pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)
+pak::pkg_install(
+  "Pereira-Lab-UF/asc_seurat",
+  dependencies = c("Depends", "Imports", "LinkingTo")
+)
 ```
 
-The middle line pre-installs [BPCells](https://github.com/bnprks/BPCells#r-installation) (a hard dependency of `monocle3`) via `remotes`, which works around a known `pak` issue with GitHub sub-directory packages. If BPCells still fails through `remotes`, install it from [R-universe](https://bnprks.r-universe.dev/BPCells) before running `pak::pkg_install()`:
+The middle line pre-installs [BPCells](https://github.com/bnprks/BPCells#r-installation) (a hard dependency of `monocle3`) via `remotes`, which works around a known `pak` issue with GitHub sub-directory packages. The `dependencies` argument intentionally installs only required runtime packages; `dependencies = TRUE` also installs optional `Suggests` packages such as `PseudotimeDE`, which may require a working Fortran toolchain on macOS.
+
+If BPCells still fails through `remotes`, install it from [R-universe](https://bnprks.r-universe.dev/BPCells) before running `pak::pkg_install()`:
 
 ```r
 install.packages("BPCells", repos = c("https://bnprks.r-universe.dev", "https://cloud.r-project.org"))
@@ -126,7 +131,7 @@ install.packages("BPCells", repos = c("https://bnprks.r-universe.dev", "https://
 Or, from a terminal:
 
 ```bash
-Rscript -e 'if (!requireNamespace("pak", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r", upgrade = "never"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)'
+Rscript -e 'if (!requireNamespace("pak", quietly = TRUE) || !requireNamespace("remotes", quietly = TRUE)) install.packages(c("pak", "remotes"), repos = "https://cloud.r-project.org"); remotes::install_github("bnprks/BPCells/r", upgrade = "never"); pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = c("Depends", "Imports", "LinkingTo"))'
 ```
 
 Then, in the R session, launch the app:
