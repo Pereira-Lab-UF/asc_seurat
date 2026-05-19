@@ -8,6 +8,8 @@
 ^docs/pkgdown(/|$)
 ^\.gitignore$
 ^\.dockerignore$
+^\.readthedocs\.yaml$
+^\.zenodo\.json$
 ^LICENSE$
 ^LICENSE\.md$
 ^README\.Rmd$
