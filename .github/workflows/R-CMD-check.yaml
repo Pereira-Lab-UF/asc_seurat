@@ -11,6 +11,8 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       _R_CHECK_FORCE_SUGGESTS_: "false"
+      RETICULATE_AUTOCONFIGURE: "FALSE"
+      RETICULATE_PYTHON: /usr/bin/python3
 
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +39,7 @@ jobs:
           needs: check
 
       - name: Run R CMD check
+        timeout-minutes: 45
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--no-build-vignettes"), error_on = "warning")
         shell: Rscript {0}
 
