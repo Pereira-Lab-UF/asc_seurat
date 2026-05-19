@@ -4,7 +4,7 @@ ARG TARGETARCH
 
 LABEL maintainer="Felipe Marques de Almeida <almeidafmarques@outlook.com>"
 LABEL description="Asc-Seurat v3: Interactive scRNA-seq analysis"
-LABEL version="3.0.3"
+LABEL version="3.0.4"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV RETICULATE_PYTHON=/opt/venv/bin/python

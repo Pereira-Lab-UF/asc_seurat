@@ -1,3 +1,16 @@
+# ascseurat 3.0.4
+
+## Install and distribution
+
+* GitHub Actions now pre-install `BPCells` with `remotes` before handing the
+  rest of the dependency graph to `pak`, avoiding the GitHub sub-directory
+  archive unpacking failure that broke pkgdown and R CMD check.
+* macOS CI now installs and exports OpenSSL/HDF5 build paths before source
+  package compilation, fixing Bioconductor packages that link against
+  `libssl`.
+* Docker release publishing now downloads per-architecture digest artifacts by
+  name before creating the multi-arch manifest.
+
 # ascseurat 3.0.3
 
 ## Install and distribution

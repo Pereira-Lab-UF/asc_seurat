@@ -20,8 +20,8 @@ import sphinx_rtd_theme
 project = 'Asc-Seurat: Analytical single-cell Seurat-based web application'
 copyright = 'Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM, Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M'
 author = 'Wendell J. Pereira and Felipe M. Almeida'
-version = '3.0.3'
-release = '3.0.3'
+version = '3.0.4'
+release = '3.0.4'
 
 
 # -- General configuration ---------------------------------------------------
