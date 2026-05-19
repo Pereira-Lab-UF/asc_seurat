@@ -1,3 +1,19 @@
+# ascseurat 3.0.3
+
+## Install and distribution
+
+* R packages used by app features are now declared as runtime dependencies.
+  Local R installs therefore install `PseudotimeDE`, Monocle 3, SingleR,
+  scDblFinder, and other app packages automatically, while docs now list the
+  system compiler/HDF5 prerequisites that users still need to install.
+* README and ReadTheDocs installation instructions now direct users to either
+  Docker or the R-session install commands, with the BPCells HDF5 prerequisite
+  and macOS GNU Fortran requirement called out explicitly.
+* Docker usage docs now explain bind mounts for local data paths, and the app
+  strips pasted path quotes before resolving local files.
+* macOS package-check smoke tests install the official R GNU Fortran runtime
+  before building source packages that link Fortran libraries.
+
 # ascseurat 3.0.2
 
 ## Install and distribution
@@ -7,10 +23,6 @@
 * Package GitHub Actions now install only hard/runtime dependencies, avoiding
   pak's optional GitHub sub-directory remote path for `BPCells`; the Docker
   release workflow remains the full optional-stack runtime gate.
-* R packages used by app features are now declared as runtime dependencies.
-  Local R installs therefore install `PseudotimeDE`, Monocle 3, SingleR,
-  scDblFinder, and other app packages automatically, while docs now list the
-  system compiler/HDF5 prerequisites that users still need to install.
 * Docker smoke tests now preserve container logs on failure.
 
 # ascseurat 3.0.1
