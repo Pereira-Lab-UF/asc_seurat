@@ -63,6 +63,38 @@ docker pull pereiralabbio/asc-seurat:3 && docker run --rm -p 3838:3838 pereirala
 
 Then open <http://localhost:3838> in your browser. That's it.
 
+Docker containers cannot see arbitrary host paths unless those paths are
+mounted when the container starts. The easiest pattern is to launch the
+container from the folder that contains your data and mount that current
+folder into Asc-Seurat's `data/` directory:
+
+```bash
+cd "/path/to/folder/that/contains/your/data"
+docker run --rm -p 3838:3838 \
+  -v "$PWD:/home/ascseurat/data:ro" \
+  pereiralabbio/asc-seurat:3
+```
+
+Then enter paths relative to the app workdir, for example
+`data/sample/filtered_feature_bc_matrix`. If the mounted folder itself
+is the 10X matrix directory, enter `data/`.
+
+If you prefer to paste normal absolute paths from anywhere under your
+home directory on macOS or Linux, mount your home directory at the same
+path inside the container:
+
+```bash
+docker run --rm -p 3838:3838 \
+  -v "$HOME:$HOME:ro" \
+  pereiralabbio/asc-seurat:3
+```
+
+Then enter the normal absolute path in Asc-Seurat, for example
+`/Users/you/project/sample/filtered_feature_bc_matrix`, without wrapping
+the path in quotes. To expose external drives on macOS, also mount
+`/Volumes:/Volumes:ro`. On Windows, mount a folder to a Linux container
+path such as `/home/ascseurat/data` and enter `data/...` in the app.
+
 ### Option 2 — R package from GitHub
 
 Recommended for users who already work in R and want a lighter install than the Docker image. Requires **R ≥ 4.3.0**.

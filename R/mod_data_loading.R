@@ -37,7 +37,9 @@ mod_data_loading_ui <- function(id, demo_mode = FALSE) {
                                 class = "text-muted small mb-0",
                                 "Relative paths start from ",
                                 tags$code(current_workdir),
-                                ". Use an absolute path if your data is elsewhere."
+                                ". In Docker, launch with a bind mount such as ",
+                                tags$code('-v "$HOME:$HOME:ro"'),
+                                " before entering host paths."
                             )
                         )
                     )
@@ -206,7 +208,7 @@ mod_data_loading_server <- function(id, trigger_demo = NULL) {
                             paste0(
                                 "10X data directory not found: ", path,
                                 ". Relative paths start from: ", ascseurat_workdir(),
-                                ". Use an absolute path if the data is outside this app workdir."
+                                ". In Docker, launch with a bind mount such as -v \"$HOME:$HOME:ro\" before entering host paths."
                             ),
                             type = "error",
                             duration = 14

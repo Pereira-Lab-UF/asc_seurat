@@ -26,6 +26,19 @@ If you are using the Docker image:
 
 then open ``http://localhost:3838`` in a browser.
 
+For your own data, launch Docker from the folder that contains the data
+and mount that folder into the app:
+
+.. code-block:: bash
+
+   cd "/path/to/folder/that/contains/your/data"
+   docker run --rm -p 3838:3838 \
+     -v "$PWD:/home/ascseurat/data:ro" \
+     pereiralabbio/asc-seurat:3
+
+Then use paths such as ``data/sample/filtered_feature_bc_matrix`` in the
+app. See :ref:`installation` for additional mount examples.
+
 .. figure:: images/v3/v3_home.png
    :alt: Asc-Seurat home screen.
    :width: 100%

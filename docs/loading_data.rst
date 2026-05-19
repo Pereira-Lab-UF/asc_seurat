@@ -54,8 +54,15 @@ The *Load Data* card has three columns:
 
 #. **Path / upload + Load Data** (right column). Relative paths in the
    path field are resolved against the working directory shown beneath
-   the field; absolute paths work too. Click **Load Data** to read the
-   sample.
+   the field; absolute paths work too when they are visible to the app
+   process. In Docker, host paths such as ``/Users/...`` must be
+   bind-mounted first. The simplest Docker workflow is to launch the
+   image from the directory where your data lives with
+   ``-v "$PWD:/home/ascseurat/data:ro"``, then enter a path such as
+   ``data/sample/filtered_feature_bc_matrix``. If the mounted folder is
+   the 10X matrix directory, enter ``data/``. Alternatively, mounting
+   ``-v "$HOME:$HOME:ro"`` lets macOS and Linux users paste normal paths
+   under their home directory. Click **Load Data** to read the sample.
 
 Optionally, the *Add cell-level metadata* card at the bottom of Step 1
 lets you upload a CSV/TSV whose first column is the cell barcode; the

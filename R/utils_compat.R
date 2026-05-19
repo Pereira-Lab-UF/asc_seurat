@@ -410,6 +410,39 @@ detect_input_format <- function(path) {
 }
 
 
+#' Strip Shell-Style Quotes from a Path
+#'
+#' Paths pasted from terminals are often wrapped in quotes because they contain
+#' spaces. In Shiny text inputs those quote characters are literal and would
+#' otherwise make absolute paths look relative.
+#'
+#' @param path Character. User-supplied file or directory path.
+#' @return Character path without wrapping quote characters.
+#' @keywords internal
+strip_input_path_quotes <- function(path) {
+    path <- trimws(as.character(path %||% ""))
+    if (!nzchar(path)) {
+        return(path)
+    }
+
+    first <- substr(path, 1L, 1L)
+    last <- substr(path, nchar(path), nchar(path))
+
+    if (first %in% c("\"", "'") && identical(first, last) && nchar(path) > 1L) {
+        path <- substr(path, 2L, nchar(path) - 1L)
+    } else {
+        if (first %in% c("\"", "'")) {
+            path <- substr(path, 2L, nchar(path))
+        }
+        if (last %in% c("\"", "'") && nchar(path) > 1L) {
+            path <- substr(path, 1L, nchar(path) - 1L)
+        }
+    }
+
+    trimws(path)
+}
+
+
 #' Resolve a User-Supplied Input Path
 #'
 #' Relative paths are resolved against the app working directory.
@@ -418,7 +451,7 @@ detect_input_format <- function(path) {
 #' @return Normalized path when possible.
 #' @keywords internal
 resolve_input_path <- function(path) {
-    path <- trimws(path.expand(path))
+    path <- trimws(path.expand(strip_input_path_quotes(path)))
     if (!grepl("^(/|[A-Za-z]:[/\\\\])", path)) {
         path <- file.path(ascseurat_workdir(), path)
     }

@@ -38,7 +38,9 @@ mod_trajectory_ui <- function(id) {
                         tags$p(class = "text-muted small",
                                "Use a path for large files. Relative paths start from ",
                                tags$code(ascseurat_workdir()),
-                               ".")
+                               ". In Docker, launch with a bind mount such as ",
+                               tags$code('-v "$HOME:$HOME:ro"'),
+                               " before entering host paths.")
                     )
                 ),
                 card(

@@ -14,6 +14,35 @@ test_that("detect_input_format recognizes common formats", {
     expect_equal(ascseurat:::detect_input_format(tempfile(fileext = ".foo")), "unknown")
 })
 
+test_that("resolve_input_path tolerates pasted shell quotes", {
+    old_workdir <- getOption("ascseurat.workdir", NULL)
+    on.exit({
+        if (is.null(old_workdir)) {
+            options(ascseurat.workdir = NULL)
+        } else {
+            options(ascseurat.workdir = old_workdir)
+        }
+    }, add = TRUE)
+
+    workdir <- tempdir()
+    options(ascseurat.workdir = workdir)
+
+    absolute_path <- file.path(tempdir(), "sample folder")
+    expect_equal(
+        ascseurat:::resolve_input_path(paste0('"', absolute_path, '"')),
+        normalizePath(absolute_path, winslash = "/", mustWork = FALSE)
+    )
+    expect_equal(
+        ascseurat:::resolve_input_path(paste0("'", absolute_path)),
+        normalizePath(absolute_path, winslash = "/", mustWork = FALSE)
+    )
+    expect_equal(
+        ascseurat:::resolve_input_path("'relative folder'"),
+        normalizePath(file.path(ascseurat:::ascseurat_workdir(), "relative folder"),
+                      winslash = "/", mustWork = FALSE)
+    )
+})
+
 test_that("format_bytes and local_future_globals_max_size return usable values", {
     expect_match(ascseurat:::format_bytes(1024), "KiB")
     info <- ascseurat:::local_future_globals_max_size()

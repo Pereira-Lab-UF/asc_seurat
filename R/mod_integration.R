@@ -28,7 +28,9 @@ mod_integration_ui <- function(id) {
                         class = "text-muted small",
                         "Relative paths start from ",
                         tags$code(ascseurat_workdir()),
-                        ". Use absolute paths for data stored elsewhere."
+                        ". In Docker, launch with a bind mount such as ",
+                        tags$code('-v "$HOME:$HOME:ro"'),
+                        " before entering host paths."
                     )
                 )
             ),
