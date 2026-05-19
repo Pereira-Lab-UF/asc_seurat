@@ -52,6 +52,8 @@ test_that("DE module compares metadata conditions inside a selected cluster", {
             res <- markers()
             expect_s3_class(res, "data.frame")
             expect_identical(colnames(res)[1:2], c("gene", "cluster"))
+            expect_false(anyNA(res$cluster))
+            expect_false(anyNA(res$condition_column))
             expect_true(all(res$cluster == cluster))
             expect_true(all(res$condition_column == "test_condition"))
             expect_identical(rownames(res), as.character(seq_len(nrow(res))))

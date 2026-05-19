@@ -463,9 +463,11 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
                 result <- format_marker_results(result)
 
                 if ("p_val_adj" %in% colnames(result)) {
-                    result <- result[result$p_val_adj < input$pval_cutoff, , drop = FALSE]
+                    keep <- !is.na(result$p_val_adj) & result$p_val_adj < input$pval_cutoff
+                    result <- result[keep, , drop = FALSE]
                 } else if ("max_pval" %in% colnames(result)) {
-                    result <- result[result$max_pval < input$pval_cutoff, , drop = FALSE]
+                    keep <- !is.na(result$max_pval) & result$max_pval < input$pval_cutoff
+                    result <- result[keep, , drop = FALSE]
                 }
 
                 rownames(result) <- NULL
