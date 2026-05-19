@@ -1,0 +1,9 @@
+# Multi-sample integration
+
+Asc-Seurat v3 uses RPCA integration by default and keeps Harmony as an
+alternative.
+
+Prepare a CSV file with `sample_name` and `data_path` columns, then load
+it from the Integration tab. After integration you can cluster the
+combined object and run either standard DE, condition-specific DE, or
+conserved-marker analysis across samples.

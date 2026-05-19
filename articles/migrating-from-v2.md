@@ -1,0 +1,12 @@
+# Migrating from v2
+
+Key migration points for existing Asc-Seurat users:
+
+- Old Seurat RDS files are updated automatically on load.
+- Dynverse and BioMart are no longer part of the workflow.
+- Trajectory analysis is now handled by supported Slingshot, PAGA, and
+  Monocle 3 workflows.
+- Functional enrichment is no longer bundled; use a dedicated enrichment
+  service or standalone R workflow.
+- The app can now be installed either through Docker or as a GitHub R
+  package.
