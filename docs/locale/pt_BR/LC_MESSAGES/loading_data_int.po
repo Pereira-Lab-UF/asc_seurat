@@ -1,0 +1,196 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../loading_data_int.rst:5 9a714db8e7394588af0967d2a4cd2467
+msgid "Loading the data and integration of multiple samples"
+msgstr "Carregando os dados e integração de múltiplas amostras"
+
+#: ../../loading_data_int.rst:7 d203ae61e16e4cc79fbf56e9ad325341
+msgid ""
+"To analyze multiple samples, select the **Integration** tab in the web "
+"application. The full integration workflow is contained in this tab: sample "
+"declaration, per-sample QC, normalization, integration method, clustering, "
+"and the integrated visualization handoff."
+msgstr ""
+"Para analisar múltiplas amostras, selecione a guia **Integration** no "
+"aplicativo web. A integração completa workflow está contida nesta guia: "
+"declaração de amostra, por amostra QC, normalização, método de integração, "
+"clustering e transferência de visualização integrada."
+
+#: ../../loading_data_int.rst:12 46cedc73109e49a591c9aa722c8bd369
+msgid ""
+"Integration uses Seurat v5's `IntegrateLayers "
+"<https://satijalab.org/seurat/reference/integratelayers>`_ framework. "
+"**RPCA** is the default method and **Harmony** is also available from the "
+"same tab. Samples are declared directly in the UI — pick the number of "
+"samples, type their names and paths inline, and set the QC values for each "
+"on the same page."
+msgstr ""
+"Integration usa a estrutura `IntegrateLayers "
+"<https://satijalab.org/seurat/reference/integratelayers>`_ do Seurat v5. "
+"**RPCA** é o método padrão e **Harmony** também está disponível na mesma "
+"guia. As amostras são declaradas diretamente na UI – escolha o número de "
+"amostras, digite seus nomes e caminhos inline e defina os valores QC para "
+"cada uma na mesma página."
+
+#: ../../loading_data_int.rst:24 c7c2fe88831b45d2baaea0d80867dee8
+msgid "Integration tab."
+msgstr "Guia Integration."
+
+#: ../../loading_data_int.rst:24 03e854acfdfc4713899986b69f77d09b
+msgid ""
+"Integration tab. Declare the number of samples and their paths in *Load "
+"Samples*, set per-sample QC in the middle column, and pick **RPCA (Seurat "
+"v5)** or **Harmony** in *Integration Method*."
+msgstr ""
+"Separador Integration. Declare o número de amostras e seus caminhos em *Load"
+" Samples*, defina QC por amostra na coluna do meio e escolha **RPCA (Seurat "
+"v5)** ou **Harmony** em *Integration Method*."
+
+#: ../../loading_data_int.rst:29 743fa818931946fc94b96a54ca17e7c2
+msgid "Declaring the samples"
+msgstr "Declarando as amostras"
+
+#: ../../loading_data_int.rst:31 9e6d5147b6fa4384b951aa96399ffe1c
+msgid "In the *Load Samples* card:"
+msgstr "No cartão *Load Samples*:"
+
+#: ../../loading_data_int.rst:33 e211ef9457c54b12874f3c2dd6461867
+msgid "Set **Number of samples** (1–24)."
+msgstr "Defina **Number of samples** (1–24)."
+
+#: ../../loading_data_int.rst:34 cd96e528c4574fb7a15bfaf05782e97c
+msgid "For each sample, fill in:"
+msgstr "Para cada amostra, preencha:"
+
+#: ../../loading_data_int.rst:36 f6151f0401104c28abd1e8a167ed3e9c
+msgid ""
+"**Sample name** — any label you prefer. Use the same name for biological "
+"replicates that should be pooled in plots and analyses."
+msgstr ""
+"**Sample name** — qualquer rótulo de sua preferência. Use o mesmo nome para "
+"réplicas biológicas que devem ser agrupadas em gráficos e análises."
+
+#: ../../loading_data_int.rst:38 9c46b003c2634bd1bdb0f4fd70c081a9
+msgid ""
+"**10X data path** — relative or absolute path to the sample's directory."
+msgstr ""
+"**10X data path** — caminho relativo ou absoluto para o diretório da "
+"amostra."
+
+#: ../../loading_data_int.rst:42 a4a979de6f3440aab35ba01efd69862d
+msgid "Setting per-sample QC parameters"
+msgstr "Configurando parâmetros QC por amostra"
+
+#: ../../loading_data_int.rst:44 8699b86ac11943c4acf2a6db77635bc2
+msgid "In the *QC Parameters per sample* card, for each declared sample set:"
+msgstr ""
+"No cartão *QC Parâmetros por amostra*, para cada conjunto de amostras "
+"declarado:"
+
+#: ../../loading_data_int.rst:46 34ce6c27bbd34cca8442ca1671c8b690
+msgid ""
+"**Mito pattern** — regular expression matching mitochondrial gene IDs "
+"(default ``^MT-`` for human; use ``^mt-`` for mouse, ``^ATMG`` for "
+"*Arabidopsis*, etc.)."
+msgstr ""
+"**Mito pattern** — expressão regular correspondente aos IDs dos genes "
+"mitocondriais (padrão ``^MT-`` para humanos; use ``^mt-`` para camundongos, "
+"``^ATMG`` para *Arabidopsis*, etc.)."
+
+#: ../../loading_data_int.rst:49 5b5b3a6ceb94463cb87ee3d8191ec8d4
+msgid ""
+"**Min genes** — minimum number of genes a cell must express to be retained."
+msgstr ""
+"**Min genes** — número mínimo de genes que uma célula deve expressar para "
+"ser retida."
+
+#: ../../loading_data_int.rst:51 ee04851e880644fba4a84d22a3d18678
+msgid ""
+"**Max genes** — maximum number of genes a cell can express (useful to filter"
+" suspected doublets)."
+msgstr ""
+"**Max genes** — número máximo de genes que uma célula pode expressar (útil "
+"para filtrar doublets suspeitos)."
+
+#: ../../loading_data_int.rst:53 22213a6114db4e138ed83f4bf1e0d8e9
+msgid ""
+"**Max mito %** — maximum percentage of mitochondrial transcripts allowed per"
+" cell."
+msgstr ""
+"**Max mito %** — porcentagem máxima de transcrições mitocondriais permitidas"
+" por célula."
+
+#: ../../loading_data_int.rst:57 2b331885bc544499a068e9f7a38a3e5a
+msgid "Choosing the integration method"
+msgstr "Escolhendo o método de integração"
+
+#: ../../loading_data_int.rst:59 420631d140354d9384129a4b628306c1
+msgid "In the *Integration Method* card:"
+msgstr "No cartão *Integration Method*:"
+
+#: ../../loading_data_int.rst:61 fc3f6b87b0ab4be5ae5690993dcc24a0
+msgid "**Method**: ``RPCA (Seurat v5)`` (default) or ``Harmony``."
+msgstr "**Method**: ``RPCA (Seurat v5)`` (padrão) ou ``Harmony``."
+
+#: ../../loading_data_int.rst:62 143a1a4ef1354d53a0a540f3ba125ac0
+msgid ""
+"**Normalization method**: ``LogNormalize (faster)`` (default) or "
+"``SCTransform v2``."
+msgstr ""
+"**Método de normalização**: ``LogNormalize (faster)`` (padrão) ou "
+"``SCTransform v2``."
+
+#: ../../loading_data_int.rst:64 1c24545a023547d3b233ae95744f76d6
+msgid ""
+"**Number of PCs**: principal components to use during integration (default "
+"``30``; range 5–100)."
+msgstr ""
+"**Number of PCs**: componentes principais a serem usados ​​durante a "
+"integração (padrão ``30``; faixa 5–100)."
+
+#: ../../loading_data_int.rst:67 151b56820d9649b49a34c11d45548fc5
+msgid ""
+"Click **Load & Integrate** to run the integration. The integrated object "
+"becomes available to the clustering, DE, and visualization modules below."
+msgstr ""
+"Clique em **Load & Integrate** para executar a integração. O objeto "
+"integrado fica disponível para os módulos clustering, DE e visualização "
+"abaixo."
+
+#: ../../loading_data_int.rst:72 07b21a2dd8cf44dc9c9ce7f70f30c270
+msgid "Saving the integrated object for reuse"
+msgstr "Salvando o objeto integrado para reutilização"
+
+#: ../../loading_data_int.rst:74 7bac188086b34f6f9cb12199c4cb22fe
+msgid ""
+"Integration is the most time-consuming step in this tab. After it completes,"
+" an *Integration Summary* card lets you download the integrated Seurat "
+"object as an RDS file. To skip the integration step later, load that RDS in "
+"the **Single Sample** tab using *Existing Seurat RDS* — the clustering and "
+"downstream steps will pick up from there."
+msgstr ""
+"Integration é a etapa mais demorada nesta guia. Após a conclusão, um cartão "
+"*Integration Resumo* permite que você baixe o objeto Seurat integrado como "
+"um arquivo RDS. Para pular a etapa de integração posteriormente, carregue "
+"esse RDS na guia **Single Sample** usando *Seurat RDS* existente — o "
+"clustering e as etapas posteriores serão iniciadas a partir daí."

@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../expression_visualization_int.rst:5 9b89cfbf4f7249878b796f550611c6e5
+msgid "Integrated expression visualization"
+msgstr "Visualização de expressão integrada"
+
+#: ../../expression_visualization_int.rst:7 4f168a93084e430cb6311990e9318f50
+msgid ""
+"The integrated workflow uses the same visualization controls as the single-"
+"sample workflow, but the clustered object contains all samples."
+msgstr ""
+"O workflow integrado usa os mesmos controles de visualização que a amostra "
+"única workflow, mas o objeto com clustering contém todas as amostras."
+
+#: ../../expression_visualization_int.rst:11 48f7166e8f684cf89c9c09ff0d83419b
+msgid "Gene sources"
+msgstr "Fontes genéticas"
+
+#: ../../expression_visualization_int.rst:13 e1a0fdef5a7f4fa5997cdeba58cd5426
+msgid ""
+"Use :guilabel:`Upload file` for a custom CSV or TSV marker list with one "
+"gene per row and an optional second column for gene groups."
+msgstr ""
+"Use:guilabel:`Upload file` para uma lista personalizada CSV ou TSV marker "
+"com um gene por linha e uma segunda coluna opcional para grupos de genes."
+
+#: ../../expression_visualization_int.rst:16 a7f8c279e9b34bc99937b6fa9bb46c70
+msgid ""
+"Use :guilabel:`Use de novo marker genes detected in Step 3` to visualize "
+"genes directly from the integrated differential-expression results. When "
+"cluster markers are available, choose the cluster and the number of top "
+"genes to plot."
+msgstr ""
+"Use:guilabel:`Use de novo marker genes detected in Step 3` para visualizar "
+"genes diretamente dos resultados integrados de expressão diferencial. Quando"
+" cluster markers estiverem disponíveis, escolha cluster e o número de genes "
+"principais a serem plotados."
+
+#: ../../expression_visualization_int.rst:21 9565e24008df4f279afe648fb61d23a5
+msgid "Expression values"
+msgstr "Valores de expressão"
+
+#: ../../expression_visualization_int.rst:23 25ae2722749c4506899b32ff94dc02c8
+msgid ""
+"The :guilabel:`Expression values` selector controls all generated plots:"
+msgstr ""
+"O seletor:guilabel:`Expression values` controla todos os gráficos gerados:"
+
+#: ../../expression_visualization_int.rst:25 6b6ee6bc639848ea9b065b3e4ed5fd2d
+msgid ":guilabel:`Counts` uses raw counts."
+msgstr ":guilabel:`Counts` usa counts bruto."
+
+#: ../../expression_visualization_int.rst:26 feacb4aa9a904e658bb64ad1e1601ac6
+msgid ":guilabel:`Normalized` uses normalized expression."
+msgstr ":guilabel:`Normalized` usa expressão normalizada."
+
+#: ../../expression_visualization_int.rst:27 50390fcf9748439a8c4423907fbdfabd
+msgid ""
+":guilabel:`Scaled` uses scaled expression and scales selected genes on "
+"demand if they were not already present in ``scale.data``."
+msgstr ""
+":guilabel:`Scaled` usa expressão escalonada e dimensiona genes selecionados "
+"sob demanda, caso eles ainda não estivessem presentes em ``scale.data``."
+
+#: ../../expression_visualization_int.rst:31 7b54be01051548bd8c0204112ef192bd
+msgid "Plots"
+msgstr "Gráficos"
+
+#: ../../expression_visualization_int.rst:33 d83e8910e6b44f6ca3d5f6a4cc41608d
+msgid ""
+"Click :guilabel:`Show Expression Plots` to generate the clustered dot plot, "
+"feature plots, violin plots, and optional per-gene zip bundle. For "
+"integrated objects, the plots should be interpreted together with the "
+"sample-colored UMAPs and sample-aware cluster tables from the clustering "
+"step."
+msgstr ""
+"Clique em:guilabel:`Show Expression Plots` para gerar o dot plot agrupados, "
+"feature plots, violin plots e pacote zip opcional por gene. Para objetos "
+"integrados, os gráficos devem ser interpretados em conjunto com os UMAPs "
+"coloridos de amostra e tabelas cluster com reconhecimento de amostra da "
+"etapa clustering."
+
+#: ../../expression_visualization_int.rst:38 2a0956c3ae0443dea9cdc303906ce5bb
+msgid ""
+"Download controls are collapsed by default. Expand :guilabel:`Download "
+"options` to choose plot size, resolution, and file type."
+msgstr ""
+"Os controles de download são recolhidos por padrão. "
+"Expanda:guilabel:`Download options` para escolher o tamanho do gráfico, "
+"resolução e tipo de arquivo."

@@ -1,0 +1,202 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../loading_data.rst:5 433d690e739945979611bd47b0e1f0f3
+msgid "Loading the data of an individual sample"
+msgstr "Carregando os dados de uma amostra individual"
+
+#: ../../loading_data.rst:7 8b6bd50340884957b9e42fdd126b89e8
+msgid ""
+"The Single Sample tab reads 10X Genomics directories, 10X HDF5 files , CSV /"
+" TSV count matrices, AnnData files, and existing Seurat RDS files. Selecting"
+" an input type reveals the matching path or upload control."
+msgstr ""
+"A guia Single Sample lê diretórios 10X Genomics, arquivos 10X HDF5, matrizes"
+" de contagem CSV/TSV, arquivos AnnData e arquivos Seurat RDS existentes. A "
+"seleção de um tipo de entrada revela o caminho correspondente ou o controle "
+"de upload."
+
+#: ../../loading_data.rst:11 5900affcc1cf4222be20e91ce98f6e44
+msgid "Loading the data"
+msgstr "Carregando os dados"
+
+#: ../../loading_data.rst:13 555738e737bb4b1190bb1db2e9fa1f6c
+msgid ""
+"To analyze an individual sample, select the **Single Sample** tab in the "
+"navigation bar. Step 1 of the tab — *Load Data* — handles the input."
+msgstr ""
+"Para analisar uma amostra individual, selecione a aba **Single Sample** na "
+"barra de navegação. A etapa 1 da guia — *Load Data* — trata da entrada."
+
+#: ../../loading_data.rst:22 38b79f91b4fa425499a1bd21a9ce8beb
+msgid "Single Sample loading interface."
+msgstr "Single Sample interface de carregamento."
+
+#: ../../loading_data.rst:22 0c26effc6d154755a8c371bb091e4426
+msgid ""
+"Single Sample — Step 1. Pick an input type, fill in the matching path or "
+"upload control, set the initial filtering parameters, and click **Load "
+"Data**."
+msgstr ""
+"Single Sample — Etapa 1. Escolha um tipo de entrada, preencha o caminho "
+"correspondente ou controle de upload, defina os parâmetros de filtragem "
+"iniciais e clique em **Load Data**."
+
+#: ../../loading_data.rst:26 3005f3df67a14b569e5f6f3d946cbec0
+msgid "The *Load Data* card has three columns:"
+msgstr "O cartão *Load Data* possui três colunas:"
+
+#: ../../loading_data.rst:28 4d1f1e74f932488cbc83452c08bac644
+msgid "**Select input type** (left column). Choose between:"
+msgstr "**Selecione o tipo de entrada** (coluna da esquerda). Escolha entre:"
+
+#: ../../loading_data.rst:30 81e29a2278e64b26a1fe8e25d31ca75b
+msgid ""
+"``10X Genomics directory`` — folder with ``matrix.mtx.gz``, "
+"``barcodes.tsv.gz``, and ``features.tsv.gz``. Reveals a *Path to 10X data "
+"directory* control."
+msgstr ""
+"``10X Genomics directory`` — pasta com ``matrix.mtx.gz``, "
+"``barcodes.tsv.gz`` e ``features.tsv.gz``. Revela um controle *Caminho para "
+"diretório de dados 10X*."
+
+#: ../../loading_data.rst:33 51857cce347c4a54be2b16246273449e
+msgid "``10X h5 file`` — single ``.h5`` file from Cell Ranger."
+msgstr "``10X h5 file`` — arquivo ``.h5`` único de Cell Ranger."
+
+#: ../../loading_data.rst:34 cc4ad1672bbb4c418f22d8ec12f09090
+msgid ""
+"``CSV count matrix`` / ``TSV count matrix`` — comma- or tab-separated count "
+"matrix; first column is gene IDs, header is cell barcodes."
+msgstr ""
+"``CSV count matrix`` / ``TSV count matrix`` — matriz de contagem separada "
+"por vírgula ou tabulação; a primeira coluna contém IDs de genes, o cabeçalho"
+" contém códigos de barras de células."
+
+#: ../../loading_data.rst:37 bbd55c2093014cb9af7b4b453cd52c5c
+msgid "``h5ad (AnnData)`` — AnnData file; loaded through ``anndataR``."
+msgstr ""
+"``h5ad (AnnData)`` — AnnData arquivo; carregado através de ``anndataR``."
+
+#: ../../loading_data.rst:38 44480c0b074e4bfcaf554f0da3404205
+msgid ""
+"``Existing Seurat RDS`` — resume from a Seurat object saved earlier. Older "
+"Seurat objects are upgraded automatically via ``UpdateSeuratObject()``."
+msgstr ""
+"``Existing Seurat RDS`` — retome de um objeto Seurat salvo anteriormente. "
+"objetos Seurat mais antigos são atualizados automaticamente via "
+"``UpdateSeuratObject()``."
+
+#: ../../loading_data.rst:42 272b180fadef415ca1d1734517ccd64c
+msgid ""
+"**Initial parameters** (middle column). These are passed to Seurat's "
+"`CreateSeuratObject "
+"<https://satijalab.org/seurat/reference/createseuratobject>`_ and "
+"`PercentageFeatureSet "
+"<https://satijalab.org/seurat/reference/PercentageFeatureSet.html>`_:"
+msgstr ""
+"**Parâmetros iniciais** (coluna do meio). Estes são passados ​​​​para "
+"`CreateSeuratObject "
+"<https://satijalab.org/seurat/reference/createseuratobject>`_ e "
+"`PercentageFeatureSet "
+"<https://satijalab.org/seurat/reference/PercentageFeatureSet.html>`_ de "
+"Seurat:"
+
+#: ../../loading_data.rst:46 eb24be1897e34bf4b8390025d139967c
+msgid "**Project name**: label used in some plots (default ``AscSeurat``)."
+msgstr ""
+"**Nome do projeto**: rótulo utilizado em algumas gráficos (padrão "
+"``AscSeurat``)."
+
+#: ../../loading_data.rst:47 555ef3d34f7442e28b3ae81711911cda
+msgid ""
+"**Mitochondrial gene pattern (regex)**: regular expression used to identify "
+"mitochondrial transcripts. ``^MT-`` (default) works for human; use ``^mt-`` "
+"for mouse, ``^ATMG`` for *Arabidopsis*, etc."
+msgstr ""
+"**Padrão genético mitocondrial (regex)**: expressão regular usada para "
+"identificar transcritos mitocondriais. ``^MT-`` (padrão) funciona para "
+"humanos; use ``^mt-`` para mouse, ``^ATMG`` para *Arabidopsis*, etc."
+
+#: ../../loading_data.rst:50 330a84fd85124269b9e524573129137b
+msgid ""
+"**Min cells per gene**: include genes detected in at least this many cells "
+"(default ``3``)."
+msgstr ""
+"**Mínimo de células por gene**: inclui genes detectados em pelo menos esse "
+"número de células (padrão ``3``)."
+
+#: ../../loading_data.rst:52 3574ae09254d43e09792071cefb38029
+msgid ""
+"**Min genes per cell**: include cells expressing at least this many genes "
+"(default ``200``)."
+msgstr ""
+"**Min genes por célula**: inclui células que expressam pelo menos esta "
+"quantidade de genes (padrão ``200``)."
+
+#: ../../loading_data.rst:55 717b46d1877449fbb1b4ef0177b35145
+msgid ""
+"**Path / upload + Load Data** (right column). Relative paths in the path "
+"field are resolved against the working directory shown beneath the field; "
+"absolute paths work too when they are visible to the app process. In Docker,"
+" host paths such as ``/Users/...`` must be bind-mounted first. The simplest "
+"Docker workflow is to launch the image from the directory where your data "
+"lives with ``-v \"$PWD:/home/ascseurat/data:ro\"``, then enter a path such "
+"as ``data/sample/filtered_feature_bc_matrix``. If the mounted folder is the "
+"10X matrix directory, enter ``data/``. Alternatively, mounting ``-v "
+"\"$HOME:$HOME:ro\"`` lets macOS and Linux users paste normal paths under "
+"their home directory. Click **Load Data** to read the sample."
+msgstr ""
+"**Caminho/upload + Load Data** (coluna da direita). Os caminhos relativos no"
+" campo de caminho são resolvidos no diretório de trabalho mostrado abaixo do"
+" campo; caminhos absolutos também funcionam quando estão visíveis para o "
+"processo do aplicativo. Em Docker, caminhos de host como ``/Users/...`` "
+"devem ser montados primeiro. O Docker workflow mais simples é lançar a "
+"imagem do diretório onde seus dados residem com ``-v "
+"\"$PWD:/home/ascseurat/data:ro\"`` e, em seguida, inserir um caminho como "
+"``data/sample/filtered_feature_bc_matrix``. Se a pasta montada for o "
+"diretório da matriz 10X, insira ``data/``. Alternativamente, a montagem ``-v"
+" \"$HOME:$HOME:ro\"`` permite que os usuários macOS e Linux colem caminhos "
+"normais em seu diretório inicial. Clique em **Load Data** para ler o "
+"exemplo."
+
+#: ../../loading_data.rst:67 f611931042294233866b8a3441c26012
+msgid ""
+"Optionally, the *Add cell-level metadata* card at the bottom of Step 1 lets "
+"you upload a CSV/TSV whose first column is the cell barcode; the remaining "
+"columns are added to the Seurat object's ``meta.data`` when you click **Add "
+"Metadata**."
+msgstr ""
+"Opcionalmente, o cartão *Adicionar metadata* no nível da célula na parte "
+"inferior da Etapa 1 permite fazer upload de um CSV/TSV cuja primeira coluna "
+"é o código de barras da célula; as colunas restantes são adicionadas aos "
+"``meta.data`` de objeto Seurat quando você clica em **Add Metadata**."
+
+#: ../../loading_data.rst:72 86a7277cba434781970b908fb4b11eda
+msgid ""
+"After loading, a violin plot of QC metrics appears in **Step 2: Quality "
+"Control & Filtering**, where you can set tighter thresholds before "
+"clustering. See :ref:`quality control <quality_control>`."
+msgstr ""
+"Depois do carregamento, um violin plot das métricas de QC aparece em **Step "
+"2: Quality Control & Filtering**, onde você pode definir thresholds mais "
+"rígidos antes do clustering. Veja :ref:`quality control <quality_control>`."

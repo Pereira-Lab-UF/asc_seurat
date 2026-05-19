@@ -1,0 +1,130 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../differential_expression.rst:5 cb2e1d04d2f54c41b5908c3031714ca8
+msgid "Markers identification and differential expression analysis"
+msgstr "Identificação de marcadores e análise de expressão diferencial"
+
+#: ../../differential_expression.rst:7 3c657359687646df804d06958a939525
+msgid ""
+"After clustering the cells, users may be interested in identifying genes "
+"specifically expressed in one cluster (markers) or in genes that are "
+"differentially expressed between clusters or conditions of interest. Asc-"
+"Seurat v3 exposes these options in **Step 5: Differential Expression / "
+"Marker Identification (Optional)**. The module uses Seurat's `FindMarkers "
+"<https://satijalab.org/seurat/reference/FindMarkers.html>`_ and "
+"`FindAllMarkers "
+"<https://satijalab.org/seurat/reference/FindAllMarkers.html>`_ workflows."
+msgstr ""
+"Após clustering das células, os usuários podem estar interessados ​​em "
+"identificar genes expressos especificamente em um cluster (markers) ou em "
+"genes que são expressos diferencialmente entre clusters ou condições de "
+"interesse. Asc-Seurat v3 expõe essas opções na **Etapa 5: Expressão "
+"Diferencial/identificação de markers (Opcional)**. O módulo usa os workflows"
+" `FindMarkers <https://satijalab.org/seurat/reference/FindMarkers.html>`_ e "
+"`FindAllMarkers "
+"<https://satijalab.org/seurat/reference/FindAllMarkers.html>`_ do Seurat."
+
+#: ../../differential_expression.rst:18 64eaa64a619f40418ef6f8e967a06486
+msgid ""
+"Once a DE table is available, you can send selected genes **directly to the "
+"visualization module** without exporting and re-importing a CSV. The CSV "
+"export still works and is the recommended format for sharing gene lists "
+"outside the app."
+msgstr ""
+"Assim que uma tabela DE estiver disponível, você poderá enviar genes "
+"selecionados **diretamente para o módulo de visualização** sem exportar e "
+"reimportar um CSV. A exportação CSV ainda funciona e é o formato recomendado"
+" para compartilhar listas de genes fora do aplicativo."
+
+#: ../../differential_expression.rst:23 630d1ddc280b45fdaf2606b167e0778e
+msgid ""
+"Asc-Seurat lets users choose the analysis type, statistical test, adjusted "
+"p-value cutoff, log2 fold-change threshold, and minimum fraction of cells "
+"expressing a gene. The same panel can search markers for all clusters, one "
+"selected cluster, two selected clusters, or conditions stored in the "
+"object's metadata."
+msgstr ""
+"Asc-Seurat permite que os usuários escolham o tipo de análise, o teste "
+"estatístico, o corte do valor p ajustado, o limite de alteração de log2 e a "
+"fração mínima de células que expressam um gene. O mesmo painel pode "
+"pesquisar markers por todos os clusters, um cluster selecionado, dois "
+"clusters selecionados ou condições armazenadas no metadata do objeto."
+
+#: ../../differential_expression.rst:34 2294b7ab17354ff7a6f6374cdf5a13af
+msgid "Asc-Seurat v3 settings for finding markers for all clusters."
+msgstr ""
+"Asc-Seurat Configurações v3 para encontrar markers para todos os clusters."
+
+#: ../../differential_expression.rst:34 6e8bf1b7a29d42128ccc6c2ec3fea76c
+msgid ""
+"Settings for finding marker genes for all clusters using the Wilcoxon test "
+"and the default filtering thresholds."
+msgstr ""
+"Configurações para encontrar genes marcadores para todos os clusters usando "
+"o teste de Wilcoxon e os limites de filtragem padrão."
+
+#: ../../differential_expression.rst:42 a9f5a122eecc40bfa82f703441b9eb99
+msgid "Asc-Seurat v3 settings for finding markers for one cluster."
+msgstr "Asc-Seurat Configurações v3 para encontrar markers para um cluster."
+
+#: ../../differential_expression.rst:42 4dd3a18319984d43ae7814c49d528b3c
+msgid "Settings for finding markers for one selected cluster."
+msgstr "Configurações para encontrar markers para um cluster selecionado."
+
+#: ../../differential_expression.rst:49 2cb42fabb5f446c294123339bf957f16
+msgid "Asc-Seurat v3 settings for comparing two clusters."
+msgstr "Asc-Seurat Configurações v3 para comparar dois clusters."
+
+#: ../../differential_expression.rst:49 792ef5dabfab47b19b6fe4c00e95e878
+msgid "Settings for comparing two selected clusters."
+msgstr "Configurações para comparar dois clusters selecionados."
+
+#: ../../differential_expression.rst:51 bcae2f671b6c41479ecaa81934920d6e
+msgid ""
+"After the search runs, Asc-Seurat displays an interactive marker table. "
+"Users can search within the table and download the significant markers or "
+"DEGs as a CSV file."
+msgstr ""
+"Após a execução da pesquisa, Asc-Seurat exibe uma tabela interativa marker. "
+"Os usuários podem pesquisar na tabela e baixar os markers ou DEGs "
+"significativos como um arquivo CSV."
+
+#: ../../differential_expression.rst:60 c5779db3744b42989d563251062c2257
+msgid "Asc-Seurat v3 marker genes result table."
+msgstr "Asc-Seurat v3 marker tabela de resultados de genes."
+
+#: ../../differential_expression.rst:60 eac22873bcce4eb09eff7c2b8baaf4b7
+msgid "Marker-gene table generated from the Asc-Seurat v3 demo dataset."
+msgstr ""
+"Tabela de genes marcadores gerada a partir da demonstração Asc-Seurat v3 "
+"dataset."
+
+#: ../../differential_expression.rst:62 ac487fd8a55340769811e4445304e999
+msgid ""
+"The list of genes in the CSV can then be used to visualize expression "
+"patterns in a series of plots, as shown in the section "
+":ref:`expression_visualization`."
+msgstr ""
+"A lista de genes no CSV pode então ser usada para visualizar padrões de "
+"expressão em uma série de plots, como mostrado na seção "
+":ref:`expression_visualization`."

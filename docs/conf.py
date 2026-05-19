@@ -10,7 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import sphinx_rtd_theme
@@ -33,6 +33,18 @@ source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
+
+def _normalize_sphinx_language(language_code):
+    parts = language_code.replace("-", "_").split("_", 1)
+    if len(parts) == 2:
+        return f"{parts[0].lower()}_{parts[1].upper()}"
+    return language_code
+
+
+language = _normalize_sphinx_language(os.environ.get("READTHEDOCS_LANGUAGE", "en"))
+locale_dirs = ["locale/"]
+gettext_compact = False
+gettext_uuid = True
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom

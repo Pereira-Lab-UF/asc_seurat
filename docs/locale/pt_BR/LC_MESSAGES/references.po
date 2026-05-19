@@ -1,0 +1,303 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../references.rst:5 49421cb8434546f69606675a43e6ce17
+msgid "References"
+msgstr "Referências"
+
+#: ../../references.rst:7 642bdfa5dfe04ed097384573b1acb19b
+msgid ""
+"Asc-Seurat is built on the work of many other people and relies on a "
+"diversity of R packages. These packages, in turn, have many dependencies. "
+"Here we list all packages that Asc-Seurat directly calls."
+msgstr ""
+"O Asc-Seurat é construído sobre o trabalho de muitas outras pessoas e "
+"depende de uma diversidade de pacotes R. Esses pacotes, por sua vez, têm "
+"muitas dependências. Aqui listamos todos os pacotes que o Asc-Seurat chama "
+"diretamente."
+
+#: ../../references.rst:13 d71cffd50b6b41fbbc6f9b785ebb9f64
+msgid "Analytical core"
+msgstr "Núcleo analítico"
+
+#: ../../references.rst:15 d395749ea1cb420b98ef65d7fe977673
+msgid "**Seurat**"
+msgstr "**Seurat**"
+
+#: ../../references.rst:17 be83f9bbc0234696981dc8ad064e84f7
+msgid "web page: https://satijalab.org/seurat/"
+msgstr "página web: https://satijalab.org/seurat/"
+
+#: ../../references.rst:18 75f7666e647c4aff9f0e5bf7c6128068
+msgid "Publications:"
+msgstr "Publicações:"
+
+#: ../../references.rst:20 344881b5243543f3afb770603e3d285b
+msgid ""
+"`Satija, R. et al. (2015) <https://www.nature.com/articles/nbt.3192>`_ "
+"Spatial reconstruction of single-cell gene expression data. Nat. "
+"Biotechnol., 33, 495–502."
+msgstr ""
+"`Satija, R. et al. (2015) <https://www.nature.com/articles/nbt.3192>`_ "
+"Spatial reconstruction of single-cell gene expression data. Nat. "
+"Biotechnol., 33, 495–502."
+
+#: ../../references.rst:21 37917fc69f8441abba2b3c06ff377b21
+msgid ""
+"`Stuart, T. et al. (2019) "
+"<https://www.cell.com/cell/fulltext/S0092-8674(19)30559-8>`_ Comprehensive "
+"Integration of Single-Cell Data. Cell, 177, 1888–1902.e21."
+msgstr ""
+"`Stuart, T. et al. (2019) "
+"<https://www.cell.com/cell/fulltext/S0092-8674(19)30559-8>`_ Comprehensive "
+"Integration of Single-Cell Data. Cell, 177, 1888–1902.e21."
+
+#: ../../references.rst:22 1603e93f1e8c4a978181f0b45cf7d1e6
+msgid ""
+"`Hao, Y. et al. (2024) <https://doi.org/10.1038/s41592-024-02276-1>`_ "
+"Dictionary learning for integrative, multimodal and scalable single-cell "
+"analysis. Nat. Methods, 21, 1–9."
+msgstr ""
+"`Hao, Y. et al. (2024) <https://doi.org/10.1038/s41592-024-02276-1>`_ "
+"Dictionary learning for integrative, multimodal and scalable single-cell "
+"analysis. Nat. Methods, 21, 1–9."
+
+#: ../../references.rst:24 f7a8853f27694f9d804ccf92213b1cfa
+msgid "**Slingshot** (trajectory inference)"
+msgstr "**Slingshot** (trajectory inference)"
+
+#: ../../references.rst:26 50cfd9b1040d4ac9b8e5415c120e26ad
+msgid ""
+"web page: https://bioconductor.org/packages/release/bioc/html/slingshot.html"
+msgstr ""
+"página web: "
+"https://bioconductor.org/packages/release/bioc/html/slingshot.html"
+
+#: ../../references.rst:27 ../../references.rst:34 ../../references.rst:41
+#: ../../references.rst:48 ../../references.rst:55
+#: 1fe0abbeb6fe44319ce8f3f34c111c03 5caa68733fcd45e9b30eaed66cfe6c7f
+#: 5ee7cfdf73704540ad240fe1d2c84df2 b331299072474d99bfbbab4fca0bbe27
+#: dfaca26e30e24eb5bd6d25337b9ef3aa
+msgid "Publication:"
+msgstr "Publicação:"
+
+#: ../../references.rst:29 58bd439b78a948658f755f9d13270780
+msgid ""
+"`Street, K. et al. (2018) "
+"<https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-4772-0>`_"
+" Slingshot: cell lineage and pseudotime inference for single-cell "
+"transcriptomics. BMC Genomics, 19, 477."
+msgstr ""
+"`Street, K. et al. (2018) "
+"<https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-4772-0>`_"
+" Slingshot: cell lineage and pseudotime inference for single-cell "
+"transcriptomics. BMC Genomics, 19, 477."
+
+#: ../../references.rst:31 62ed16f25eec43899de38a8a5371a8a6
+msgid "**scDblFinder** (doublet detection)"
+msgstr "**scDblFinder** (doublet detection)"
+
+#: ../../references.rst:33 137beed9808743efbd9b541b93b32ef8
+msgid ""
+"web page: "
+"https://bioconductor.org/packages/release/bioc/html/scDblFinder.html"
+msgstr ""
+"página web: "
+"https://bioconductor.org/packages/release/bioc/html/scDblFinder.html"
+
+#: ../../references.rst:36 1d36533d9eb84297ad5e0d5d63627b32
+msgid ""
+"`Germain, P.-L. et al. (2022) "
+"<https://doi.org/10.12688/f1000research.73600.2>`_ Doublet identification in"
+" single-cell sequencing data using scDblFinder. F1000Res., 10, 979."
+msgstr ""
+"`Germain, P.-L. et al. (2022) "
+"<https://doi.org/10.12688/f1000research.73600.2>`_ Doublet identification in"
+" single-cell sequencing data using scDblFinder. F1000Res., 10, 979."
+
+#: ../../references.rst:38 4809c3a01b26423ab1413242a9b47e67
+msgid "**SingleR** (cell-type annotation)"
+msgstr "**SingleR** (cell-type annotation)"
+
+#: ../../references.rst:40 277a9fee59b54aad8bed5a9c6271b915
+msgid ""
+"web page: https://bioconductor.org/packages/release/bioc/html/SingleR.html"
+msgstr ""
+"página web: https://bioconductor.org/packages/release/bioc/html/SingleR.html"
+
+#: ../../references.rst:43 d4073e4e7f2e42738f42da673cd6d32e
+msgid ""
+"`Aran, D. et al. (2019) "
+"<https://www.nature.com/articles/s41590-018-0276-y>`_ Reference-based "
+"analysis of lung single-cell sequencing reveals a transitional profibrotic "
+"macrophage. Nat. Immunol., 20, 163–172."
+msgstr ""
+"`Aran, D. et al. (2019) "
+"<https://www.nature.com/articles/s41590-018-0276-y>`_ Reference-based "
+"analysis of lung single-cell sequencing reveals a transitional profibrotic "
+"macrophage. Nat. Immunol., 20, 163–172."
+
+#: ../../references.rst:45 7bffa768f8fe434ea1467456e1524e06
+msgid "**scMaSigPro** (trajectory differential expression)"
+msgstr "**scMaSigPro** (trajectory differential expression)"
+
+#: ../../references.rst:47 9350419053474950bcd8bda2800d80d4
+msgid "web page: https://github.com/BioBam/scMaSigPro"
+msgstr "página web: https://github.com/BioBam/scMaSigPro"
+
+#: ../../references.rst:50 2c443ef2d6da4e10854a5bcc48477744
+msgid ""
+"`Prieto, C. & Martínez-García, P.M. (2023) "
+"<https://doi.org/10.1093/bioinformatics/btad681>`_ scMaSigPro: a polynomial "
+"regression framework for single-cell RNA sequencing time series. "
+"Bioinformatics, 39, btad681."
+msgstr ""
+"`Prieto, C. & Martínez-García, P.M. (2023) "
+"<https://doi.org/10.1093/bioinformatics/btad681>`_ scMaSigPro: a polynomial "
+"regression framework for single-cell RNA sequencing time series. "
+"Bioinformatics, 39, btad681."
+
+#: ../../references.rst:52 b59fa69623c24b8987c7d91e4bb0bc9d
+msgid "**harmony** (batch integration)"
+msgstr "**harmony** (batch integration)"
+
+#: ../../references.rst:54 3d1a6033083241cf827e978a09a6755c
+msgid "web page: https://github.com/immunogenomics/harmony"
+msgstr "página web: https://github.com/immunogenomics/harmony"
+
+#: ../../references.rst:57 55eec0b32a2a479595682dd37b348f1c
+msgid ""
+"`Korsunsky, I. et al. (2019) "
+"<https://www.nature.com/articles/s41592-019-0619-0>`_ Fast, sensitive and "
+"accurate integration of single-cell data with Harmony. Nat. Methods, 16, "
+"1289–1296."
+msgstr ""
+"`Korsunsky, I. et al. (2019) "
+"<https://www.nature.com/articles/s41592-019-0619-0>`_ Fast, sensitive and "
+"accurate integration of single-cell data with Harmony. Nat. Methods, 16, "
+"1289–1296."
+
+#: ../../references.rst:59 1eb18473429f4c6d9808730ba93ce87e
+msgid "**scCustomize**"
+msgstr "**scCustomize**"
+
+#: ../../references.rst:61 d7d47b2f57a24504b2fd022786d1ffe7
+msgid "web page: https://samuel-marsh.github.io/scCustomize/"
+msgstr "página web: https://samuel-marsh.github.io/scCustomize/"
+
+#: ../../references.rst:64 4a5c2ca829ca46e5be6946b0e9a74b33
+msgid "Additional packages"
+msgstr "Pacotes adicionais"
+
+#: ../../references.rst:67 62141a97c3ba49b2b332fb5d6aab2149
+msgid "CRAN"
+msgstr "CRAN"
+
+#: ../../references.rst:69 1177ab5d4f90489a862f80ac0a4e1f64
+msgid "bslib: https://rstudio.github.io/bslib/"
+msgstr "bslib: https://rstudio.github.io/bslib/"
+
+#: ../../references.rst:70 fa2de49c820a42acb6ee93785061d535
+msgid "DT: https://rstudio.github.io/DT/"
+msgstr "DT: https://rstudio.github.io/DT/"
+
+#: ../../references.rst:71 0c37ae8aeb454d18b906a3027a9b8db4
+msgid "dplyr: https://dplyr.tidyverse.org/"
+msgstr "dplyr: https://dplyr.tidyverse.org/"
+
+#: ../../references.rst:72 8f6dc1852f6b42fa890780222c3658fa
+msgid "ggplot2: https://ggplot2.tidyverse.org/"
+msgstr "ggplot2: https://ggplot2.tidyverse.org/"
+
+#: ../../references.rst:73 0451ca1f386e4f628e9dc1b64c8f8210
+msgid "hdf5r: https://cran.r-project.org/web/packages/hdf5r/"
+msgstr "hdf5r: https://cran.r-project.org/web/packages/hdf5r/"
+
+#: ../../references.rst:74 edc1e8ea546a4881a3df5275e490dbbc
+msgid "metap: https://cran.r-project.org/web/packages/metap/index.html"
+msgstr "metap: https://cran.r-project.org/web/packages/metap/index.html"
+
+#: ../../references.rst:75 e623848370f3484ab72011f8808f6878
+msgid "patchwork: https://patchwork.data-imaginist.com/"
+msgstr "patchwork: https://patchwork.data-imaginist.com/"
+
+#: ../../references.rst:76 00ce46440afb4cb1a07a73a740511936
+msgid "reactable: https://glin.github.io/reactable/"
+msgstr "reactable: https://glin.github.io/reactable/"
+
+#: ../../references.rst:77 2e6de5b9d9144c94aa3d0fd4dc8a6e0f
+msgid "reticulate: https://rstudio.github.io/reticulate/"
+msgstr "reticulate: https://rstudio.github.io/reticulate/"
+
+#: ../../references.rst:78 faf84060e99b4ad6b09cf365ed98b074
+msgid "sass: https://rstudio.github.io/sass/"
+msgstr "sass: https://rstudio.github.io/sass/"
+
+#: ../../references.rst:79 4ee94046b8da408284b18c0a7e36c994
+msgid "shiny: https://shiny.posit.co/"
+msgstr "shiny: https://shiny.posit.co/"
+
+#: ../../references.rst:80 6da52eec85ee45b392cd08b91af09788
+msgid ""
+"shinycssloaders: https://cran.r-project.org/web/packages/shinycssloaders/"
+msgstr ""
+"shinycssloaders: https://cran.r-project.org/web/packages/shinycssloaders/"
+
+#: ../../references.rst:81 0e8cac1cf2594274808be4a8db9e0ede
+msgid "shinyFeedback: https://merlinoa.github.io/shinyFeedback/"
+msgstr "shinyFeedback: https://merlinoa.github.io/shinyFeedback/"
+
+#: ../../references.rst:82 f527cd3f46424bae8b0fb7f731c31391
+msgid "shinyWidgets: https://dreamrs.github.io/shinyWidgets/"
+msgstr "shinyWidgets: https://dreamrs.github.io/shinyWidgets/"
+
+#: ../../references.rst:83 5c056ef918964c69b1480ed968ebc0a3
+msgid "SeuratObject: https://cran.r-project.org/web/packages/SeuratObject/"
+msgstr "SeuratObject: https://cran.r-project.org/web/packages/SeuratObject/"
+
+#: ../../references.rst:86 f3a79a05d1ec48db9b5372cd5d808341
+msgid "Bioconductor"
+msgstr "Bioconductor"
+
+#: ../../references.rst:88 3605b00811524291b3c5bf7075b61005
+msgid ""
+"celldex: "
+"https://bioconductor.org/packages/release/data/experiment/html/celldex.html"
+msgstr ""
+"celldex: "
+"https://bioconductor.org/packages/release/data/experiment/html/celldex.html"
+
+#: ../../references.rst:89 b9bc9d1eae1a4481a11b1792fbea927a
+msgid ""
+"SingleCellExperiment: "
+"https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html"
+msgstr ""
+"SingleCellExperiment: "
+"https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html"
+
+#: ../../references.rst:90 20390196e4784f68b46a6eb409f8dfe0
+msgid ""
+"slingshot: "
+"https://bioconductor.org/packages/release/bioc/html/slingshot.html"
+msgstr ""
+"slingshot: "
+"https://bioconductor.org/packages/release/bioc/html/slingshot.html"

@@ -1,0 +1,237 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../installation.rst:5 a519b78985c64d2dbe80d1f8dbdf31e9
+msgid "Installation"
+msgstr "Instalação"
+
+#: ../../installation.rst:7 691f9abb72d54c9f93170198975f6705
+msgid "Asc-Seurat can be installed in two ways:"
+msgstr "Asc-Seurat pode ser instalado de duas maneiras:"
+
+#: ../../installation.rst:9 7e8eeec972094255aea019971dcf2bad
+msgid ""
+"**Docker** — recommended for most users. Zero dependency management; every "
+"optional feature is bundled."
+msgstr ""
+"**Docker** — recomendado para a maioria dos usuários. Gerenciamento de "
+"dependência zero; cada feature opcional é incluído."
+
+#: ../../installation.rst:11 5bcdf56344a34c799e58e0081674bd0e
+msgid ""
+"**R package from GitHub** — lighter and starts faster if you already work in"
+" R and are comfortable managing Bioconductor packages."
+msgstr ""
+"**Pacote R de GitHub** — mais leve e inicia mais rápido se você já trabalha "
+"em R e se sente confortável gerenciando pacotes Biocondutores."
+
+#: ../../installation.rst:14 06a6c2d2617e4736a3cd291ff395a421
+msgid "Both options run the same Shiny app and produce identical results."
+msgstr ""
+"Ambas as opções executam o mesmo aplicativo Shiny e produzem resultados "
+"idênticos."
+
+#: ../../installation.rst:16 5111b3143640464cb3379a7bda29f551
+msgid "Source code lives at https://github.com/Pereira-Lab-UF/asc_seurat."
+msgstr ""
+"O código-fonte reside em https://github.com/Pereira-Lab-UF/asc_seurat."
+
+#: ../../installation.rst:19 64662516f07049ffbf8ce0492abc1cf6
+msgid "Option 1 — Docker (recommended)"
+msgstr "Opção 1 — Docker (recomendado)"
+
+#: ../../installation.rst:21 e447ac9762244ceb8fe46ff351ce4c61
+msgid ""
+"Requirements: a recent `Docker <https://docs.docker.com/get-docker/>`_ "
+"installation. Nothing else."
+msgstr ""
+"Requisitos: uma instalação `Docker <https://docs.docker.com/get-docker/>`_ "
+"recente. Nada mais."
+
+#: ../../installation.rst:28 8a10065eaee04614b77ce490dcf56866
+msgid ""
+"Then open `http://localhost:3838 <http://localhost:3838>`_ in a browser."
+msgstr ""
+"Em seguida, abra `http://localhost:3838 <http://localhost:3838>`_ em um "
+"navegador."
+
+#: ../../installation.rst:30 b45597e5e467456ea99da886b9692b90
+msgid ""
+"Docker containers cannot see arbitrary host paths unless those paths are "
+"mounted when the container starts. The easiest pattern is to launch the "
+"container from the folder that contains your data and mount that current "
+"folder into Asc-Seurat's ``data/`` directory:"
+msgstr ""
+"Docker Os contêineres não podem ver caminhos de host arbitrários, a menos "
+"que esses caminhos sejam montados quando o contêiner for iniciado. O padrão "
+"mais fácil é iniciar o contêiner a partir da pasta que contém seus dados e "
+"montar essa pasta atual no diretório ``data/`` de Asc-Seurat:"
+
+#: ../../installation.rst:42 49804bd3c69943e9ad27d52602513b1d
+msgid ""
+"Then enter paths relative to the app workdir, for example "
+"``data/sample/filtered_feature_bc_matrix``. If the mounted folder itself is "
+"the 10X matrix directory, enter ``data/``."
+msgstr ""
+"Em seguida, insira os caminhos relativos ao diretório de trabalho do "
+"aplicativo, por exemplo ``data/sample/filtered_feature_bc_matrix``. Se a "
+"pasta montada for o diretório da matriz 10X, insira ``data/``."
+
+#: ../../installation.rst:46 f9b7fb515fce444ebff7d899fab778a8
+msgid ""
+"If you prefer to paste normal absolute paths from anywhere under your home "
+"directory on macOS or Linux, mount your home directory at the same path "
+"inside the container:"
+msgstr ""
+"Se você preferir colar caminhos absolutos normais de qualquer lugar do seu "
+"diretório inicial em macOS ou Linux, monte seu diretório inicial no mesmo "
+"caminho dentro do contêiner:"
+
+#: ../../installation.rst:56 a1efdc7c164d4c1085f100a0f309a143
+msgid ""
+"Then enter the normal absolute path in Asc-Seurat, for example "
+"``/Users/you/project/sample/filtered_feature_bc_matrix``, without wrapping "
+"the path in quotes. To expose external drives on macOS, also mount "
+"``/Volumes:/Volumes:ro``. On Windows, mount a folder to a Linux container "
+"path such as ``/home/ascseurat/data`` and enter ``data/...`` in the app."
+msgstr ""
+"Em seguida, insira o caminho absoluto normal em Asc-Seurat, por exemplo "
+"``/Users/you/project/sample/filtered_feature_bc_matrix``, sem colocar o "
+"caminho entre aspas. Para expor unidades externas em macOS, monte também "
+"``/Volumes:/Volumes:ro``. Em Windows, monte uma pasta em um caminho de "
+"contêiner Linux, como ``/home/ascseurat/data``, e insira ``data/...`` no "
+"aplicativo."
+
+#: ../../installation.rst:64 1e2ff3ed27784f86a91f4708f94979e4
+msgid "Option 2 — R package from GitHub"
+msgstr "Opção 2 — pacote R de GitHub"
+
+#: ../../installation.rst:66 5056aad77be34a5d84b4f96f6da6c9ce
+msgid "Requires **R ≥ 4.3.0** and Rstudio is recommended."
+msgstr "Requer **R ≥ 4.3.0** e Rstudio é recomendado."
+
+#: ../../installation.rst:68 9f6240075c254b169e6c815933d91a56
+msgid ""
+"From a terminal, install the system dependencies first. Asc-Seurat installs "
+"the R packages automatically, but native packages still need compilers and "
+"HDF5 available on the machine."
+msgstr ""
+"Em um terminal, instale primeiro as dependências do sistema. Asc-Seurat "
+"instala os pacotes R automaticamente, mas os pacotes nativos ainda precisam "
+"de compiladores e HDF5 disponíveis na máquina."
+
+#: ../../installation.rst:83 efeea353bb9f4436bb88f225712e42f2
+msgid ""
+"Follow the upstream `BPCells R installation instructions "
+"<https://github.com/bnprks/BPCells#r-installation>`_ if you need more detail"
+" on the HDF5 requirement."
+msgstr ""
+"Siga o `BPCells R installation instructions "
+"<https://github.com/bnprks/BPCells#r-installation>`_ anterior se precisar de"
+" mais detalhes sobre o requisito HDF5."
+
+#: ../../installation.rst:86 c6048a2930234f89b53c31ef96ed2d18
+msgid ""
+"Then, from inside an R session, install ``BPCells`` before installing Asc-"
+"Seurat. ``BPCells`` is required by the trajectory stack, and installing it "
+"first avoids a known ``pak`` failure with GitHub sub-directory packages."
+msgstr ""
+"Então, de dentro de uma sessão R, instale ``BPCells`` antes de instalar Asc-"
+"Seurat. ``BPCells`` é exigido pela pilha de trajetória, e instalá-lo "
+"primeiro evita uma falha conhecida de ``pak`` com pacotes de subdiretórios "
+"GitHub."
+
+#: ../../installation.rst:99 bfdd7243c9484d4c84b92f22e08458d2
+msgid ""
+"The ``pak`` command installs every R package declared as an app runtime "
+"dependency in ``DESCRIPTION``, including ``PseudotimeDE``. It avoids only "
+"developer, documentation, and test-only packages. On macOS, ``PseudotimeDE``"
+" requires the official R GNU Fortran toolchain above. The error ``library "
+"'emutls_w' not found`` means that toolchain is missing or mismatched."
+msgstr ""
+"O comando ``pak`` instala todos os pacotes R declarados como dependência de "
+"tempo de execução do aplicativo em ``DESCRIPTION``, incluindo "
+"``PseudotimeDE``. Ele evita apenas pacotes de desenvolvedor, documentação e "
+"somente testes. Em macOS, ``PseudotimeDE`` requer o conjunto de ferramentas "
+"oficial R GNU Fortran acima. O erro ``library 'emutls_w' not found`` "
+"significa que o conjunto de ferramentas está ausente ou incompatível."
+
+#: ../../installation.rst:106 36cbbe42b15746f4a3c0de836f7bd792
+msgid ""
+"If the GitHub install of ``BPCells`` is rate-limited or unavailable, use the"
+" BPCells R-universe repository first, then run the Asc-Seurat install:"
+msgstr ""
+"Se a instalação GitHub de ``BPCells`` estiver com taxa limitada ou "
+"indisponível, use primeiro o repositório BPCells R-universe e depois execute"
+" a instalação Asc-Seurat:"
+
+#: ../../installation.rst:117 cded38883642437b8563185eff621d19
+msgid "Then launch the app:"
+msgstr "Em seguida, inicie o aplicativo:"
+
+#: ../../installation.rst:124 05a345f247a647d6a4fbfdda628a8db0
+msgid "Python dependencies for PAGA"
+msgstr "Dependências Python para PAGA"
+
+#: ../../installation.rst:126 da92fb11036d4358af208eeb26d3bb02
+msgid "Docker users can skip this step — Scanpy is already in the image."
+msgstr "Docker usuários podem pular esta etapa — Scanpy já está na imagem."
+
+#: ../../installation.rst:128 72a309b649e34ec2847c560c86e86353
+msgid ""
+"PAGA uses the Python `Scanpy <https://scanpy.readthedocs.io/>`_ stack via "
+"`reticulate <https://rstudio.github.io/reticulate/>`_. A one-liner prepares "
+"and verifies a managed Python environment:"
+msgstr ""
+"PAGA usa a pilha Python `Scanpy <https://scanpy.readthedocs.io/>`_ via "
+"`reticulate <https://rstudio.github.io/reticulate/>`_. Um one-liner prepara "
+"e verifica um ambiente Python gerenciado:"
+
+#: ../../installation.rst:137 8f01743212314a47951de0ccf887a1f6
+msgid "Resource notes"
+msgstr "Notas de recursos"
+
+#: ../../installation.rst:139 09f10242c04542c8bd2b83bcb5a4db18
+msgid ""
+"Single-cell analysis is memory-intensive. Larger datasets will require more "
+"RAM whether you use Docker or the R package. we recommend at least 8 GB for "
+"datasets of ~20,000 cells."
+msgstr ""
+"A análise de single-cell exige muita memória. datasets maiores exigirão mais"
+" RAM, quer você use o pacote Docker ou R. recomendamos pelo menos 8 GB para "
+"datasets de aproximadamente 20.000 células."
+
+#: ../../installation.rst:143 33388a7dfbd54856b5e22bb48fae60c6
+msgid "Verifying the installation"
+msgstr "Verificando a instalação"
+
+#: ../../installation.rst:145 4d723195477e4ec3ad6c6fbf0f51fe93
+msgid ""
+"After launching the app, open the **Demo** tab in the top navigation. A "
+"2,000-cell subset of the PBMC 3k reference dataset is loaded automatically "
+"and you can walk through the full workflow in a few minutes. See "
+":ref:`getting_started` for the step-by-step tour."
+msgstr ""
+"Depois de iniciar o app, abra a aba **Demo** na navegação superior. Um "
+"subconjunto de 2.000 células do dataset de referência PBMC 3k é carregado "
+"automaticamente e você pode percorrer todo o workflow em poucos minutos. "
+"Consulte :ref:`getting_started` para o passo a passo."

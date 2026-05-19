@@ -1,0 +1,237 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../clustering_int.rst:5 6b671b35a2fa44868694159b344d2738
+msgid "Clustering"
+msgstr "Clustering"
+
+#: ../../clustering_int.rst:7 f91832c380b64fd6ba5d84597e410c0b
+msgid ""
+"In the **Integration** tab, Asc-Seurat v3 separates multi-sample integration"
+" from clustering:"
+msgstr ""
+"Na guia **Integration**, Asc-Seurat v3 separa a integração multiamostra de "
+"clustering:"
+
+#: ../../clustering_int.rst:10 d42c12c359fb4b768079697c10fbaa58
+msgid ""
+"**Step 1: Multi-Sample Integration** loads the samples, runs RPCA or Harmony"
+" integration, shows post-integration QC metrics, and displays the PCA elbow "
+"plot used to choose clustering dimensions."
+msgstr ""
+"**Etapa 1: Multi-Sample Integration** carrega as amostras, executa a "
+"integração RPCA ou Harmony, mostra as métricas QC pós-integração e exibe o "
+"gráfico de cotovelo PCA usado para escolher as dimensões clustering."
+
+#: ../../clustering_int.rst:13 cd1028d025094399aae1fa4c984dd3ec
+msgid ""
+"**Step 2: Clustering & Visualization** uses the selected PCs to cluster the "
+"integrated object and display sample-aware UMAP summaries."
+msgstr ""
+"**Etapa 2: Clustering e Visualização** usa o PCs selecionado para cluster o "
+"objeto integrado e exibe resumos UMAP com reconhecimento de amostra."
+
+#: ../../clustering_int.rst:16 ec0612ff3e4f4eae869d58b24fe20db3
+msgid ""
+"The integrated clustering workflow also supports cluster renaming and "
+"optional cluster selection or exclusion before downstream differential "
+"expression and visualization."
+msgstr ""
+"O clustering workflow integrado também suporta renomeação de cluster e "
+"seleção ou exclusão opcional de cluster antes da expressão e visualização "
+"diferencial downstream."
+
+#: ../../clustering_int.rst:21 bc24237ccb264c2aad8792ee88f89fcb
+msgid "Integration QC and PCA dimensions"
+msgstr "Integration QC e PCA dimensões"
+
+#: ../../clustering_int.rst:23 1876367462c84202ae00284e9b8dfcbc
+msgid ""
+"After :guilabel:`Load & Integrate` finishes, Asc-Seurat reports the number "
+"of cells, features, samples, integration method, and mitochondrial tags used"
+" for each sample. The same section displays integration QC violin plots, "
+"optional post-integration filtering, and the elbow plot used to choose the "
+"number of PCs for clustering."
+msgstr ""
+"Após o:guilabel:`Load & Integrate` terminar, Asc-Seurat relata o número de "
+"células, features, amostras, método de integração e marcadores mitocondriais"
+" usados ​​para cada amostra. A mesma seção exibe violin plots QC de "
+"integração, filtragem pós-integração opcional e o gráfico de cotovelo usado "
+"para escolher o número de PCs para clustering."
+
+#: ../../clustering_int.rst:34 923f84a96b9c4e47a167211169349897
+msgid "Asc-Seurat v3 integration summary, QC metrics, and elbow plot."
+msgstr ""
+"Asc-Seurat Resumo de integração v3, métricas QC e gráfico de cotovelo."
+
+#: ../../clustering_int.rst:34 69a72034602042998126d46f2a821bc7
+msgid ""
+"Integration summary, post-integration QC metrics, optional filtering, and "
+"the PC selector shown after RPCA integration of the WT and rhd6 example "
+"samples."
+msgstr ""
+"Integration resumo, métricas QC pós-integração, filtragem opcional e o "
+"seletor de PC mostrado após RPCA integração das amostras de exemplo WT e "
+"rhd6."
+
+#: ../../clustering_int.rst:38 84ab98480f5e413ea2ff3f5025c4b274
+msgid ""
+"When **SCTransform v2** is selected during integration, Asc-Seurat uses the "
+"``SCT`` assay through integration and clustering. For downstream "
+"differential expression and expression visualization, Asc-Seurat also "
+"prepares normalized ``RNA`` values so those modules can use the assay "
+"recommended for marker testing and visualization."
+msgstr ""
+"Quando **SCTransform v2** é selecionado durante a integração, Asc-Seurat usa"
+" o ``SCT`` assay através da integração e clustering. Para expressão "
+"diferencial downstream e visualização de expressão, Asc-Seurat também "
+"prepara valores ``RNA`` normalizados para que esses módulos possam usar o "
+"assay recomendado para teste e visualização de marker."
+
+#: ../../clustering_int.rst:45 65e7ae7309e44de09b2e3060f31ad7e3
+msgid "Step 2: Clustering & Visualization"
+msgstr "Etapa 2: clustering e visualização"
+
+#: ../../clustering_int.rst:47 c4b4829241574dcbbfda2618073ac525
+msgid ""
+"Set the **Clustering resolution** and click :guilabel:`Run Clustering`. The "
+"selected number of PCs comes from the Step 1 PC selector. Internally, Asc-"
+"Seurat uses Seurat's `FindNeighbors "
+"<https://satijalab.org/seurat/reference/FindNeighbors.html>`_, `FindClusters"
+" <https://satijalab.org/seurat/reference/FindClusters.html>`_, and UMAP "
+"workflow on the integration reduction."
+msgstr ""
+"Defina **Clustering resolution** e clique em:guilabel:`Run Clustering`. O "
+"número selecionado de PCs vem do seletor de PC da Etapa 1. Internamente, "
+"Asc-Seurat usa `FindNeighbors "
+"<https://satijalab.org/seurat/reference/FindNeighbors.html>`_, `FindClusters"
+" <https://satijalab.org/seurat/reference/FindClusters.html>`_ e UMAP "
+"workflow do Seurat sobre a redução de integração."
+
+#: ../../clustering_int.rst:59 9ba3452c7f014b0da1b689d1ad66fd3a
+msgid "Asc-Seurat v3 integrated clustering controls."
+msgstr "Asc-Seurat v3 controles clustering integrados."
+
+#: ../../clustering_int.rst:59 5ad7c15166a14015b46dfe0d849a848f
+msgid "Step 2 controls for clustering the integrated object."
+msgstr "A etapa 2 controla clustering o objeto integrado."
+
+#: ../../clustering_int.rst:61 cb67524a92434823a2131e6c855326a3
+msgid ""
+"Resolution controls the number of clusters. Larger values generally split "
+"cells into more clusters; smaller values merge them into broader groups. "
+"There is no single optimal resolution, so compare a small set of values "
+"against expected marker genes and the biological question."
+msgstr ""
+"A resolução controla o número de clusters. Valores maiores geralmente "
+"dividem as células em mais clusters; valores menores os fundem em grupos "
+"mais amplos. Não existe uma resolução ideal única, então compare um pequeno "
+"conjunto de valores com os genes marcadores esperados e a questão biológica."
+
+#: ../../clustering_int.rst:67 8a036df0204147818499ab5e61598d21
+msgid "Integrated UMAP summaries"
+msgstr "Resumos UMAP integrados"
+
+#: ../../clustering_int.rst:69 b2179713a6114dedb9ba4f5fa54ec82d
+msgid ""
+"After clustering, Asc-Seurat displays the integrated UMAP colored by cluster"
+" and the same embedding colored by sample."
+msgstr ""
+"Após clustering, Asc-Seurat exibe o UMAP integrado colorido por cluster e a "
+"mesma embedding colorida por amostra."
+
+#: ../../clustering_int.rst:77 d7b7aeeee4644fa9b8d0a43e0bdbf805
+msgid "Asc-Seurat v3 integrated UMAP colored by clusters and samples."
+msgstr "Asc-Seurat v3 UMAP integrado colorido por clusters e amostras."
+
+#: ../../clustering_int.rst:77 c6b11ec11491486e9d455a064c898605
+msgid ""
+"Integrated UMAPs from the WT and rhd6 example samples, colored by cluster "
+"and by sample."
+msgstr ""
+"UMAPs integrados das amostras de exemplo WT e rhd6, coloridos por cluster e "
+"por amostra."
+
+#: ../../clustering_int.rst:80 d6176653f0ea4e0d860864e6b2762113
+msgid ""
+"The workflow also shows the cluster labels split by sample, which makes it "
+"easier to spot sample-specific cluster composition or uneven mixing."
+msgstr ""
+"O workflow também mostra os rótulos cluster divididos por amostra, o que "
+"torna mais fácil identificar a composição cluster específica da amostra ou "
+"mistura irregular."
+
+#: ../../clustering_int.rst:88 108ac0052a3d48ab832ec32c4750b4a9
+msgid "Asc-Seurat v3 integrated UMAP split by sample."
+msgstr "Asc-Seurat v3 integrado UMAP dividido por amostra."
+
+#: ../../clustering_int.rst:88 e4b611b859c0493a9f78594ae12717d8
+msgid "Integrated UMAP split by sample while retaining the cluster labels."
+msgstr "UMAP integrado dividido por amostra, mantendo os rótulos cluster."
+
+#: ../../clustering_int.rst:91 b23fc6bb409d4782aa88906e8ffb1599
+msgid "Cells per cluster and subsetting"
+msgstr "Células por cluster e subconjunto"
+
+#: ../../clustering_int.rst:93 f8dec110aab1443da686d015412570a8
+msgid ""
+"Asc-Seurat reports the number of cells assigned to each cluster, broken down"
+" by sample. The **Cluster Selection / Exclusion (optional)** card can be "
+"used to keep or remove selected clusters before downstream analysis."
+msgstr ""
+"Asc-Seurat informa o número de células atribuídas a cada cluster, "
+"discriminadas por amostra. O cartão **Cluster Selection / Exclusion "
+"(optional)** pode ser usado para manter ou remover clusters selecionados "
+"antes da análise posterior."
+
+#: ../../clustering_int.rst:102 01abe15315fb4285883547f7c6d4e4f5
+msgid "Asc-Seurat v3 integrated cluster table and cluster selection controls."
+msgstr ""
+"Asc-Seurat v3 tabela cluster integrada e controles de seleção cluster."
+
+#: ../../clustering_int.rst:102 61daa6c18ff74220b6758126d7251f74
+msgid ""
+"Cells per cluster table and the optional cluster selection / exclusion card."
+msgstr ""
+"Células por tabela cluster e cartão opcional de seleção/exclusão cluster."
+
+#: ../../clustering_int.rst:105 59ffbe39412e4dbf9ccb3fb7f9053e0e
+msgid ""
+"When **Recompute PCA and clusters** is selected, Asc-Seurat creates a new "
+"subset object, recomputes normalization and PCA, and shows an updated elbow "
+"plot before clustering the subset again. When **Keep current reduction and "
+"clusters** is selected, the current embedding and cluster labels are carried"
+" forward for the selected subset."
+msgstr ""
+"Quando **Recompute PCA and clusters** é selecionado, Asc-Seurat cria um novo"
+" objeto de subconjunto, recalcula a normalização e PCA e mostra um gráfico "
+"de cotovelo atualizado antes de clustering o subconjunto novamente. Quando "
+"**Keep current reduction and clusters** é selecionado, a embedding atual e "
+"os rótulos cluster são transportados para o subconjunto selecionado."
+
+#: ../../clustering_int.rst:113 87038999d0604dd6a1edecbcc990d41c
+msgid ""
+"Cluster numbering can change after selecting or excluding clusters, "
+"especially when PCA and clustering are recomputed for the subset."
+msgstr ""
+"A numeração do cluster pode mudar após selecionar ou excluir clusters, "
+"especialmente quando PCA e clustering são recalculados para o subconjunto."

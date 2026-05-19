@@ -1,0 +1,252 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../trajectory_inference.rst:4 f299e68dfcf449f38ae53e723188c012
+msgid "Trajectory inference"
+msgstr "Trajectory inference"
+
+#: ../../trajectory_inference.rst:6 3ad88e65016246d09ddfbf9c8fccd913
+msgid ""
+"Asc-Seurat supports three trajectory methods that share the same Shiny "
+"controls:"
+msgstr ""
+"Asc-Seurat suporta três métodos de trajetória que compartilham os mesmos "
+"controles Shiny:"
+
+#: ../../trajectory_inference.rst:9 d95df3ff43a2485c94edb386278207c5
+msgid ""
+"**Slingshot** (default) — fits lineages on the clustered UMAP embedding. "
+"Start and end clusters can guide lineage orientation, and the results "
+"include a compact minimum-spanning-tree graph of the inferred cluster "
+"relationships."
+msgstr ""
+"**Slingshot** (padrão) — ajusta as linhagens na embedding UMAP agrupada. "
+"Início e fim clusters podem orientar a orientação da linhagem, e os "
+"resultados incluem um gráfico compacto de árvore de abrangência mínima dos "
+"relacionamentos cluster inferidos."
+
+#: ../../trajectory_inference.rst:13 bb7cc5f95e84454f860ff04651f95a63
+msgid ""
+"**PAGA** — estimates connectivity between clusters and calculates pseudotime"
+" from the selected root cluster."
+msgstr ""
+"**PAGA** — estima a conectividade entre clusters e calcula o pseudotempo a "
+"partir da raiz selecionada cluster."
+
+#: ../../trajectory_inference.rst:15 9f6e27778e43454aa213fc93692150d8
+msgid ""
+"**Monocle 3** — learns a Monocle 3 principal graph on the existing UMAP and "
+"orders cells from the selected root cluster."
+msgstr ""
+"**Monocle 3** — aprende um gráfico principal Monocle 3 no UMAP existente e "
+"ordena as células da raiz selecionada cluster."
+
+#: ../../trajectory_inference.rst:19 b533fd5f5fee47de9d890d5c35eda12d
+msgid "Running trajectory inference"
+msgstr "Executando trajectory inference"
+
+#: ../../trajectory_inference.rst:21 5e5f259309964d3e9cee410d0310e459
+msgid ""
+"The Trajectory Inference tab takes a clustered Seurat object as input. You "
+"can load it in two ways:"
+msgstr ""
+"A guia Trajectory Inference recebe um objeto Seurat agrupado como entrada. "
+"Você pode carregá-lo de duas maneiras:"
+
+#: ../../trajectory_inference.rst:24 1c25361b4f494a219c650cca5861c24a
+msgid ""
+"**Upload from browser** — the default and most convenient option for "
+"moderate-sized objects."
+msgstr ""
+"**Upload from browser** — a opção padrão e mais conveniente para objetos de "
+"tamanho moderado."
+
+#: ../../trajectory_inference.rst:26 2948dd33c3ef45cb9cef87d1861eb43b
+msgid ""
+"**Path on this computer/server** — best for very large RDS files, where the "
+"browser upload limit is a concern. Relative paths are resolved against the "
+"working directory shown beneath the input."
+msgstr ""
+"**Path on this computer/server** — melhor para arquivos RDS muito grandes, "
+"onde o limite de upload do navegador é uma preocupação. Os caminhos "
+"relativos são resolvidos no diretório de trabalho mostrado abaixo da "
+"entrada."
+
+#: ../../trajectory_inference.rst:30 1ab516170b8448848b1a1ed6f61e251e
+msgid "For all three methods you can:"
+msgstr "Para todos os três métodos, você pode:"
+
+#: ../../trajectory_inference.rst:32 27274bc92e0340c78965f0b834e80100
+msgid "pick the trajectory method (Slingshot / PAGA / Monocle 3),"
+msgstr "escolha o método de trajetória (Slingshot / PAGA / Monocle 3),"
+
+#: ../../trajectory_inference.rst:33 ab4c3f9fc1414a56b56b1c9d208d721b
+msgid ""
+"choose a **root/start cluster**; this is strongly recommended so the "
+"pseudotime orientation is explicit,"
+msgstr ""
+"escolha um **root/start cluster**; isso é fortemente recomendado para que a "
+"orientação do pseudotempo seja explícita,"
+
+#: ../../trajectory_inference.rst:35 82ee2b247c934bae92bfc05975e7a195
+msgid "optionally fix an **end cluster** (Slingshot only),"
+msgstr "opcionalmente, corrija um **end cluster** (somente Slingshot),"
+
+#: ../../trajectory_inference.rst:36 eb2755a4da79410180f568d7f7d1c726
+msgid "inspect the resulting pseudotime plot and trajectory graph,"
+msgstr ""
+"inspecionar o gráfico de pseudotempo e o gráfico de trajetória resultantes;"
+
+#: ../../trajectory_inference.rst:37 e3be1417897d4ced8c88b14fae8af4a5
+msgid "export the trajectory object."
+msgstr "exporte o objeto de trajetória."
+
+#: ../../trajectory_inference.rst:44 4393a3ff51274827b09b90f429412888
+msgid "Trajectory Inference tab."
+msgstr "Guia Trajectory Inference."
+
+#: ../../trajectory_inference.rst:44 7b4fecf8b9ee4ac7b1852e0371c692f9
+msgid ""
+"Trajectory Inference tab. Upload a clustered Seurat RDS or provide a server "
+"path, pick **Slingshot**, **PAGA**, or **Monocle 3**, and set a root/start "
+"cluster before running inference."
+msgstr ""
+"Guia Trajectory Inference. Carregue um Seurat RDS agrupado ou forneça um "
+"caminho de servidor, escolha **Slingshot**, **PAGA** ou **Monocle 3** e "
+"defina um root/start cluster antes de executar a inferência."
+
+#: ../../trajectory_inference.rst:49 2ed476055def46db93cf04c4afcdd155
+msgid "Trajectory gene discovery"
+msgstr "Descoberta genética de trajetória"
+
+#: ../../trajectory_inference.rst:51 675831e8968345e880053bf278486ad4
+msgid ""
+"Each trajectory method exposes a gene-discovery workflow that matches the "
+"method's underlying model."
+msgstr ""
+"Cada método de trajetória expõe uma descoberta genética workflow que "
+"corresponde ao modelo subjacente do método."
+
+#: ../../trajectory_inference.rst:54 7e700a4594b542aab0b738599ac57d37
+msgid ""
+"For **Slingshot**, the Shiny workflow exposes three trajectory-DE engines:"
+msgstr ""
+"Para **Slingshot**, o Shiny workflow expõe três motores de trajetória-DE:"
+
+#: ../../trajectory_inference.rst:56 1bc15b6ce92d42009ed1ba8253090d83
+msgid ""
+"**PseudotimeDE-fast** (recommended default). Fast, well-suited to the "
+"Slingshot pseudotime produced by Asc-Seurat."
+msgstr ""
+"**PseudotimeDE-fast** (padrão recomendado). Rápido, adequado ao pseudotempo "
+"Slingshot produzido por Asc-Seurat."
+
+#: ../../trajectory_inference.rst:58 468a2f7f01b84a1391b12f2ed16e6bf4
+msgid ""
+"**scMaSigPro**. Polynomial-regression alternative; identifies genes that "
+"change significantly along pseudotime."
+msgstr ""
+"**scMaSigPro**. Alternativa de regressão polinomial; identifica genes que "
+"mudam significativamente ao longo do pseudotempo."
+
+#: ../../trajectory_inference.rst:60 ce1a45e2143f4aca9138842b04d1059e
+msgid ""
+"**tradeSeq**. More flexible but slower; the UI labels it as a long-runtime "
+"option and lets you tune the number of knots."
+msgstr ""
+"**tradeSeq**. Mais flexível, mas mais lento; a IU o rotula como uma opção de"
+" longo tempo de execução e permite ajustar o número de nós."
+
+#: ../../trajectory_inference.rst:63 ca72f85c27484a06b36d0abeb2d6f644
+msgid ""
+"Set the *Top genes to display/plot* control to limit how many top genes are "
+"shown in the displayed table and plots; all variable genes are tested "
+"regardless."
+msgstr ""
+"Defina o controle *Top genes to display/plot* para limitar quantos genes "
+"principais são mostrados na tabela e gráficos exibidos; todos os genes "
+"variáveis ​​são testados independentemente."
+
+#: ../../trajectory_inference.rst:67 b301ed8a6cc343f48987d37eeb854da7
+msgid ""
+"For **PAGA**, the workflow focuses on connected states rather than lineage-"
+"specific DE:"
+msgstr ""
+"Para **PAGA**, o workflow concentra-se em estados conectados em vez de DE "
+"específico da linhagem:"
+
+#: ../../trajectory_inference.rst:70 c34df6b4243647629075d77e4f569ced
+msgid ""
+"**Connected cluster markers** compares selected or top-connected PAGA "
+"cluster pairs with Seurat marker testing."
+msgstr ""
+"**Connected cluster markers** compara pares PAGA cluster selecionados ou "
+"conectados pela parte superior com testes de Seurat marker."
+
+#: ../../trajectory_inference.rst:72 bd9c30a618a04e7baf080ecc3078d094
+msgid ""
+"**Pseudotime-associated genes** ranks genes that vary along cells in the "
+"selected connected clusters."
+msgstr ""
+"**Genes associados a pseudotempo** classifica genes que variam ao longo das "
+"células nos clusters conectados selecionados."
+
+#: ../../trajectory_inference.rst:75 9662e9ef57164e7588a267afb8692ceb
+msgid ""
+"For **Monocle 3**, Asc-Seurat uses Monocle 3's graph-based test to rank "
+"genes that vary over the learned principal graph. The optional gene-module "
+"step groups significant trajectory-variable genes into modules."
+msgstr ""
+"Para **Monocle 3**, Asc-Seurat usa o teste baseado em gráfico de Monocle 3 "
+"para classificar genes que variam no gráfico principal aprendido. A etapa "
+"opcional do módulo genético agrupa genes significativos de trajetória "
+"variável em módulos."
+
+#: ../../trajectory_inference.rst:80 330512f2ba0f4c8b90302dbc452750eb
+msgid "Installing the Python and R dependencies"
+msgstr "Instalando as dependências Python e R"
+
+#: ../../trajectory_inference.rst:82 5be1473f46d54b579aa5da2e0426a978
+msgid ""
+"The Docker image bundles the trajectory and DE dependencies. The R package "
+"install also installs the required R trajectory packages; only the Python "
+"stack for PAGA is prepared separately:"
+msgstr ""
+"A imagem Docker agrupa a trajetória e as dependências DE. A instalação do "
+"pacote R também instala os pacotes de trajetória R necessários; apenas a "
+"pilha Python para PAGA é preparada separadamente:"
+
+#: ../../trajectory_inference.rst:86 38c17e0329254f8786ca71502d1f82e3
+msgid ""
+"**PAGA**: requires ``scanpy``. Run ``ascseurat::setup_paga()`` from R to "
+"verify or prepare the Python environment."
+msgstr ""
+"**PAGA**: requer ``scanpy``. Execute ``ascseurat::setup_paga()`` de R para "
+"verificar ou preparar o ambiente Python."
+
+#: ../../trajectory_inference.rst:88 dfd31fd7197f4c57a425081c0b59d0ad
+msgid ""
+"**Monocle 3**, **PseudotimeDE-fast**, **scMaSigPro**, and **tradeSeq** are "
+"declared as app runtime dependencies."
+msgstr ""
+"**Monocle 3**, **PseudotimeDE-fast**, **scMaSigPro** e **tradeSeq** são "
+"declarados como dependências de tempo de execução do aplicativo."

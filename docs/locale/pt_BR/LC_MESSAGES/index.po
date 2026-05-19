@@ -1,0 +1,192 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../index.rst:48
+msgid "General information"
+msgstr "Informações gerais"
+
+#: ../../index.rst:58
+msgid "Analysis of individual sample"
+msgstr "Análise de amostra individual"
+
+#: ../../index.rst:69
+msgid "Analysis of multiple samples"
+msgstr "Análise de múltiplas amostras"
+
+#: ../../index.rst:80
+msgid "Trajectory inference"
+msgstr "Trajectory inference"
+
+#: ../../index.rst:87
+msgid "Cell-type annotation"
+msgstr "Cell-type annotation"
+
+#: ../../index.rst:94
+msgid "Advanced plots"
+msgstr "Gráficos avançados"
+
+#: ../../index.rst:2 3400b8d1e14e41f29445245c82ddfe94
+msgid "Asc-Seurat documentation"
+msgstr "Documentação do Asc-Seurat"
+
+#: ../../index.rst:4 c674efe14d82412ca5ba7c325dbd7159
+msgid ""
+"**Asc-Seurat** is a web application for single-cell RNA-seq analysis, built "
+"around `Seurat v5 <https://satijalab.org/seurat/>`_. It walks you through "
+"the full scRNA-seq workflow — quality control, normalization, clustering, "
+"differential expression, trajectory inference, cell-type annotation, and "
+"publication-ready visualization — without writing any R code."
+msgstr ""
+"**Asc-Seurat** é uma aplicação web para análise de single-cell RNA-seq, "
+"construída em torno do `Seurat v5 <https://satijalab.org/seurat/>`_. Ela "
+"conduz o usuário por todo o scRNA-seq workflow — quality control, "
+"normalização, clustering, expressão diferencial, trajectory inference, cell-"
+"type annotation e visualização pronta para publicação — sem escrever código "
+"em R."
+
+#: ../../index.rst:11 0befc0dd70624a329fdbc7ae39ef8b9f
+msgid ""
+"This documentation covers Asc-Seurat **v3**, the current release. v3 builds "
+"on the original Asc-Seurat published in *BMC Bioinformatics* (2021) and "
+"keeps the same end-to-end click-driven workflow."
+msgstr ""
+"Esta documentação cobre o Asc-Seurat **v3**, a versão atual. A v3 se baseia "
+"no Asc-Seurat original publicado na *BMC Bioinformatics* (2021) e mantém o "
+"mesmo workflow end-to-end orientado por cliques."
+
+#: ../../index.rst:20 42c3829b7cae4e9bb842e828abb02d20
+#: 4e4017f8c8bd4000848f71341ceda280
+msgid "Asc-Seurat home screen."
+msgstr "Tela inicial do Asc-Seurat."
+
+#: ../../index.rst:23 0490427726fd48629d9bf1ddc5f8f59a
+msgid "What you can do with Asc-Seurat"
+msgstr "O que você pode fazer com o Asc-Seurat"
+
+#: ../../index.rst:25 ded96bdeb0324fe1834914487fb313f8
+msgid ""
+"**Load data from many formats** — 10X Genomics directories, 10X HDF5, "
+"CSV/TSV count matrices, AnnData (``.h5ad``), and existing Seurat objects."
+msgstr ""
+"**Carregar dados de vários formatos** — diretórios 10X Genomics, 10X HDF5, "
+"matrizes de contagem CSV/TSV, AnnData (``.h5ad``) e objetos Seurat "
+"existentes."
+
+#: ../../index.rst:26 1ab328e021904bd09a713855d6254294
+msgid ""
+"**Quality control and filtering** — interactive violin plots, per-cell "
+"metric thresholds, and optional doublet removal."
+msgstr ""
+"**Quality control e filtragem** — violin plots interativos, thresholds de "
+"métricas por célula e doublet removal opcional."
+
+#: ../../index.rst:27 55480b87017d4740a5dcc322267d88ae
+msgid ""
+"**Normalization and clustering** — ``LogNormalize`` or ``SCTransform``, UMAP"
+" and t-SNE embeddings, and an inline control to rename clusters with "
+"biological labels."
+msgstr ""
+"**Normalização e clustering** — ``LogNormalize`` ou ``SCTransform``, "
+"embeddings UMAP e t-SNE, e um controle inline para renomear clusters com "
+"rótulos biológicos."
+
+#: ../../index.rst:28 a423454d93134dc2931c3dce5ba1cd5e
+msgid ""
+"**Differential expression** — cluster markers, between-cluster DE, and "
+"between-sample DE for integrated datasets."
+msgstr ""
+"**Expressão diferencial** — cluster markers, DE entre clusters e DE entre "
+"amostras para datasets integrados."
+
+#: ../../index.rst:29 e09e11d49b0d458c921ef83ed2d98c11
+msgid ""
+"**Multi-sample integration** — declare samples inline, set per-sample QC, "
+"and integrate with RPCA (Seurat) or Harmony."
+msgstr ""
+"**Integração multi-sample** — declare amostras inline, defina QC por amostra"
+" e integre com RPCA (Seurat) ou Harmony."
+
+#: ../../index.rst:30 c3eaa7ff257b41fe8d412c9cdb8986e4
+msgid ""
+"**Trajectory inference** — three supported methods: Slingshot, PAGA, and "
+"Monocle 3, plus method-specific gene discovery."
+msgstr ""
+"**Trajectory inference** — três métodos suportados: Slingshot, PAGA e "
+"Monocle 3, além de descoberta de genes específica de cada método."
+
+#: ../../index.rst:31 7b1f1ea01cf0400687dcc77508376b42
+msgid ""
+"**Cell-type annotation** — automated labelling against reference atlases via"
+" SingleR."
+msgstr ""
+"**Cell-type annotation** — anotação automatizada usando atlas de referência "
+"via SingleR."
+
+#: ../../index.rst:32 09318751ffc147888b9c1dbacff0726a
+msgid ""
+"**Advanced plots** — stacked violin and multi-gene dot plots, with control "
+"over gene and cluster ordering."
+msgstr ""
+"**Gráficos avançados** — stacked violin plots e dot plots multi-gene, com "
+"controle sobre a ordem de genes e clusters."
+
+#: ../../index.rst:33 def298d7c4f4422eb6882028d88563ba
+msgid ""
+"**Per-gene plot bundles** — download a zipped collection of every plot for a"
+" selected gene in one click."
+msgstr ""
+"**Pacotes de plots por gene** — baixe uma coleção compactada com todos os "
+"plots de um gene selecionado em um clique."
+
+#: ../../index.rst:34 ba8043af2a8641b08177b3957ee8cdd5
+msgid ""
+"**Bookmarking and session reports** — capture an analysis state and "
+"reproduce or share it later."
+msgstr ""
+"**Bookmarks e relatórios de sessão** — capture um estado de análise e "
+"reproduza ou compartilhe depois."
+
+#: ../../index.rst:37 8bd00c3d570e49d19ab1b9a74f942229
+msgid "Where to start"
+msgstr "Por onde começar"
+
+#: ../../index.rst:39 dfa3573e7a2c498a8f14ad2238518ab1
+msgid ""
+"**First time?** Install Asc-Seurat (:ref:`installation`) and then follow the"
+" :ref:`getting_started` walkthrough. The built-in **Demo** tab auto-loads a "
+"2,000-cell PBMC dataset so you can try every step without supplying your own"
+" data."
+msgstr ""
+"**Primeira vez?** Instale o Asc-Seurat (:ref:`installation`) e depois siga o"
+" passo a passo em :ref:`getting_started`. A aba **Demo** carrega "
+"automaticamente um dataset PBMC com 2.000 células para você testar cada "
+"etapa sem fornecer seus próprios dados."
+
+#: ../../index.rst:43 3b1eebce40174de69d0a08a5f5ed95ea
+msgid ""
+"**Ready to load your data?** Jump to :ref:`Single-sample loading "
+"<loading_data>`, :ref:`Integration loading <loading_data_int>`, or "
+":doc:`trajectory_inference`."
+msgstr ""
+"**Pronto para carregar seus dados?** Vá para :ref:`carregamento de amostra "
+"única <loading_data>`, :ref:`carregamento para integração "
+"<loading_data_int>` ou :doc:`trajectory_inference`."

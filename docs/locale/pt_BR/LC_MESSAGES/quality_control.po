@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../quality_control.rst:5 16297af6cb3d4e7bb86360cbc5e0a797
+msgid "Quality control"
+msgstr "Quality control"
+
+#: ../../quality_control.rst:7 df1800401cb54698af880c1aa34a2723
+msgid ""
+"After loading a single-sample dataset, Asc-Seurat shows QC violin plots for:"
+msgstr ""
+"Depois de carregar uma amostra única dataset, Asc-Seurat mostra QC violin "
+"plots para:"
+
+#: ../../quality_control.rst:9 a95e2fb6001c4ca99da473c1976d820f
+msgid "``nFeature_RNA``: genes detected in each cell."
+msgstr "``nFeature_RNA``: genes detectados em cada célula."
+
+#: ../../quality_control.rst:10 cd142ab1dab74cf2a615be28ed193562
+msgid "``nCount_RNA``: molecules detected in each cell."
+msgstr "``nCount_RNA``: moléculas detectadas em cada célula."
+
+#: ../../quality_control.rst:11 cb861907c204453a8d9efdc6128e5ec0
+msgid ""
+"``percent.mt``: percentage of transcripts matching the mitochondrial "
+"pattern."
+msgstr ""
+"``percent.mt``: porcentagem de transcritos correspondentes ao padrão "
+"mitocondrial."
+
+#: ../../quality_control.rst:14 e4d8d8752e91403bb5d18396bd828951
+msgid "Filtering mode"
+msgstr "Modo de filtragem"
+
+#: ../../quality_control.rst:16 afc5ea9a82f9485dbb028a97bf5a1a95
+msgid "The filtering panel has two modes:"
+msgstr "O painel de filtragem possui dois modos:"
+
+#: ../../quality_control.rst:18 191dbd700bd148869d5322f5e8b1a710
+msgid ":guilabel:`No filtering` keeps all loaded cells for normalization."
+msgstr ""
+":guilabel:`No filtering` mantém todas as células carregadas para "
+"normalização."
+
+#: ../../quality_control.rst:19 45bfa3eb3b824a39bb105d0c1860bd66
+msgid ""
+":guilabel:`Use filtering thresholds` applies minimum genes, maximum genes, "
+"and maximum mitochondrial percentage cutoffs."
+msgstr ""
+":guilabel:`Use filtering thresholds` aplica genes mínimos, genes máximos e "
+"limites máximos de porcentagem mitocondrial."
+
+#: ../../quality_control.rst:22 504a498bd1c94310b28b6ca27ac94101
+msgid ""
+"The suggested threshold values are calculated from the loaded dataset as "
+"median plus or minus three median absolute deviations (MADs), with "
+"safeguards for valid ranges. These defaults are meant as a starting point, "
+"not a substitute for reviewing the violin plots."
+msgstr ""
+"Os valores limite sugeridos são calculados a partir do dataset carregado "
+"como mediana mais ou menos três desvios absolutos medianos (MADs), com "
+"salvaguardas para intervalos válidos. Esses padrões são um ponto de partida "
+"e não um substituto para a revisão das tramas do violino."
+
+#: ../../quality_control.rst:28 5cddf3b1fe34416aa3559d90aa9d8579
+msgid "Doublet removal"
+msgstr "Remoção de dupleto"
+
+#: ../../quality_control.rst:30 6b2d18093e404faf9af9d53a5d78bc13
+msgid ""
+"Doublet detection is independent from metric filtering. The "
+":guilabel:`Detect and remove doublets (scDblFinder)` checkbox is available "
+"in both filtering modes:"
+msgstr ""
+"A detecção de dupletos é independente da filtragem métrica. A caixa de "
+"seleção:guilabel:`Detect and remove doublets (scDblFinder)` está disponível "
+"em ambos os modos de filtragem:"
+
+#: ../../quality_control.rst:34 0508ecefb4e94732a7635c28e70d2b8c
+msgid ""
+"With :guilabel:`No filtering`, Asc-Seurat keeps all cells except predicted "
+"doublets when the checkbox is enabled and :guilabel:`Apply Filters` is run."
+msgstr ""
+"Com:guilabel:`No filtering`, Asc-Seurat mantém todas as células, exceto o "
+"previsto doublets quando a caixa de seleção está habilitada "
+"e:guilabel:`Apply Filters` é executado."
+
+#: ../../quality_control.rst:36 00a9087ddf7743faaf143c9673bffd7a
+msgid ""
+"With :guilabel:`Use filtering thresholds`, Asc-Seurat first applies the QC "
+"thresholds and then removes predicted doublets if requested."
+msgstr ""
+"Com:guilabel:`Use filtering thresholds`, Asc-Seurat primeiro aplica os "
+"limites de QC e depois remove o doublets previsto, se solicitado."
+
+#: ../../quality_control.rst:39 df7640e96877467d8f6c671eedc60e4c
+msgid ""
+"If doublet removal is not selected and :guilabel:`No filtering` is active, "
+"you can proceed directly to :guilabel:`Run Normalization + PCA`."
+msgstr ""
+"Se doublet removal não estiver selecionado e:guilabel:`No filtering` estiver"
+" ativo, você pode prosseguir diretamente para:guilabel:`Run Normalization + "
+"PCA`."
+
+#: ../../quality_control.rst:43 09b361b2c1ec4734ad5a79e250a6ee5e
+msgid "Downloads"
+msgstr "Transferências"
+
+#: ../../quality_control.rst:45 b64b0fcb224746708201703779f5d474
+msgid ""
+"Plot download controls are collapsed by default. Expand :guilabel:`Download "
+"options` to choose size, resolution, and file type."
+msgstr ""
+"Os controles de download de plotagem são recolhidos por padrão. "
+"Expanda:guilabel:`Download options` para escolher tamanho, resolução e tipo "
+"de arquivo."

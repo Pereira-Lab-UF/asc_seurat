@@ -1,0 +1,72 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../packages_version.rst:7 ea0433c5df8f4babb7d31aae52536725
+msgid "Session information"
+msgstr "Informações da sessão"
+
+#: ../../packages_version.rst:9 1ded3b3252f9407f9b12e28982ae10c6
+msgid ""
+"All R-package dependencies for the current Asc-Seurat release are declared "
+"in ``DESCRIPTION``. Follow the upstream `BPCells R installation instructions"
+" <https://github.com/bnprks/BPCells#r-installation>`_ first so the HDF5 "
+"system dependency is available, then install ``BPCells`` before installing "
+"Asc-Seurat:"
+msgstr ""
+"Todas as dependências do pacote R para a versão atual do Asc-Seurat são "
+"declaradas em ``DESCRIPTION``. Siga o `BPCells R installation instructions "
+"<https://github.com/bnprks/BPCells#r-installation>`_ do upstream primeiro "
+"para que a dependência do sistema HDF5 esteja disponível e, em seguida, "
+"instale ``BPCells`` antes de instalar Asc-Seurat:"
+
+#: ../../packages_version.rst:24 f107053dab704c82af35bf97facb9cb5
+msgid ""
+"This explicit ``BPCells`` step avoids a known ``pak`` failure with the "
+"GitHub sub-directory package used by BPCells. The explicit ``dependencies`` "
+"value installs every package declared as an app runtime dependency in "
+"``DESCRIPTION``, including ``PseudotimeDE``; it avoids only developer, "
+"documentation, and test-only packages. On macOS, ``PseudotimeDE`` requires "
+"the official R GNU Fortran toolchain from `R for macOS tools "
+"<https://mac.r-project.org/tools/>`_."
+msgstr ""
+"Esta etapa ``BPCells`` explícita evita uma falha conhecida de ``pak`` com o "
+"pacote de subdiretório GitHub usado por BPCells. O valor ``dependencies`` "
+"explícito instala todos os pacotes declarados como dependência de tempo de "
+"execução do aplicativo em ``DESCRIPTION``, incluindo ``PseudotimeDE``; evita"
+" apenas pacotes de desenvolvedor, documentação e somente testes. Em macOS, "
+"``PseudotimeDE`` requer o conjunto de ferramentas oficial R GNU Fortran de "
+"`R for macOS tools <https://mac.r-project.org/tools/>`_."
+
+#: ../../packages_version.rst:32 9bfc32a865a840709f8f2bb58ebcdcd4
+msgid ""
+"To capture the exact versions on your machine for a methods section or a bug"
+" report, run ``sessionInfo()`` after launching the app:"
+msgstr ""
+"Para capturar as versões exatas em sua máquina para uma seção de métodos ou "
+"um relatório de bug, execute ``sessionInfo()`` após iniciar o aplicativo:"
+
+#: ../../packages_version.rst:41 54d8264c6a3449cb89b506425763382b
+msgid ""
+"See :doc:`references` for the list of packages Asc-Seurat directly calls."
+msgstr ""
+"Veja :doc:`references` para a lista de pacotes chamados diretamente pelo "
+"Asc-Seurat."

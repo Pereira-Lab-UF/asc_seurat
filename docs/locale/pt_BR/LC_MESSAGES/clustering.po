@@ -1,0 +1,306 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../clustering.rst:5 9ee4e9a00f074743a686eb2b5540131b
+msgid "Clustering"
+msgstr "Clustering"
+
+#: ../../clustering.rst:7 93762d79a68c40989b696333c1e7b893
+msgid ""
+"After filtering the data to remove low-quality cells, Asc-Seurat v3 "
+"normalizes the object, runs PCA, clusters the cells, and builds the "
+"embeddings used for downstream interpretation. In the Single Sample workflow"
+" these actions are split across two cards:"
+msgstr ""
+"Depois de filtrar os dados para remover células de baixa qualidade, Asc-"
+"Seurat v3 normaliza o objeto, executa PCA, clusters as células e constrói os"
+" embeddings usados ​​para interpretação posterior. No Single Sample workflow"
+" essas ações são divididas em duas cartas:"
+
+#: ../../clustering.rst:12 9203c9be65d045fdbde0e0c886697fbe
+msgid ""
+"**Step 3: Normalization & PCA** prepares the object and creates the PCA "
+"elbow plot."
+msgstr ""
+"**Etapa 3: Normalização & PCA** prepara o objeto e cria o gráfico de "
+"cotovelo PCA."
+
+#: ../../clustering.rst:14 8a79cdffc8304c4096dbcdee031ebd18
+msgid ""
+"**Step 4: Clustering & Visualization** runs clustering and displays the "
+"UMAP/tSNE summaries."
+msgstr ""
+"**Etapa 4: Clustering e Visualização** executa clustering e exibe os resumos"
+" UMAP/tSNE."
+
+#: ../../clustering.rst:17 4515d8289e024ecd819b4cb34574c042
+msgid ""
+"After clustering, the Single Sample tab also lets you **rename clusters** "
+"directly from the UI. This is useful for assigning biological labels, such "
+"as ``T cells`` or ``B cells``, before moving on to differential expression "
+"and marker visualization."
+msgstr ""
+"Depois de clustering, a guia Single Sample também permite **renomear "
+"clusters** diretamente da UI. Isto é útil para atribuir rótulos biológicos, "
+"como ``T cells`` ou ``B cells``, antes de passar para a expressão "
+"diferencial e visualização marker."
+
+#: ../../clustering.rst:23 67144a9e59dc437eb945bf4a7f28ec7d
+msgid "Step 3: Normalization & PCA"
+msgstr "Etapa 3: Normalização e PCA"
+
+#: ../../clustering.rst:25 f1574d6a0d9b4fb79162c4f074661832
+msgid ""
+"The normalization card supports Seurat's `LogNormalize "
+"<https://satijalab.org/seurat/reference/LogNormalize.html>`_ workflow and "
+"`SCTransform v2 <https://satijalab.org/seurat/reference/SCTransform.html>`_."
+" Choose the method, set the number of variable features, optionally score "
+"cell cycle, and click :guilabel:`Run Normalization + PCA`."
+msgstr ""
+"O cartão de normalização suporta `LogNormalize "
+"<https://satijalab.org/seurat/reference/LogNormalize.html>`_ workflow e "
+"`SCTransform v2 <https://satijalab.org/seurat/reference/SCTransform.html>`_ "
+"de Seurat. Escolha o método, defina o número da variável features, "
+"opcionalmente marque cell cycle e clique em:guilabel:`Run Normalization + "
+"PCA`."
+
+#: ../../clustering.rst:36 b777bbe6f203468b8e52cded0853f94c
+msgid "Asc-Seurat v3 Step 3 controls for normalization and PCA."
+msgstr "Asc-Seurat v3 A etapa 3 controla a normalização e PCA."
+
+#: ../../clustering.rst:36 31ac3120c64f4257ba691c458cfe5293
+msgid ""
+"Step 3 combines normalization settings, optional cell-cycle scoring, and the"
+" command that runs PCA."
+msgstr ""
+"A etapa 3 combina configurações de normalização, pontuação opcional do ciclo"
+" celular e o comando que executa PCA."
+
+#: ../../clustering.rst:39 6b027251282e420facd4a0239f9dbba7
+msgid ""
+"For **LogNormalize**, the scale factor is shown directly in the "
+"Normalization card. The default ``10000`` is appropriate for most single-"
+"cell datasets, but it can be changed when needed. Asc-Seurat then calls "
+"Seurat's `FindVariableFeatures "
+"<https://satijalab.org/seurat/reference/FindVariableFeatures.html>`_ using "
+"the requested number of variable features."
+msgstr ""
+"Para **LogNormalize**, o fator de escala é mostrado diretamente no cartão "
+"Normalização. O padrão ``10000`` é apropriado para a maioria dos single-cell"
+" datasets, mas pode ser alterado quando necessário. Asc-Seurat então chama "
+"`FindVariableFeatures "
+"<https://satijalab.org/seurat/reference/FindVariableFeatures.html>`_ de "
+"Seurat usando o número solicitado da variável features."
+
+#: ../../clustering.rst:46 d018aebf643c46a39495c7cd519340d8
+msgid ""
+"For **SCTransform v2**, Asc-Seurat runs variance-stabilizing normalization "
+"and uses the requested number of variable features. When metadata columns "
+"are available, the interface also allows variables to be regressed out. If "
+"cell-cycle scoring is enabled, users can score human or mouse cell-cycle "
+"genes and optionally regress the scores during scaling."
+msgstr ""
+"Para **SCTransform v2**, Asc-Seurat executa a normalização de estabilização "
+"de variância e usa o número solicitado da variável features. Quando colunas "
+"metadata estão disponíveis, a interface também permite a regressão de "
+"variáveis. Se a pontuação do ciclo celular estiver habilitada, os usuários "
+"poderão pontuar genes do ciclo celular humano ou de camundongo e, "
+"opcionalmente, regredir as pontuações durante o dimensionamento."
+
+#: ../../clustering.rst:55 93815417a594487a87fffdab35801a52
+msgid ""
+"When SCTransform is selected, Asc-Seurat uses the ``SCT`` assay for PCA and "
+"clustering, while also preparing normalized ``RNA`` assay values for "
+"downstream differential expression and expression visualization."
+msgstr ""
+"Quando SCTransform é selecionado, Asc-Seurat usa ``SCT`` assay para PCA e "
+"clustering, ao mesmo tempo que prepara valores normalizados de ``RNA`` assay"
+" para expressão diferencial downstream e visualização de expressão."
+
+#: ../../clustering.rst:61 20e57e47cb094f01b4c7d3ac72f91037
+msgid "Choosing PCA dimensions"
+msgstr "Escolhendo dimensões PCA"
+
+#: ../../clustering.rst:63 e2260077e84840e38ca3a08e34714d31
+msgid ""
+"After :guilabel:`Run Normalization + PCA` completes, Asc-Seurat shows an "
+"elbow plot and a **PCA Dimensions** card in the same Step 3 section. Use the"
+" elbow plot to choose how many principal components should be used for "
+"clustering. The selected value is carried into Step 4."
+msgstr ""
+"Após a conclusão de:guilabel:`Run Normalization + PCA`, Asc-Seurat mostra um"
+" gráfico de cotovelo e um cartão **PCA Dimensions** na mesma seção da Etapa "
+"3. Use o gráfico de cotovelo para escolher quantos componentes principais "
+"devem ser usados ​​para clustering. O valor selecionado é levado para a "
+"Etapa 4."
+
+#: ../../clustering.rst:73 3f8b7ce71fdd446a84f5122705d06daf
+msgid "Asc-Seurat v3 PCA elbow plot and PC selection card."
+msgstr "Asc-Seurat v3 PCA gráfico de cotovelo e cartão de seleção de PC."
+
+#: ../../clustering.rst:73 285857a3f7c149aebf0f17ec888a7b48
+msgid ""
+"The elbow plot helps identify a reasonable number of PCs for the clustering "
+"step. The demo dataset shown here uses the default value of ``30`` PCs."
+msgstr ""
+"O gráfico do cotovelo ajuda a identificar um número razoável de PCs para a "
+"etapa clustering. A demonstração dataset mostrada aqui usa o valor padrão de"
+" ``30`` PCs."
+
+#: ../../clustering.rst:78 c8e311ae68dd4233abc7483240555dba
+msgid "Step 4: Clustering & Visualization"
+msgstr "Etapa 4: clustering e visualização"
+
+#: ../../clustering.rst:80 ba5711210fed429b90f5355b36a93cff
+msgid ""
+"The clustering card uses the selected PCs from Step 3. Set the **Clustering "
+"resolution** and click :guilabel:`Run Clustering`. Internally, Asc-Seurat "
+"uses Seurat's `FindNeighbors "
+"<https://satijalab.org/seurat/reference/FindNeighbors.html>`_, `FindClusters"
+" <https://satijalab.org/seurat/reference/FindClusters.html>`_, and "
+"dimensionality-reduction plotting functions."
+msgstr ""
+"O cartão clustering usa o PCs selecionado na Etapa 3. Defina **Clustering "
+"resolution** e clique em:guilabel:`Run Clustering`. Internamente, Asc-Seurat"
+" usa `FindNeighbors "
+"<https://satijalab.org/seurat/reference/FindNeighbors.html>`_, `FindClusters"
+" <https://satijalab.org/seurat/reference/FindClusters.html>`_ e funções de "
+"plotagem de redução de dimensionalidade de Seurat."
+
+#: ../../clustering.rst:87 e2dd8c122f1a43a8bab1d0c1e148cfe0
+msgid ""
+"Resolution controls the number of clusters. Larger values generally split "
+"cells into more clusters; smaller values merge them into broader groups. For"
+" datasets of a few thousand cells, values around ``0.4`` to ``1.2`` are "
+"common starting points, but the best value depends on the biological "
+"question and marker-gene interpretation."
+msgstr ""
+"A resolução controla o número de clusters. Valores maiores geralmente "
+"dividem as células em mais clusters; valores menores os fundem em grupos "
+"mais amplos. Para datasets de alguns milhares de células, valores em torno "
+"de ``0.4`` a ``1.2`` são pontos de partida comuns, mas o melhor valor "
+"depende da questão biológica e da interpretação do gene marcador."
+
+#: ../../clustering.rst:95 604619ad38fa47359f34fa5df9571b8e
+msgid ""
+"There is no single optimal resolution. Try a small set of values and "
+"evaluate whether known marker genes, expected cell states, and downstream "
+"differential expression agree with the resulting cluster structure."
+msgstr ""
+"Não existe uma única resolução ideal. Experimente um pequeno conjunto de "
+"valores e avalie se os genes marcadores conhecidos, os estados celulares "
+"esperados e a expressão diferencial a jusante concordam com a estrutura "
+"cluster resultante."
+
+#: ../../clustering.rst:100 4e499a4c03434231a662de5dacd84fd7
+msgid ""
+"After clustering, the Single Sample workflow displays a UMAP plot and a tSNE"
+" plot colored by cluster."
+msgstr ""
+"Após clustering, o Single Sample workflow exibe um gráfico UMAP e um gráfico"
+" tSNE colorido por cluster."
+
+#: ../../clustering.rst:108 e98618b08a3d40d98a7467d231ba065d
+msgid "Asc-Seurat v3 UMAP and tSNE cluster visualizations."
+msgstr "Visualizações Asc-Seurat v3 UMAP e tSNE cluster."
+
+#: ../../clustering.rst:108 64e3b3b3a2d84cc3aede684a410f6a45
+msgid ""
+"UMAP and tSNE plots generated from the Asc-Seurat v3 demo dataset after "
+"normalization and clustering."
+msgstr ""
+"Gráficos UMAP e tSNE gerados a partir da demonstração Asc-Seurat v3 dataset "
+"após normalização e clustering."
+
+#: ../../clustering.rst:111 095d7f70786a447b80f2f1abd68ad16c
+msgid ""
+"Asc-Seurat also reports the number of cells assigned to each cluster. The "
+"clustered object can be downloaded from the same section, and plot download "
+"controls are available for exported figures."
+msgstr ""
+"Asc-Seurat também informa o número de células atribuídas a cada cluster. O "
+"objeto com clustering pode ser baixado da mesma seção, e controles de "
+"download de plotagem estão disponíveis para figuras exportadas."
+
+#: ../../clustering.rst:116 995662323d2c4c73b00371084998e9b5
+msgid "Renaming clusters"
+msgstr "Renomeando clusters"
+
+#: ../../clustering.rst:118 952c4905dcbe4f1db8aba016c082bed2
+msgid ""
+"Once clustering has completed, expand **Rename clusters (optional)** to "
+"replace numeric cluster IDs with biological labels. Click :guilabel:`Apply "
+"New Names` to update the cluster identities stored in the active object."
+msgstr ""
+"Assim que clustering for concluído, expanda **Rename clusters (optional)** "
+"para substituir IDs numéricos de cluster por rótulos biológicos. Clique "
+"em:guilabel:`Apply New Names` para atualizar as identidades cluster "
+"armazenadas no objeto ativo."
+
+#: ../../clustering.rst:126 9ce82cf839f64a48a7be1852b3ae0cac
+msgid "Selecting clusters of interest"
+msgstr "Selecionando clusters de interesse"
+
+#: ../../clustering.rst:128 d93ce769d0b147098b0417936dd273b1
+msgid ""
+"The **Cluster Selection / Exclusion (optional)** card can be used to keep or"
+" remove specific clusters before continuing with downstream analysis. Enable"
+" **Reanalyze subset?**, choose whether to **Select** or **Exclude** "
+"clusters, and click :guilabel:`Reanalyze Subset`."
+msgstr ""
+"O cartão **Cluster Selection / Exclusion (optional)** pode ser usado para "
+"manter ou remover clusters específicos antes de continuar com a análise "
+"posterior. Habilite **Reanalyze subset?**, escolha se deseja **Selecionar** "
+"ou **Excluir** clusters e clique em:guilabel:`Reanalyze Subset`."
+
+#: ../../clustering.rst:133 574adfc346b14a9eb1738f9059455242
+msgid ""
+"When **Recompute PCA and clusters** is selected, Asc-Seurat creates a new "
+"subset object, recomputes normalization and PCA, and shows an updated elbow "
+"plot. Review the new elbow plot, keep or adjust the number of PCs in Step 3,"
+" and click :guilabel:`Run Clustering` again."
+msgstr ""
+"Quando **Recompute PCA and clusters** é selecionado, Asc-Seurat cria um novo"
+" objeto de subconjunto, recalcula a normalização e PCA e mostra um gráfico "
+"de cotovelo atualizado. Revise o novo gráfico de cotovelo, mantenha ou "
+"ajuste o número de PCs na Etapa 3 e clique em:guilabel:`Run Clustering` "
+"novamente."
+
+#: ../../clustering.rst:138 69f2fd9872b94f5db33ad2c18c344d28
+msgid ""
+"When **Keep current reduction and clusters** is selected, Asc-Seurat keeps "
+"the current embeddings and cluster labels for the selected subset. This is "
+"useful for quickly carrying a subset forward without rerunning the full "
+"clustering workflow."
+msgstr ""
+"Quando **Keep current reduction and clusters** é selecionado, Asc-Seurat "
+"mantém os embeddings atuais e os rótulos cluster para o subconjunto "
+"selecionado. Isso é útil para transportar rapidamente um subconjunto sem "
+"executar novamente o clustering workflow completo."
+
+#: ../../clustering.rst:145 b9227e2c5bf44f91a2e45f7d7a2c220d
+msgid ""
+"Cluster numbering can change after selecting or excluding clusters, "
+"especially when PCA and clustering are recomputed for the subset."
+msgstr ""
+"A numeração do cluster pode mudar após selecionar ou excluir clusters, "
+"especialmente quando PCA e clustering são recalculados para o subconjunto."

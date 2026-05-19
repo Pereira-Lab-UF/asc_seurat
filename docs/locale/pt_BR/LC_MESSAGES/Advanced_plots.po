@@ -1,0 +1,142 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../Advanced_plots.rst:5 7f30420f51a94a029a3609703c20253f
+msgid "Advanced plots"
+msgstr "Gráficos avançados"
+
+#: ../../Advanced_plots.rst:7 2327d6086b7c4cbaa24349a324140046
+msgid ""
+"The **Advanced Plots** tool visualizes multiple genes at once from a "
+"clustered Seurat object. It can use an uploaded RDS file, the current Single"
+" Sample object, or the current Integration object."
+msgstr ""
+"A ferramenta **Advanced Plots** visualiza vários genes de uma só vez a "
+"partir de um objeto Seurat agrupado. Ele pode usar um arquivo RDS carregado,"
+" o objeto Single Sample atual ou o objeto Integration atual."
+
+#: ../../Advanced_plots.rst:16 09756b26745e413082c1f84d56eab137
+msgid "Advanced Plots tab."
+msgstr "Guia Advanced Plots."
+
+#: ../../Advanced_plots.rst:16 bd295081a1c9478bbff67a05fcdb0727
+msgid ""
+"Advanced Plots tab. Choose the data source, upload a gene list, pick stacked"
+" violin or multi-gene dot plot, and configure download settings."
+msgstr ""
+"Guia Advanced Plots. Escolha a fonte de dados, carregue uma lista de genes, "
+"escolha um violino empilhado ou um dot plot multi-gene e defina as "
+"configurações de download."
+
+#: ../../Advanced_plots.rst:20 a8d46fad2e0f4fd5b235875ab3af7248
+msgid ""
+"The expression visualization tools (:ref:`single sample "
+"<expression_visualization>`, :ref:`integrated "
+"<expression_visualization_int>`) focus on the standard Step 6 / Step 4 "
+"workflow. The **Advanced Plots** tab complements those modules by plotting "
+"many marker genes in one stacked violin plot or one multi-gene dot plot."
+msgstr ""
+"As ferramentas de visualização de expressão (:ref:`amostra única "
+"<expression_visualization>`, :ref:`integrada "
+"<expression_visualization_int>`) focam no workflow padrão da Etapa 6 / Etapa"
+" 4. A aba **Advanced Plots** complementa esses módulos plotando muitos genes"
+" marcadores em um stacked violin plot ou em um dot plot multi-gene."
+
+#: ../../Advanced_plots.rst:28 9ffde1c7a905443d985a3c4f09d07dd9
+msgid "Gene list format"
+msgstr "Formato da lista de genes"
+
+#: ../../Advanced_plots.rst:30 709253a4340943cfa6d1049bf2f4efec
+msgid ""
+"Upload a CSV or TSV marker-gene file. The first column should contain gene "
+"IDs. A second column is optional and can be used as a grouping variable when"
+" organizing the gene list. The tool keeps only genes that are present in the"
+" selected Seurat object."
+msgstr ""
+"Carregue um arquivo CSV ou TSV marker-gene. A primeira coluna deve conter "
+"IDs de genes. Uma segunda coluna é opcional e pode ser usada como variável "
+"de agrupamento ao organizar a lista de genes. A ferramenta mantém apenas os "
+"genes que estão presentes nos objeto Seurat selecionados."
+
+#: ../../Advanced_plots.rst:35 fdcc05421fde44038a45070185bf3d82
+msgid ""
+"Use **Genes to plot** to include all matching genes or only the first ``N`` "
+"genes from the uploaded file. After the first plot is generated, the "
+"ordering panel lets you adjust the display order of genes and clusters "
+"before regenerating the plot."
+msgstr ""
+"Use **Genes to plot** para incluir todos os genes correspondentes ou apenas "
+"os primeiros ``N`` genes do arquivo carregado. Após a geração do primeiro "
+"gráfico, o painel de ordenação permite ajustar a ordem de exibição dos genes"
+" e clusters antes de regenerar o gráfico."
+
+#: ../../Advanced_plots.rst:41 4fdd8ab2c14d493399dd05206ef68c54
+msgid "Stacked violin plot"
+msgstr "Stacked violin plot"
+
+#: ../../Advanced_plots.rst:43 be37d3243a4d439ba1260df86a261308
+msgid ""
+"Stacked violin plots show the distribution of expression for several genes "
+"across clusters in a compact vertical layout. Asc-Seurat builds this plot "
+"with ``scCustomize::Stacked_VlnPlot``."
+msgstr ""
+"Violin plots empilhados mostram a distribuição de expressão de vários genes "
+"em clusters em um layout vertical compacto. Asc-Seurat constrói este gráfico"
+" com ``scCustomize::Stacked_VlnPlot``."
+
+#: ../../Advanced_plots.rst:52 a69784027ff6423aa7058e1d410db1ba
+msgid "Asc-Seurat v3 stacked violin plot."
+msgstr "Stacked violin plot do Asc-Seurat v3."
+
+#: ../../Advanced_plots.rst:52 ca345b3c0a554b538ec7218b93dfa7bc
+msgid ""
+"Stacked violin plot generated from the Asc-Seurat v3 demo clustered PBMC "
+"object using common marker genes."
+msgstr ""
+"Violin plot empilhado gerado a partir do objeto PBMC com clustering de "
+"demonstração Asc-Seurat v3 usando genes marcadores comuns."
+
+#: ../../Advanced_plots.rst:56 eb009b2d09844e2c88a6226dab14c56a
+msgid "Multi-gene dot plot"
+msgstr "Dot plot multi-gene"
+
+#: ../../Advanced_plots.rst:58 b04bb105fd734933a2e1e459c35155f2
+msgid ""
+"The multi-gene dot plot summarizes the same gene set by average expression "
+"and the percentage of cells expressing each gene in each cluster. Asc-Seurat"
+" builds this plot with ``scCustomize::DotPlot_scCustom``."
+msgstr ""
+"O dot plot multi-gene resume o mesmo gene definido pela expressão média e a "
+"porcentagem de células que expressam cada gene em cada cluster. Asc-Seurat "
+"constrói este gráfico com ``scCustomize::DotPlot_scCustom``."
+
+#: ../../Advanced_plots.rst:68 d07848dc1d8f49b1a868e2dbd4b3637b
+msgid "Asc-Seurat v3 multi-gene dot plot."
+msgstr "Dot plot multi-gene do Asc-Seurat v3."
+
+#: ../../Advanced_plots.rst:68 15178baa8b034721a0e93c3e358370b6
+msgid ""
+"Multi-gene dot plot generated from the same marker list and demo clustered "
+"PBMC object."
+msgstr ""
+"Dot plot multi-gene gerado a partir da mesma lista marker e objeto PBMC com "
+"clustering de demonstração."

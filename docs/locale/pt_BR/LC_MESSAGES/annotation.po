@@ -1,0 +1,56 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../annotation.rst:2 415420149aab484db5b62017f3cc1bb8
+msgid "Cell-type annotation"
+msgstr "Cell-type annotation"
+
+#: ../../annotation.rst:4 f8eff701731347879352ecc05d8ded12
+msgid ""
+"Asc-Seurat provides **automated cell-type annotation** via `SingleR "
+"<https://bioconductor.org/packages/release/bioc/html/SingleR.html>`_. Use "
+"the **Cell-type Annotation** entry under *Tools* to run SingleR against a "
+"``celldex`` reference atlas and attach predicted cell-type labels to the "
+"clustered object. The module works on objects produced by the Single Sample "
+"or Integration tabs, or on processed Seurat RDS files uploaded directly."
+msgstr ""
+"Asc-Seurat fornece **anotação cell-type automatizada** via `SingleR "
+"<https://bioconductor.org/packages/release/bioc/html/SingleR.html>`_. Use a "
+"entrada **Cell-type Annotation** em *Tools* para executar SingleR em um "
+"atlas de referência ``celldex`` e anexar rótulos previstos de cell-type ao "
+"objeto com clustering. O módulo funciona em objetos produzidos pelas guias "
+"Single Sample ou Integration, ou em arquivos processados ​​Seurat RDS "
+"carregados diretamente."
+
+#: ../../annotation.rst:17 468959b726cd427c8c0f098f1967291f
+msgid "Cell-type Annotation tab (SingleR)."
+msgstr "Guia Cell-type Annotation (SingleR)."
+
+#: ../../annotation.rst:17 258fddb3752246b19b3e23389e7aba9a
+msgid ""
+"Cell-type Annotation tab. Point it at a processed Seurat object (from the "
+"Single Sample or Integration tab, or uploaded as RDS), choose a ``celldex`` "
+"reference atlas, and pick main or fine labels."
+msgstr ""
+"Cell-type Annotation guia. Aponte-o para um objeto Seurat processado (da "
+"guia Single Sample ou Integration, ou carregado como RDS), escolha um atlas "
+"de referência ``celldex`` e escolha rótulos principais ou finos."

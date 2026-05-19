@@ -1,0 +1,126 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../expression_visualization.rst:5 fd542ba356c64882ae7934d1e97a8e2a
+msgid "Expression visualization"
+msgstr "Visualização de expressão"
+
+#: ../../expression_visualization.rst:7 0535b6bfe06e4525b4cf8a71ed27f3f1
+msgid ""
+"Step 6 visualizes marker genes on the clustered object. Genes can come from "
+"an uploaded marker list or from the de novo marker genes detected in Step 5."
+msgstr ""
+"A etapa 6 visualiza genes marcadores no objeto com clustering. Os genes "
+"podem vir de uma lista marker carregada ou dos genes marcadores de novo "
+"detectados na Etapa 5."
+
+#: ../../expression_visualization.rst:11 3e674563bd5143f5af583c308b516d98
+msgid "Gene sources"
+msgstr "Fontes genéticas"
+
+#: ../../expression_visualization.rst:13 67025976647145c186744c3e9c832eb0
+msgid ""
+"Use :guilabel:`Upload file` for a custom list. The file may be CSV or TSV "
+"and should contain one gene per row. A second column is optional and is used"
+" as a gene group selector."
+msgstr ""
+"Use:guilabel:`Upload file` para uma lista personalizada. O arquivo pode ser "
+"CSV ou TSV e deve conter um gene por linha. Uma segunda coluna é opcional e "
+"é usada como seletor de grupo de genes."
+
+#: ../../expression_visualization.rst:17 affdcc4af94047928022bd9f4de5e604
+msgid ""
+"Use :guilabel:`Use de novo marker genes detected in Step 5` to pull genes "
+"directly from the differential-expression table. Choose the cluster and the "
+"number of top genes to visualize; genes are ranked by adjusted p-value."
+msgstr ""
+"Use:guilabel:`Use de novo marker genes detected in Step 5` para extrair "
+"genes diretamente da tabela de expressão diferencial. Escolha o cluster e o "
+"número de genes principais para visualizar; os genes são classificados pelo "
+"valor p ajustado."
+
+#: ../../expression_visualization.rst:22 549d24eb3fb040a9a169a0452041208e
+msgid "Expression values"
+msgstr "Valores de expressão"
+
+#: ../../expression_visualization.rst:24 6de911c289024a7fb4beba65262be463
+msgid ""
+"The :guilabel:`Expression values` selector controls the layer used for the "
+"clustered dot plot, feature plots, violin plots, and per-gene bundle:"
+msgstr ""
+"O seletor:guilabel:`Expression values` controla a camada usada para o dot "
+"plot agrupados, feature plots, violin plots e pacote por gene:"
+
+#: ../../expression_visualization.rst:27 146edc3b42674f09b2f47442b894368a
+msgid ":guilabel:`Counts` uses raw counts."
+msgstr ":guilabel:`Counts` usa counts bruto."
+
+#: ../../expression_visualization.rst:28 d57fe7110af44676941e335e51b40fff
+msgid ":guilabel:`Normalized` uses normalized expression."
+msgstr ":guilabel:`Normalized` usa expressão normalizada."
+
+#: ../../expression_visualization.rst:29 37d47c9aa6af4422b5dd6d9e3871751a
+msgid ""
+":guilabel:`Scaled` uses scaled expression. If a selected gene was not "
+"already present in ``scale.data``, Asc-Seurat scales the selected genes on "
+"demand for plotting."
+msgstr ""
+":guilabel:`Scaled` usa expressão em escala. Se um gene selecionado ainda não"
+" estiver presente em ``scale.data``, Asc-Seurat dimensiona os genes "
+"selecionados sob demanda para plotagem."
+
+#: ../../expression_visualization.rst:34 36abef92920c4ffaad11d7eb39fc0159
+msgid "Plots"
+msgstr "Gráficos"
+
+#: ../../expression_visualization.rst:36 d2cc7566c5ff436fb4f7746e43846218
+msgid "Click :guilabel:`Show Expression Plots` to generate:"
+msgstr "Clique:guilabel:`Show Expression Plots` para gerar:"
+
+#: ../../expression_visualization.rst:38 f555def2c48a4769a43eb4b0cf38dd6d
+msgid ""
+"a clustered dot plot showing mean expression by cluster and percent of cells"
+" expressing each gene;"
+msgstr ""
+"um dot plot agrupados mostrando a expressão média por cluster e a "
+"porcentagem de células que expressam cada gene;"
+
+#: ../../expression_visualization.rst:40 de520cb8e7454dcb8a51f5e974bba3c0
+msgid "UMAP feature plots for the selected genes;"
+msgstr "UMAP feature gráficos para os genes selecionados;"
+
+#: ../../expression_visualization.rst:41 7b79edb6c5d0475587f99fef58f4d21e
+msgid "violin plots by cluster;"
+msgstr "violin plots por cluster;"
+
+#: ../../expression_visualization.rst:42 7aa804f959f845afb15e61e1a5c2742f
+msgid "an optional per-gene zip bundle."
+msgstr "um pacote zip opcional por gene."
+
+#: ../../expression_visualization.rst:44 1da0262c076a493eab4295a67ae45106
+msgid ""
+"Download controls are collapsed by default. Expand :guilabel:`Download "
+"options` to choose plot size, resolution, and file type."
+msgstr ""
+"Os controles de download são recolhidos por padrão. "
+"Expanda:guilabel:`Download options` para escolher o tamanho do gráfico, "
+"resolução e tipo de arquivo."

@@ -1,0 +1,212 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) Asc-Seurat, 2021. Pereira WJ, Almeida FM, Balmant KM,
+# Rodriguez DC, Triozzi PM, Schmidt HW, Dervinis C, Pappas Jr. GJ, Kirst M
+# This file is distributed under the same license as the Asc-Seurat:
+# Analytical single-cell Seurat-based web application package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Asc-Seurat: Analytical single-cell Seurat-based web application 3.0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 12:49-0400\n"
+"PO-Revision-Date: 2026-05-19 13:00-0400\n"
+"Last-Translator: Codex machine draft <noreply@example.com>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../getting_started.rst:5 438d33444f5a4e9bb782af208caae9d3
+msgid "Getting started"
+msgstr "Começando"
+
+#: ../../getting_started.rst:7 c4613b2b57c74bb1a76c66c0f8468271
+msgid ""
+"The fastest way to evaluate Asc-Seurat is to use the built-in **Demo** tab, "
+"which auto-loads a small PBMC dataset and lets you walk through the whole "
+"single-sample workflow without supplying any data of your own."
+msgstr ""
+"A maneira mais rápida de avaliar Asc-Seurat é usar a guia integrada "
+"**Demo**, que carrega automaticamente um pequeno PBMC dataset e permite "
+"percorrer toda a amostra única workflow sem fornecer quaisquer dados "
+"próprios."
+
+#: ../../getting_started.rst:12 b9a4b1f0143b4ba1bf04f4c769bd5145
+msgid "Launching the app"
+msgstr "Iniciando o aplicativo"
+
+#: ../../getting_started.rst:14 4392d0273fee4e3283c10ddc8c439d1c
+msgid "If you installed the R package:"
+msgstr "Se você instalou o pacote R:"
+
+#: ../../getting_started.rst:20 b7057e12f9574d639b911d8e1bec9356
+msgid "If you are using the Docker image:"
+msgstr "Se você estiver usando a imagem Docker:"
+
+#: ../../getting_started.rst:27 0afb4df726514d918900fdb5ade14a44
+msgid "then open ``http://localhost:3838`` in a browser."
+msgstr "em seguida, abra ``http://localhost:3838`` em um navegador."
+
+#: ../../getting_started.rst:29 37b2c5d75f1d432a8f75a302aebe8527
+msgid ""
+"For your own data, launch Docker from the folder that contains the data and "
+"mount that folder into the app:"
+msgstr ""
+"Para seus próprios dados, inicie Docker da pasta que contém os dados e monte"
+" essa pasta no aplicativo:"
+
+#: ../../getting_started.rst:39 4e3731e833ae4da29fdac31339f41832
+msgid ""
+"Then use paths such as ``data/sample/filtered_feature_bc_matrix`` in the "
+"app. See :ref:`installation` for additional mount examples."
+msgstr ""
+"Depois, use caminhos como ``data/sample/filtered_feature_bc_matrix`` no app."
+" Consulte :ref:`installation` para exemplos adicionais de montagem."
+
+#: ../../getting_started.rst:47 6d46ea9b71694f1d95268dddc00f9507
+msgid "Asc-Seurat home screen."
+msgstr "Tela inicial do Asc-Seurat."
+
+#: ../../getting_started.rst:47 61a82f166eda44229f7dfaa596058fe0
+msgid ""
+"The home screen. Click **Try it with Demo Data** or use the top navigation "
+"to jump straight to a workflow."
+msgstr ""
+"A tela inicial. Clique em **Try it with Demo Data** ou use a navegação "
+"superior para ir direto para workflow."
+
+#: ../../getting_started.rst:51 44dde64eb77c44ecb7ec4738f94eab20
+msgid "The Demo tab"
+msgstr "A guia Demo"
+
+#: ../../getting_started.rst:53 db4ee78f6ac84a5497a36828e03208c6
+msgid ""
+"The **Demo** tab auto-loads a 2,000-cell subset of the PBMC 3k reference "
+"dataset that ships with the package. It is the recommended starting point "
+"for first-time users: the dataset is small enough to finish every step in a "
+"few minutes while still exercising QC, normalization, clustering, "
+"differential expression, and visualization."
+msgstr ""
+"A guia **Demo** carrega automaticamente um subconjunto de 2.000 células da "
+"referência PBMC 3k dataset que acompanha o pacote. É o ponto de partida "
+"recomendado para usuários iniciantes: o dataset é pequeno o suficiente para "
+"terminar cada etapa em poucos minutos enquanto ainda exercita QC, "
+"normalização, clustering, expressão diferencial e visualização."
+
+#: ../../getting_started.rst:59 551ccc75492c489886ad9551b3bd1ee6
+msgid "Suggested first run:"
+msgstr "Primeira execução sugerida:"
+
+#: ../../getting_started.rst:61 09b5980af4ee48a5b8d6f11da6d692e6
+msgid "Open the app."
+msgstr "Abra o aplicativo."
+
+#: ../../getting_started.rst:62 008809b8d86a4a5ca8afac5f381df8ab
+msgid ""
+"Click **Try it with Demo Data** on the home page (or the **Demo** tab in the"
+" navigation bar). The PBMC object is loaded automatically."
+msgstr ""
+"Clique em **Try it with Demo Data** na página inicial (ou na guia **Demo** "
+"na barra de navegação). O objeto PBMC é carregado automaticamente."
+
+#: ../../getting_started.rst:64 88035f93c2fd4215b616d95933258cbc
+msgid ""
+"Step through QC, Normalize & Cluster, and DE / Visualization with the "
+"default settings."
+msgstr ""
+"Percorra QC, Normalizar e agrupar e DE/Visualização com as configurações "
+"padrão."
+
+#: ../../getting_started.rst:66 3ca29b3ec92a4452981d66b919e8c5fd
+msgid ""
+"From the DE results table, send a gene set directly into the visualization "
+"module to inspect markers without re-importing a CSV."
+msgstr ""
+"A partir da tabela de resultados DE, envie um conjunto de genes diretamente "
+"para o módulo de visualização para inspecionar markers sem reimportar um "
+"CSV."
+
+#: ../../getting_started.rst:74 25a49a8662f4407faf344375b37fcfbf
+msgid "Demo tab with example dataset loaded."
+msgstr "Aba Demo com exemplo dataset carregado."
+
+#: ../../getting_started.rst:74 d684eea956f540ea9a48ddd743439189
+msgid ""
+"The Demo tab. The example dataset is auto-loaded and every step (Load, QC, "
+"Normalize & Cluster, Explore) is available in a single scroll."
+msgstr ""
+"A guia Demo. O exemplo dataset é carregado automaticamente e cada etapa "
+"(Carregar, QC, Normalizar e agrupar, Explorar) está disponível em uma única "
+"rolagem."
+
+#: ../../getting_started.rst:79 d494489d3ebf486ab65dafacd6eb7071
+msgid "Top-level navigation"
+msgstr "Navegação de nível superior"
+
+#: ../../getting_started.rst:81 8e64b4b2c7134faab18a7a00a8770c29
+msgid "The navigation bar groups the workflows into:"
+msgstr "A barra de navegação agrupa os workflows em:"
+
+#: ../../getting_started.rst:83 1d9dfa00695844edaacedf5c85c13930
+msgid "**Home** — landing page with the Demo button and a quick-start guide."
+msgstr ""
+"**Home** — página inicial com o botão Demo e um guia de início rápido."
+
+#: ../../getting_started.rst:84 930f6accc1c44870ad59fa911f3a4001
+msgid "**Single Sample** — load, QC, cluster, and explore one sample."
+msgstr "**Single Sample** — carregue, QC, cluster e explore uma amostra."
+
+#: ../../getting_started.rst:85 6064704c466548e7ac3c17466d9456e5
+msgid ""
+"**Integration** — declare multiple samples inline, set per-sample QC, and "
+"integrate with RPCA or Harmony."
+msgstr ""
+"**Integration** — declarar múltiplas amostras em linha, definir QC por "
+"amostra e integrar com RPCA ou Harmony."
+
+#: ../../getting_started.rst:87 784442baaadb44f6a54d5d2fadda946b
+msgid "**Trajectory Inference** — Slingshot, PAGA, and Monocle 3 in one tab."
+msgstr "**Trajectory Inference** — Slingshot, PAGA e Monocle 3 em uma guia."
+
+#: ../../getting_started.rst:89 ca3b5627ecd74538a973a364a101de96
+msgid ""
+"**Tools** (dropdown) — Cell-type Annotation (SingleR) and Advanced Plots "
+"(stacked violin / multi-gene dot plot)."
+msgstr ""
+"**Tools** (menu suspenso) — Cell-type Annotation (SingleR) e Advanced Plots "
+"(violino empilhado / dot plot multi-gene)."
+
+#: ../../getting_started.rst:91 9914243b1de245e1bd87defe3e5b5d93
+msgid "**Demo** — the auto-loaded PBMC walkthrough described above."
+msgstr ""
+"**Demo** — o passo a passo PBMC carregado automaticamente descrito acima."
+
+#: ../../getting_started.rst:94 991236495874482881a5f985a4be8a68
+msgid "Working with your own data"
+msgstr "Trabalhando com seus próprios dados"
+
+#: ../../getting_started.rst:96 b82396e19b2a4ed58f2ad0bc95f18c58
+msgid "Once you are comfortable with the demo, load your own dataset:"
+msgstr ""
+"Quando estiver confortável com a demonstração, carregue seu próprio dataset:"
+
+#: ../../getting_started.rst:98 b8e3c28a895b4380b8b4c51414697c96
+msgid "For **a single sample**, see :ref:`loading_data`."
+msgstr "Para **uma amostra única**, consulte :ref:`loading_data`."
+
+#: ../../getting_started.rst:99 5c240d4ca04f4775b9d64e8c0115f495
+msgid "For **multiple samples (integration)**, see :ref:`loading_data_int`."
+msgstr ""
+"Para **múltiplas amostras (integração)**, consulte :ref:`loading_data_int`."
+
+#: ../../getting_started.rst:100 058d3317653345a486c9525c38ad2551
+msgid "For **trajectory inference**, see :ref:`trajectory_inference`."
+msgstr "Para **trajectory inference**, consulte :ref:`trajectory_inference`."
+
+#: ../../getting_started.rst:101 d966d4371aea4821bfd733141ad86518
+msgid "For **cell-type annotation**, see :doc:`annotation`."
+msgstr "Para **cell-type annotation**, consulte :doc:`annotation`."
