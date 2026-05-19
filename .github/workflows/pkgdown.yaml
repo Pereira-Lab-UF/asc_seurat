@@ -45,7 +45,9 @@ jobs:
         env:
           BPCELLS_REF: adc4a3c30f60a03522f58947d733d7d77a6eb2cf
         run: |
-          options(timeout = 600, repos = c(CRAN = "https://cran.rstudio.com"))
+          cran <- Sys.getenv("RSPM", "https://packagemanager.posit.co/cran/__linux__/noble/latest")
+          if (!nzchar(cran)) cran <- "https://packagemanager.posit.co/cran/__linux__/noble/latest"
+          options(timeout = 600, repos = c(CRAN = cran))
           for (attempt in seq_len(5)) {
             try(install.packages("remotes", repos = getOption("repos")), silent = TRUE)
             if (requireNamespace("remotes", quietly = TRUE)) break
