@@ -1,3 +1,11 @@
+# ascseurat 3.0.6
+
+## Install and distribution
+
+* ARM64 Docker builds now switch Ubuntu ports package sources to an HTTPS
+  mirror before `apt-get update`, avoiding release failures when
+  `ports.ubuntu.com` is unreachable over plain HTTP on GitHub runners.
+
 # ascseurat 3.0.5
 
 ## Install and distribution

@@ -4,12 +4,15 @@ ARG TARGETARCH
 
 LABEL maintainer="Felipe Marques de Almeida <almeidafmarques@outlook.com>"
 LABEL description="Asc-Seurat v3: Interactive scRNA-seq analysis"
-LABEL version="3.0.5"
+LABEL version="3.0.6"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV RETICULATE_PYTHON=/opt/venv/bin/python
 
 RUN set -eux; \
+    if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+        find /etc/apt -type f \( -name '*.list' -o -name '*.sources' \) -exec sed -i 's|http://ports.ubuntu.com/ubuntu-ports|https://mirrors.mit.edu/ubuntu-ports/ubuntu-ports|g; s|https://ports.ubuntu.com/ubuntu-ports|https://mirrors.mit.edu/ubuntu-ports/ubuntu-ports|g' {} +; \
+    fi; \
     for attempt in 1 2 3 4 5; do \
         apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update \
         && apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y --no-install-recommends \
@@ -118,6 +121,9 @@ ENV RETICULATE_PYTHON=/opt/venv/bin/python
 # libtiff6, libx11-6, libxml2) ship in rocker/r-ver:4.5.3 already and are
 # not listed here. Everything below is added on top of that base.
 RUN set -eux; \
+    if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+        find /etc/apt -type f \( -name '*.list' -o -name '*.sources' \) -exec sed -i 's|http://ports.ubuntu.com/ubuntu-ports|https://mirrors.mit.edu/ubuntu-ports/ubuntu-ports|g; s|https://ports.ubuntu.com/ubuntu-ports|https://mirrors.mit.edu/ubuntu-ports/ubuntu-ports|g' {} +; \
+    fi; \
     for attempt in 1 2 3 4 5; do \
         apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update \
         && apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y --no-install-recommends \
