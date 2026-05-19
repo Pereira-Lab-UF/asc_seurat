@@ -69,7 +69,7 @@ Recommended for users who already work in R and want a lighter install than the 
 
 From inside an R or R Studio session:
 
-Install the HDF5 system dependency first:
+Follow the upstream [BPCells R installation instructions](https://github.com/bnprks/BPCells#r-installation) first. In particular, install the HDF5 system dependency before installing BPCells:
 
 ```bash
 # Ubuntu/Debian
@@ -85,7 +85,7 @@ remotes::install_github("bnprks/BPCells/r", upgrade = "never")
 pak::pkg_install("Pereira-Lab-UF/asc_seurat", dependencies = TRUE)
 ```
 
-The middle line pre-installs [BPCells](https://github.com/bnprks/BPCells) (a hard dependency of `monocle3`) via `remotes`, which works around a known `pak` issue with GitHub sub-directory packages. If BPCells still fails through `remotes`, install it from [R-universe](https://bnprks.r-universe.dev/BPCells) before running `pak::pkg_install()`:
+The middle line pre-installs [BPCells](https://github.com/bnprks/BPCells#r-installation) (a hard dependency of `monocle3`) via `remotes`, which works around a known `pak` issue with GitHub sub-directory packages. If BPCells still fails through `remotes`, install it from [R-universe](https://bnprks.r-universe.dev/BPCells) before running `pak::pkg_install()`:
 
 ```r
 install.packages("BPCells", repos = c("https://bnprks.r-universe.dev", "https://cloud.r-project.org"))

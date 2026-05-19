@@ -34,7 +34,9 @@ Requires **R ≥ 4.3.0** and Rstudio is recommended.
 
 From inside an R session:
 
-Install the HDF5 system dependency first if it is not already present:
+Follow the upstream `BPCells R installation instructions <https://github.com/bnprks/BPCells#r-installation>`_
+first. In particular, install the HDF5 system dependency before installing
+``BPCells``:
 
 .. code-block:: bash
 

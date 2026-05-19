@@ -7,8 +7,10 @@ Session information
 *******************
 
 All R-package dependencies for the current Asc-Seurat release are
-declared in ``DESCRIPTION``. Install ``BPCells`` first, then install
-Asc-Seurat:
+declared in ``DESCRIPTION``. Follow the upstream
+`BPCells R installation instructions <https://github.com/bnprks/BPCells#r-installation>`_
+first so the HDF5 system dependency is available, then install
+``BPCells`` before installing Asc-Seurat:
 
 .. code-block:: r
 
