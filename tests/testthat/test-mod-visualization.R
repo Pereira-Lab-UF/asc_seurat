@@ -17,3 +17,22 @@ test_that("clustered expression dot plot is generated from selected layer", {
 
     expect_s3_class(plot, "ggplot")
 })
+
+test_that("clustered expression dot plot can split clusters by sample", {
+    obj <- suppressWarnings(clustered_fixture())
+    obj$samples <- rep(c("sample_A", "sample_B"), length.out = ncol(obj))
+    genes <- head(rownames(obj), 5)
+
+    expect_identical(ascseurat:::visualization_sample_col(obj), "samples")
+    plot <- ascseurat:::clustered_expression_dot_plot(
+        obj,
+        genes,
+        "data",
+        sample_col = "samples"
+    )
+
+    split_labels <- levels(plot$data$cluster)
+    expect_true(any(grepl("sample_A", split_labels, fixed = TRUE)))
+    expect_true(any(grepl("sample_B", split_labels, fixed = TRUE)))
+    expect_identical(plot$labels$x, "Cluster | Sample")
+})

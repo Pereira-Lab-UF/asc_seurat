@@ -33,14 +33,7 @@ mod_data_loading_ui <- function(id, demo_mode = FALSE) {
                                       "Path to 10X data directory:",
                                       value = "data/",
                                       placeholder = "e.g., /path/to/sample/filtered_feature_bc_matrix"),
-                            tags$p(
-                                class = "text-muted small mb-0",
-                                "Relative paths start from ",
-                                tags$code(current_workdir),
-                                ". In Docker, launch with a bind mount such as ",
-                                tags$code('-v "$HOME:$HOME:ro"'),
-                                " before entering host paths."
-                            )
+                            data_path_help(current_workdir)
                         )
                     )
                 ),
@@ -208,7 +201,7 @@ mod_data_loading_server <- function(id, trigger_demo = NULL) {
                             paste0(
                                 "10X data directory not found: ", path,
                                 ". Relative paths start from: ", ascseurat_workdir(),
-                                ". In Docker, launch with a bind mount such as -v \"$HOME:$HOME:ro\" before entering host paths."
+                                ". In Docker, confirm that the host data folder was mounted and use a container-visible path such as data/sample_name."
                             ),
                             type = "error",
                             duration = 14

@@ -1,3 +1,69 @@
+#' Explain how Docker data paths map into the app.
+#'
+#' @param workdir Character. The app working directory used for relative paths.
+#' @return A Shiny UI fragment.
+#' @keywords internal
+data_path_help <- function(workdir = ascseurat_workdir()) {
+    tagList(
+        tags$div(
+            class = "alert alert-warning asc-path-mount-note",
+            icon("circle-info", class = "me-1"),
+            tags$strong("Docker path note: "),
+            "The app can only read folders that were mounted when Docker started. ",
+            "A path on your computer is not automatically visible inside the container. ",
+            "For mounted data, enter a path such as ",
+            tags$code("data/sample_name"),
+            "."
+        ),
+        tags$details(
+            class = "asc-collapse-panel asc-path-help",
+            tags$summary(
+                class = "asc-collapse-summary",
+                icon("terminal", class = "me-2"),
+                "Show Docker path setup"
+            ),
+            tags$div(
+                class = "asc-collapse-body",
+                tags$p(
+                    "Start Docker from the folder that contains your sample folders:"
+                ),
+                tags$pre(
+                    tags$code(
+                        paste(
+                            'cd "/path/to/folder/that/contains/your/data"',
+                            "docker run --rm -p 3838:3838 \\",
+                            '  -v "$PWD:/home/ascseurat/data:ro" \\',
+                            "  pereiralabbio/asc-seurat:3",
+                            sep = "\\n"
+                        )
+                    )
+                ),
+                tags$p(
+                    "Then enter paths relative to the app, for example ",
+                    tags$code("data/sample_name"),
+                    ". Each sample path should point to its own 10X folder containing ",
+                    tags$code("matrix.mtx"),
+                    ", ",
+                    tags$code("barcodes.tsv"),
+                    ", and ",
+                    tags$code("genes.tsv"),
+                    " or ",
+                    tags$code("features.tsv"),
+                    "."
+                ),
+                tags$p(
+                    class = "text-muted small mb-0",
+                    "Relative paths start from ",
+                    tags$code(workdir),
+                    ". To use normal host paths instead, mount your home directory at the same path with ",
+                    tags$code('-v "$HOME:$HOME:ro"'),
+                    "."
+                )
+            )
+        )
+    )
+}
+
 #' Numeric Input for Plot Height
 #' @param id Input ID.
 #' @param value Default value in cm.

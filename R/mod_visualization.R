@@ -59,7 +59,37 @@ fetch_expression_layer <- function(obj, genes, layer = "data") {
     mat
 }
 
-clustered_expression_dot_plot <- function(obj, genes, layer = "data") {
+visualization_sample_col <- function(obj) {
+    candidates <- c("samples", "sample_name", "orig.ident")
+    metadata <- obj@meta.data
+
+    for (candidate in candidates) {
+        if (!candidate %in% colnames(metadata)) {
+            next
+        }
+        values <- as.character(metadata[[candidate]])
+        values <- values[!is.na(values) & nzchar(values)]
+        if (length(unique(values)) > 1L) {
+            return(candidate)
+        }
+    }
+
+    NULL
+}
+
+visualization_sample_values <- function(obj, sample_col) {
+    if (is.null(sample_col) || !sample_col %in% colnames(obj@meta.data)) {
+        return(NULL)
+    }
+
+    values <- as.character(obj@meta.data[[sample_col]])
+    names(values) <- rownames(obj@meta.data)
+    values[is.na(values) | !nzchar(values)] <- "Unknown"
+    values
+}
+
+clustered_expression_dot_plot <- function(obj, genes, layer = "data",
+                                           sample_col = NULL) {
     obj <- ensure_expression_layer(obj, genes, layer)
     expr_mat <- fetch_expression_layer(obj, genes, layer)
     genes <- colnames(expr_mat)
@@ -88,19 +118,41 @@ clustered_expression_dot_plot <- function(obj, genes, layer = "data") {
         cluster_levels <- sort(unique(clusters))
     }
 
+    sample_values <- visualization_sample_values(obj, sample_col)
+    if (!is.null(sample_values)) {
+        sample_values <- sample_values[rownames(expr_mat)]
+        group_values <- paste(clusters, sample_values, sep = " | ")
+        sample_levels <- unique(sample_values)
+        group_levels <- as.vector(outer(
+            cluster_levels,
+            sample_levels,
+            paste,
+            sep = " | "
+        ))
+        group_levels <- group_levels[group_levels %in% group_values]
+        if (!length(group_levels)) {
+            group_levels <- unique(group_values)
+        }
+        x_label <- "Cluster | Sample"
+    } else {
+        group_values <- clusters
+        group_levels <- cluster_levels
+        x_label <- "Cluster"
+    }
+
     avg_mat <- vapply(
-        cluster_levels,
-        function(cluster) {
-            colMeans(expr_mat[clusters == cluster, , drop = FALSE], na.rm = TRUE)
+        group_levels,
+        function(group) {
+            colMeans(expr_mat[group_values == group, , drop = FALSE], na.rm = TRUE)
         },
         numeric(length(genes))
     )
     rownames(avg_mat) <- genes
 
     pct_mat <- vapply(
-        cluster_levels,
-        function(cluster) {
-            colMeans(pct_mat_source[clusters == cluster, , drop = FALSE] > 0,
+        group_levels,
+        function(group) {
+            colMeans(pct_mat_source[group_values == group, , drop = FALSE] > 0,
                      na.rm = TRUE) * 100
         },
         numeric(length(genes))
@@ -142,7 +194,7 @@ clustered_expression_dot_plot <- function(obj, genes, layer = "data") {
             name = "Percent expressing"
         ) +
         ggplot2::labs(
-            x = "Cluster",
+            x = x_label,
             y = NULL,
             color = paste0("Mean ", expression_layer_label(layer), " expression")
         ) +
@@ -254,6 +306,7 @@ mod_visualization_ui <- function(id, step_number = 6) {
                                                 "Normalized" = "data",
                                                  "Scaled" = "scale.data"),
                                  selected = "data"),
+                    uiOutput(ns("sample_split_ui")),
                     tags$hr(),
                     action_btn(ns("show_expression"), "Show Expression Plots",
                                icon = icon("chart-area")),
@@ -516,7 +569,32 @@ mod_visualization_server <- function(id,
             req(length(genes) > 0)
             list(
                 genes = genes,
-                slot = input$slot_selection %||% "data"
+                slot = input$slot_selection %||% "data",
+                split_by_sample = isTRUE(input$split_by_sample) &&
+                    !is.null(sample_split_col())
+            )
+        })
+
+        sample_split_col <- reactive({
+            req(expression_obj())
+            visualization_sample_col(expression_obj())
+        })
+
+        output$sample_split_ui <- renderUI({
+            sample_col <- sample_split_col()
+            if (is.null(sample_col)) {
+                return(NULL)
+            }
+            tagList(
+                checkboxInput(
+                    ns("split_by_sample"),
+                    "Split clusters by sample",
+                    value = FALSE
+                ),
+                tags$small(
+                    class = "text-muted d-block mt-1",
+                    "For integrated data, show each cluster separately for each sample."
+                )
             )
         })
 
@@ -528,6 +606,14 @@ mod_visualization_server <- function(id,
         requested_slot <- reactive({
             req(plot_request())
             plot_request()$slot
+        })
+
+        requested_sample_split_col <- reactive({
+            req(plot_request())
+            if (!isTRUE(plot_request()$split_by_sample)) {
+                return(NULL)
+            }
+            sample_split_col()
         })
 
         observeEvent(input$show_expression, {
@@ -583,7 +669,8 @@ mod_visualization_server <- function(id,
                 return(NULL)
             }
             changed <- !identical(current$genes, request$genes) ||
-                !identical(current$slot, request$slot)
+                !identical(current$slot, request$slot) ||
+                !identical(current$split_by_sample, request$split_by_sample)
             if (!changed) {
                 return(NULL)
             }
@@ -605,7 +692,8 @@ mod_visualization_server <- function(id,
                 plot <- clustered_expression_dot_plot(
                     obj = obj,
                     genes = genes,
-                    layer = requested_slot()
+                    layer = requested_slot(),
+                    sample_col = requested_sample_split_col()
                 )
                 setProgress(1)
                 plot
@@ -656,7 +744,7 @@ mod_visualization_server <- function(id,
                     genes,
                     requested_slot()
                 )
-                plot <- scCustomize::FeaturePlot_scCustom(
+                feature_args <- list(
                     seurat_object = plot_obj,
                     features = genes,
                     num_columns = min(4, max(1, length(genes))),
@@ -667,6 +755,10 @@ mod_visualization_server <- function(id,
                         1e-09
                     }
                 )
+                if (!is.null(requested_sample_split_col())) {
+                    feature_args[["split.by"]] <- requested_sample_split_col()
+                }
+                plot <- do.call(scCustomize::FeaturePlot_scCustom, feature_args)
                 setProgress(1)
                 plot
             })
@@ -700,12 +792,16 @@ mod_visualization_server <- function(id,
                     genes,
                     requested_slot()
                 )
-                plot <- scCustomize::VlnPlot_scCustom(
+                violin_args <- list(
                     seurat_object = plot_obj,
                     features = genes,
                     pt.size = 0.1,
                     layer = requested_slot()
                 )
+                if (!is.null(requested_sample_split_col())) {
+                    violin_args[["split.by"]] <- requested_sample_split_col()
+                }
+                plot <- do.call(scCustomize::VlnPlot_scCustom, violin_args)
                 setProgress(1)
                 plot
             })
@@ -755,7 +851,7 @@ mod_visualization_server <- function(id,
                     )
                     for (i in seq_along(genes)) {
                         gene <- genes[[i]]
-                        feature_single <- scCustomize::FeaturePlot_scCustom(
+                        feature_args <- list(
                             seurat_object = plot_obj,
                             features = gene,
                             slot = requested_slot(),
@@ -765,11 +861,26 @@ mod_visualization_server <- function(id,
                                 1e-09
                             }
                         )
-                        violin_single <- scCustomize::VlnPlot_scCustom(
+                        if (!is.null(requested_sample_split_col())) {
+                            feature_args[["split.by"]] <- requested_sample_split_col()
+                        }
+                        feature_single <- do.call(
+                            scCustomize::FeaturePlot_scCustom,
+                            feature_args
+                        )
+
+                        violin_args <- list(
                             seurat_object = plot_obj,
                             features = gene,
                             pt.size = 0.1,
                             layer = requested_slot()
+                        )
+                        if (!is.null(requested_sample_split_col())) {
+                            violin_args[["split.by"]] <- requested_sample_split_col()
+                        }
+                        violin_single <- do.call(
+                            scCustomize::VlnPlot_scCustom,
+                            violin_args
                         )
 
                         ggplot2::ggsave(

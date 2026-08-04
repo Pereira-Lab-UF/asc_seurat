@@ -20,18 +20,11 @@ mod_integration_ui <- function(id) {
                         "Before integration, inspect each sample individually to define QC parameters, ",
                         "or use samples that have already undergone quality control."
                     ),
+                    data_path_help(),
                     numericInput(ns("n_samples"),
                                  "Number of samples",
                                  value = 2, min = 1, max = 24, step = 1),
-                    uiOutput(ns("sample_table_ui")),
-                    tags$p(
-                        class = "text-muted small",
-                        "Relative paths start from ",
-                        tags$code(ascseurat_workdir()),
-                        ". In Docker, launch with a bind mount such as ",
-                        tags$code('-v "$HOME:$HOME:ro"'),
-                        " before entering host paths."
-                    )
+                    uiOutput(ns("sample_table_ui"))
                 )
             ),
             card(
@@ -330,6 +323,7 @@ mod_integration_server <- function(id) {
             stop(
                 "Data path(s) do not exist: ",
                 paste(details, collapse = "; "),
+                ". In Docker, confirm that the host data folder was mounted and use a container-visible path such as data/sample_name.",
                 call. = FALSE
             )
         }
