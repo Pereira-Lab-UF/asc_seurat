@@ -35,6 +35,10 @@ The *Load Data* card has three columns:
      tab-separated count matrix; first column is gene IDs, header is
      cell barcodes.
    - ``h5ad (AnnData)`` — AnnData file; loaded through ``anndataR``.
+     Raw counts are read from ``layers['counts']``,
+     ``layers['raw_counts']``, ``.raw``, or ``X``; files that contain
+     only normalized (non-integer) values are rejected with an
+     explanation.
    - ``Existing Seurat RDS`` — resume from a Seurat object saved
      earlier. Older Seurat objects are upgraded automatically via
      ``UpdateSeuratObject()``.

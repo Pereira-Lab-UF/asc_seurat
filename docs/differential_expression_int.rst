@@ -24,12 +24,20 @@ The integrated DE panel can:
 - find markers for one selected cluster;
 - compare two selected clusters;
 - test differential expression between conditions within a selected
-  cluster;
+  cluster, using any categorical metadata column (the sample column by
+  default);
 - find conserved markers across samples for a selected cluster.
 
 All modes share the statistical test selector, adjusted p-value cutoff,
 log2 fold-change threshold, minimum fraction of cells expressing the
 gene, and the option to return only positive markers.
+
+Conserved markers are tested separately within each group of the
+selected **Sample column**. They need a statistical test that reports
+p-values (any test except ``roc``) and at least three cells of the
+cluster in at least two groups. A gene is kept when its largest
+per-group adjusted p-value (column ``max_p_val_adj``) is below the
+adjusted p-value cutoff.
 
 .. figure:: images/v3/v3_de_int_all_clusters.png
    :alt: Asc-Seurat v3 integrated DE settings for all clusters.

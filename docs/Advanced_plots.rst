@@ -24,6 +24,12 @@ workflow. The **Advanced Plots** tab complements those modules by
 plotting many marker genes in one stacked violin plot or one
 multi-gene dot plot.
 
+The plots use normalized expression from the ``RNA`` assay. If that
+assay was never normalized (for example, an uploaded SCTransform object
+that kept only raw ``RNA`` counts), Asc-Seurat uses the ``SCT`` assay
+when it is available and otherwise log-normalizes the ``RNA`` assay for
+the plots; a notification says which was done.
+
 Gene list format
 ================
 

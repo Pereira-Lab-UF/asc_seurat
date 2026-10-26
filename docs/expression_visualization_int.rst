@@ -24,8 +24,9 @@ The :guilabel:`Expression values` selector controls all generated plots:
 
 * :guilabel:`Counts` uses raw counts.
 * :guilabel:`Normalized` uses normalized expression.
-* :guilabel:`Scaled` uses scaled expression and scales selected genes on demand
-  if they were not already present in ``scale.data``.
+* :guilabel:`Scaled` uses scaled expression. Selected genes that are not already
+  in ``scale.data`` are scaled on demand, so genes that were already scaled keep
+  their values.
 
 Plots
 =====

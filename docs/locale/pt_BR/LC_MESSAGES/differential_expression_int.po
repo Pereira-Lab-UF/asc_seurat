@@ -70,10 +70,12 @@ msgstr "compare dois clusters selecionados;"
 
 #: ../../differential_expression_int.rst:26 95636f1ddbbd4e4ab3cbff4acf085513
 msgid ""
-"test differential expression between conditions within a selected cluster;"
+"test differential expression between conditions within a selected cluster, "
+"using any categorical metadata column (the sample column by default);"
 msgstr ""
 "testar expressão diferencial entre condições dentro de um cluster "
-"selecionado;"
+"selecionado, usando qualquer coluna categórica de metadados (por padrão, a "
+"coluna de amostras);"
 
 #: ../../differential_expression_int.rst:28 165896918f4a479fbb2ce49bc461b75a
 msgid "find conserved markers across samples for a selected cluster."
@@ -88,6 +90,21 @@ msgstr ""
 "Todos os modos compartilham o seletor de teste estatístico, corte de valor p"
 " ajustado, limite de alteração de log2, fração mínima de células que "
 "expressam o gene e a opção de retornar apenas markers positivo."
+
+#: ../../differential_expression_int.rst:35 f598eb1088fb426982f92286a4769dc9
+msgid ""
+"Conserved markers are tested separately within each group of the selected "
+"**Sample column**. They need a statistical test that reports p-values (any "
+"test except ``roc``) and at least three cells of the cluster in at least two"
+" groups. A gene is kept when its largest per-group adjusted p-value (column "
+"``max_p_val_adj``) is below the adjusted p-value cutoff."
+msgstr ""
+"Os marcadores conservados são testados separadamente em cada grupo da "
+"**Sample column** selecionada. Eles exigem um teste estatístico que informe "
+"valores de p (qualquer teste exceto ``roc``) e pelo menos três células do "
+"cluster em pelo menos dois grupos. Um gene é mantido quando o maior valor de"
+" p ajustado entre os grupos (coluna ``max_p_val_adj``) fica abaixo do corte "
+"de valor de p ajustado."
 
 #: ../../differential_expression_int.rst:39 55758eea3c374dbfb591f0e48411d81b
 msgid "Asc-Seurat v3 integrated DE settings for all clusters."

@@ -50,6 +50,11 @@ be regressed out. If cell-cycle scoring is enabled, users can score
 human or mouse cell-cycle genes and optionally regress the scores during
 scaling.
 
+Settings that are hidden for the current choices are not applied: the
+variables to regress are used only with SCTransform, the scale factor
+only with LogNormalize, and cell-cycle regression only when **Score cell
+cycle** is checked.
+
 .. note::
 
    When SCTransform is selected, Asc-Seurat uses the ``SCT`` assay for
@@ -141,6 +146,12 @@ When **Keep current reduction and clusters** is selected, Asc-Seurat
 keeps the current embeddings and cluster labels for the selected subset.
 This is useful for quickly carrying a subset forward without rerunning
 the full clustering workflow.
+
+The subset must contain at least 10 cells. After a subset is reanalyzed
+with either option, later clicks on :guilabel:`Run Clustering`
+re-cluster that subset rather than the full dataset, until Step 3
+produces a new object (for example, when :guilabel:`Run Normalization +
+PCA` is run again).
 
 .. warning::
 

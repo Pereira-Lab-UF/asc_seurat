@@ -26,9 +26,9 @@ clustered dot plot, feature plots, violin plots, and per-gene bundle:
 
 * :guilabel:`Counts` uses raw counts.
 * :guilabel:`Normalized` uses normalized expression.
-* :guilabel:`Scaled` uses scaled expression. If a selected gene was not already
-  present in ``scale.data``, Asc-Seurat scales the selected genes on demand for
-  plotting.
+* :guilabel:`Scaled` uses scaled expression. Selected genes that are not already
+  in ``scale.data`` are scaled on demand, regressing out the same variables as
+  during normalization, so genes that were already scaled keep their values.
 
 Plots
 =====

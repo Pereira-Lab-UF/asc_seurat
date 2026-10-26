@@ -162,11 +162,13 @@ msgstr ""
 
 #: ../../loading_data_int.rst:64 1c24545a023547d3b233ae95744f76d6
 msgid ""
-"**Number of PCs**: principal components to use during integration (default "
-"``30``; range 5–100)."
+"**Number of PCs for integration**: principal components used by RPCA or "
+"Harmony (default ``30``; range 5–100). With Harmony, this is also the "
+"maximum number of PCs available for clustering."
 msgstr ""
-"**Number of PCs**: componentes principais a serem usados ​​durante a "
-"integração (padrão ``30``; faixa 5–100)."
+"**Number of PCs for integration**: componentes principais usados pelo RPCA "
+"ou pelo Harmony (padrão ``30``; faixa 5–100). Com Harmony, este também é o "
+"número máximo de PCs disponíveis para o clustering."
 
 #: ../../loading_data_int.rst:67 151b56820d9649b49a34c11d45548fc5
 msgid ""

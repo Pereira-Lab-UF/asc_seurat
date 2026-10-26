@@ -61,6 +61,21 @@ msgstr ""
 " 4. A aba **Advanced Plots** complementa esses módulos plotando muitos genes"
 " marcadores em um stacked violin plot ou em um dot plot multi-gene."
 
+#: ../../Advanced_plots.rst:27 4979bae5ee824237a748c835710e62f4
+msgid ""
+"The plots use normalized expression from the ``RNA`` assay. If that assay "
+"was never normalized (for example, an uploaded SCTransform object that kept "
+"only raw ``RNA`` counts), Asc-Seurat uses the ``SCT`` assay when it is "
+"available and otherwise log-normalizes the ``RNA`` assay for the plots; a "
+"notification says which was done."
+msgstr ""
+"Os gráficos usam a expressão normalizada do assay ``RNA``. Se esse assay "
+"nunca foi normalizado (por exemplo, um objeto SCTransform enviado que "
+"manteve apenas as contagens brutas de ``RNA``), Asc-Seurat usa o assay "
+"``SCT`` quando disponível e, caso contrário, aplica a log-normalização ao "
+"assay ``RNA`` para os gráficos; uma notificação informa qual opção foi "
+"usada."
+
 #: ../../Advanced_plots.rst:28 9ffde1c7a905443d985a3c4f09d07dd9
 msgid "Gene list format"
 msgstr "Formato da lista de genes"

@@ -61,8 +61,9 @@ In the *Integration Method* card:
 - **Method**: ``RPCA (Seurat v5)`` (default) or ``Harmony``.
 - **Normalization method**: ``LogNormalize (faster)`` (default) or
   ``SCTransform v2``.
-- **Number of PCs**: principal components to use during integration
-  (default ``30``; range 5–100).
+- **Number of PCs for integration**: principal components used by RPCA
+  or Harmony (default ``30``; range 5–100). With Harmony, this is also
+  the maximum number of PCs available for clustering.
 
 Click **Load & Integrate** to run the integration. The integrated
 object becomes available to the clustering, DE, and visualization

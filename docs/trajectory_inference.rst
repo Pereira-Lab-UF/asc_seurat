@@ -9,11 +9,16 @@ controls:
 - **Slingshot** (default) — fits lineages on the clustered UMAP
   embedding. Start and end clusters can guide lineage orientation, and
   the results include a compact minimum-spanning-tree graph of the
-  inferred cluster relationships.
+  inferred cluster relationships. The exported object stores one
+  ``pseudotime_PathN`` column per lineage, with ``NA`` for cells that
+  are not on that lineage.
 - **PAGA** — estimates connectivity between clusters and calculates
-  pseudotime from the selected root cluster.
+  pseudotime from the selected root cluster. It uses the same reduction
+  and number of dimensions as clustering (for example, Harmony or RPCA
+  after integration).
 - **Monocle 3** — learns a Monocle 3 principal graph on the existing
-  UMAP and orders cells from the selected root cluster.
+  UMAP and orders cells from the principal-graph node closest to most
+  cells of the selected root cluster.
 
 Running trajectory inference
 ----------------------------
@@ -53,12 +58,17 @@ method's underlying model.
 
 For **Slingshot**, the Shiny workflow exposes three trajectory-DE engines:
 
-- **PseudotimeDE-fast** (recommended default). Fast, well-suited to the
-  Slingshot pseudotime produced by Asc-Seurat.
+- **PseudotimeDE-fast** (recommended default). Fast; tests each
+  Slingshot lineage separately on the cells of that lineage. The
+  downloaded CSV has one row per gene and lineage with BH-adjusted
+  p-values, while the table and plots show each gene once, on its
+  best-ranked lineage.
 - **scMaSigPro**. Polynomial-regression alternative; identifies genes
   that change significantly along pseudotime.
 - **tradeSeq**. More flexible but slower; the UI labels it as a
-  long-runtime option and lets you tune the number of knots.
+  long-runtime option and lets you tune the number of knots. It reports
+  BH-adjusted p-values, computes library sizes from all genes, and uses
+  a fixed random seed, so repeated runs give the same result.
 
 Set the *Top genes to display/plot* control to limit how many top genes
 are shown in the displayed table and plots; all variable genes are
@@ -75,6 +85,10 @@ lineage-specific DE:
 For **Monocle 3**, Asc-Seurat uses Monocle 3's graph-based test to rank
 genes that vary over the learned principal graph. The optional gene-module
 step groups significant trajectory-variable genes into modules.
+
+Gene tables are ranked by significance; genes with equal adjusted
+p-values are ordered by effect size or test statistic instead of
+alphabetically.
 
 Installing the Python and R dependencies
 ----------------------------------------

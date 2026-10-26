@@ -93,9 +93,16 @@ msgstr ""
 " contém códigos de barras de células."
 
 #: ../../loading_data.rst:37 bbd55c2093014cb9af7b4b453cd52c5c
-msgid "``h5ad (AnnData)`` — AnnData file; loaded through ``anndataR``."
+msgid ""
+"``h5ad (AnnData)`` — AnnData file; loaded through ``anndataR``. Raw counts "
+"are read from ``layers['counts']``, ``layers['raw_counts']``, ``.raw``, or "
+"``X``; files that contain only normalized (non-integer) values are rejected "
+"with an explanation."
 msgstr ""
-"``h5ad (AnnData)`` — AnnData arquivo; carregado através de ``anndataR``."
+"``h5ad (AnnData)`` — arquivo AnnData; carregado através de ``anndataR``. As "
+"contagens brutas são lidas de ``layers['counts']``, "
+"``layers['raw_counts']``, ``.raw`` ou ``X``; arquivos que contêm apenas "
+"valores normalizados (não inteiros) são rejeitados com uma explicação."
 
 #: ../../loading_data.rst:38 44480c0b074e4bfcaf554f0da3404205
 msgid ""

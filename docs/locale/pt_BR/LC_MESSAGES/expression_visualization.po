@@ -80,13 +80,15 @@ msgstr ":guilabel:`Normalized` usa expressão normalizada."
 
 #: ../../expression_visualization.rst:29 37d47c9aa6af4422b5dd6d9e3871751a
 msgid ""
-":guilabel:`Scaled` uses scaled expression. If a selected gene was not "
-"already present in ``scale.data``, Asc-Seurat scales the selected genes on "
-"demand for plotting."
+":guilabel:`Scaled` uses scaled expression. Selected genes that are not "
+"already in ``scale.data`` are scaled on demand, regressing out the same "
+"variables as during normalization, so genes that were already scaled keep "
+"their values."
 msgstr ""
-":guilabel:`Scaled` usa expressão em escala. Se um gene selecionado ainda não"
-" estiver presente em ``scale.data``, Asc-Seurat dimensiona os genes "
-"selecionados sob demanda para plotagem."
+":guilabel:`Scaled` usa a expressão escalonada. Os genes selecionados que "
+"ainda não estão em ``scale.data`` são escalonados sob demanda, com regressão"
+" das mesmas variáveis usadas na normalização, de modo que os genes já "
+"escalonados mantêm seus valores."
 
 #: ../../expression_visualization.rst:34 36abef92920c4ffaad11d7eb39fc0159
 msgid "Plots"

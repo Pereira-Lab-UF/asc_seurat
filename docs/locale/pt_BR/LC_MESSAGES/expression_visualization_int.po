@@ -76,11 +76,13 @@ msgstr ":guilabel:`Normalized` usa expressão normalizada."
 
 #: ../../expression_visualization_int.rst:27 50390fcf9748439a8c4423907fbdfabd
 msgid ""
-":guilabel:`Scaled` uses scaled expression and scales selected genes on "
-"demand if they were not already present in ``scale.data``."
+":guilabel:`Scaled` uses scaled expression. Selected genes that are not "
+"already in ``scale.data`` are scaled on demand, so genes that were already "
+"scaled keep their values."
 msgstr ""
-":guilabel:`Scaled` usa expressão escalonada e dimensiona genes selecionados "
-"sob demanda, caso eles ainda não estivessem presentes em ``scale.data``."
+":guilabel:`Scaled` usa a expressão escalonada. Os genes selecionados que "
+"ainda não estão em ``scale.data`` são escalonados sob demanda, de modo que "
+"os genes já escalonados mantêm seus valores."
 
 #: ../../expression_visualization_int.rst:31 7b54be01051548bd8c0204112ef192bd
 msgid "Plots"
