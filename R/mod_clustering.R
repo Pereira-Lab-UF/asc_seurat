@@ -190,6 +190,10 @@ mod_clustering_server <- function(id, norm_result) {
         state_obj <- reactiveVal(NULL)
         pending_obj <- reactiveVal(NULL)
         pending_reanalysis <- reactiveVal(FALSE)
+        # Subset that later Run Clustering calls start from, until the
+        # upstream object changes.
+        subset_base <- reactiveVal(NULL)
+        min_subset_cells <- 10L
 
         sample_metadata_col <- function(obj) {
             candidates <- c("samples", "sample_name", "orig.ident")
@@ -245,8 +249,19 @@ mod_clustering_server <- function(id, norm_result) {
             if (!is.finite(available) || available < 1L) {
                 available <- requested
             }
+            available <- as.integer(available)
+            if (requested > available) {
+                showNotification(
+                    paste0(
+                        "Clustering used the ", available, " dimensions available in the '",
+                        reduction, "' reduction instead of the requested ", requested, "."
+                    ),
+                    type = "warning",
+                    duration = 8
+                )
+            }
 
-            max(1L, min(requested, as.integer(available)))
+            max(1L, min(requested, available))
         }
 
         normalization_method_for_subset <- function(obj) {
@@ -293,11 +308,16 @@ mod_clustering_server <- function(id, norm_result) {
             obj
         }
 
-        observeEvent(get_obj(), {
+        # NULL while the upstream is req()-blocked, so the reset also runs when
+        # the previous object stops being available.
+        upstream_obj <- reactive(tryCatch(get_obj(), error = function(e) NULL))
+
+        observeEvent(upstream_obj(), {
             state_obj(NULL)
             pending_obj(NULL)
+            subset_base(NULL)
             pending_reanalysis(FALSE)
-        }, ignoreInit = TRUE, ignoreNULL = TRUE)
+        }, ignoreInit = TRUE, ignoreNULL = FALSE)
 
         output$clustering_ready <- shiny::renderText({
             if (is.null(state_obj())) "false" else "true"
@@ -310,30 +330,39 @@ mod_clustering_server <- function(id, norm_result) {
         shiny::outputOptions(output, "reanalyze_pending", suspendWhenHidden = FALSE)
 
         observeEvent(input$run_clustering, {
-            obj_for_clustering <- pending_obj()
+            obj_for_clustering <- subset_base()
             if (is.null(obj_for_clustering)) {
                 obj_for_clustering <- get_obj()
             }
             req(obj_for_clustering)
 
-            withProgress(message = "Clustering...", value = 0.3, {
-                reduction <- default_reduction(obj_for_clustering)
-                n_dims <- selected_n_pcs(obj_for_clustering)
-                tsne_requested <- is_single_sample(obj_for_clustering) &&
-                    !isFALSE(input$run_tsne)
-                obj <- run_clustering(
-                    obj = obj_for_clustering,
-                    dims = seq_len(n_dims),
-                    resolution = input$resolution,
-                    run_tsne = tsne_requested,
-                    reduction = reduction
-                )
-                attr(obj, "ascseurat_clustering_n_pcs") <- n_dims
-                setProgress(1, message = "Clustering complete!")
-                state_obj(obj)
-                pending_obj(NULL)
-                pending_reanalysis(FALSE)
-            })
+            tryCatch(
+                withProgress(message = "Clustering...", value = 0.3, {
+                    reduction <- default_reduction(obj_for_clustering)
+                    n_dims <- selected_n_pcs(obj_for_clustering)
+                    tsne_requested <- is_single_sample(obj_for_clustering) &&
+                        !isFALSE(input$run_tsne)
+                    obj <- run_clustering(
+                        obj = obj_for_clustering,
+                        dims = seq_len(n_dims),
+                        resolution = input$resolution,
+                        run_tsne = tsne_requested,
+                        reduction = reduction
+                    )
+                    attr(obj, "ascseurat_clustering_n_pcs") <- n_dims
+                    setProgress(1, message = "Clustering complete!")
+                    state_obj(obj)
+                    pending_obj(NULL)
+                    pending_reanalysis(FALSE)
+                }),
+                error = function(e) {
+                    showNotification(
+                        paste0("Clustering failed: ", conditionMessage(e)),
+                        type = "error",
+                        duration = 12
+                    )
+                }
+            )
         })
 
         active_obj <- reactive({
@@ -353,56 +382,126 @@ mod_clustering_server <- function(id, norm_result) {
                 return(invisible(NULL))
             }
 
-            withProgress(message = "Reanalyzing subset...", value = 0.3, {
-                obj <- active_obj()
-
-                if (input$filter_mode == "select") {
-                    obj <- subset(obj, idents = selected)
-                } else {
-                    all_clusters <- levels(Idents(obj))
-                    keep <- setdiff(all_clusters, selected)
-                    obj <- subset(obj, idents = keep)
-                }
-
-                if (!ncol(obj)) {
-                    showNotification(
-                        "No cells remain after applying the requested subset operation.",
-                        type = "error",
-                        duration = 6
-                    )
-                    return(invisible(NULL))
-                }
-
-                if (identical(input$reanalyze_strategy, "keep")) {
-                    setProgress(1, message = "Subset kept with current clustering.")
-                    pending_obj(NULL)
-                    pending_reanalysis(FALSE)
-                    state_obj(obj)
-                    showNotification(
-                        "Subset updated with the current reductions and cluster labels.",
-                        type = "message",
-                        duration = 6
-                    )
-                    return(invisible(NULL))
-                }
-
-                setProgress(0.6, message = "Recomputing PCA for the subset...")
-                subset_obj <- prepare_subset_for_reclustering(obj)
-                subset_obj <- run_normalization(
-                    subset_obj,
-                    method = normalization_method_for_subset(subset_obj)
-                )
-
-                pending_obj(subset_obj)
-                pending_reanalysis(TRUE)
-                state_obj(NULL)
-                setProgress(1, message = "Subset PCA ready.")
+            obj <- active_obj()
+            in_selection <- as.character(Idents(obj)) %in% selected
+            keep_cells <- if (identical(input$filter_mode, "exclude")) {
+                !in_selection
+            } else {
+                in_selection
+            }
+            # Check the size first: subset() errors when no cells match.
+            n_subset <- sum(keep_cells)
+            if (n_subset < min_subset_cells) {
                 showNotification(
-                    "Subset PCA updated. Review the new elbow plot, then run clustering again using the Step 3 PC setting.",
-                    type = "message",
+                    if (n_subset == 0L) {
+                        "No cells remain after applying the requested subset operation."
+                    } else {
+                        paste0(
+                            "The requested subset has only ", n_subset,
+                            " cells; at least ", min_subset_cells,
+                            " cells are needed to reanalyze it."
+                        )
+                    },
+                    type = "error",
                     duration = 8
                 )
-            })
+                return(invisible(NULL))
+            }
+
+            tryCatch(
+                withProgress(message = "Reanalyzing subset...", value = 0.3, {
+                    obj <- subset(obj, cells = colnames(obj)[keep_cells])
+
+                    if (identical(input$reanalyze_strategy, "keep")) {
+                        setProgress(1, message = "Subset kept with current clustering.")
+                        pending_obj(NULL)
+                        pending_reanalysis(FALSE)
+                        subset_base(obj)
+                        state_obj(obj)
+                        showNotification(
+                            "Subset updated with the current reductions and cluster labels.",
+                            type = "message",
+                            duration = 6
+                        )
+                        return(invisible(NULL))
+                    }
+
+                    setProgress(0.6, message = "Recomputing PCA for the subset...")
+                    integration <- obj@misc$ascseurat_integration
+                    subset_obj <- prepare_subset_for_reclustering(obj)
+                    n_samples <- 0L
+                    if (!is.null(integration) &&
+                        integration$sample_col %in% colnames(subset_obj@meta.data)) {
+                        sample_values <- as.character(subset_obj@meta.data[[integration$sample_col]])
+                        n_samples <- length(unique(
+                            sample_values[!is.na(sample_values) & nzchar(sample_values)]
+                        ))
+                    }
+
+                    if (n_samples >= 2L) {
+                        setProgress(0.6, message = paste0(
+                            "Re-integrating the subset with ", integration$method, "..."
+                        ))
+                        subset_obj <- tryCatch(
+                            {
+                                # run_integration() expects v5 RNA layers split by
+                                # sample; v3 assays (e.g. Seurat v4 .rds) have no layers.
+                                if (inherits(subset_obj[["RNA"]], "StdAssay")) {
+                                    subset_obj[["RNA"]] <- split(
+                                        SeuratObject::JoinLayers(subset_obj[["RNA"]]),
+                                        f = subset_obj@meta.data[[integration$sample_col]]
+                                    )
+                                }
+                                run_integration(
+                                    subset_obj,
+                                    method = integration$method,
+                                    dims = integration$dims,
+                                    sample_col = integration$sample_col,
+                                    normalization_method = integration$normalization_method
+                                )
+                            },
+                            error = function(e) {
+                                stop(
+                                    "re-integration with ", integration$method, " failed (",
+                                    conditionMessage(e), "). Select more cells per sample, ",
+                                    "or keep the current reduction and clusters instead.",
+                                    call. = FALSE
+                                )
+                            }
+                        )
+                    } else {
+                        subset_obj <- run_normalization(
+                            subset_obj,
+                            method = normalization_method_for_subset(subset_obj)
+                        )
+                    }
+
+                    pending_obj(subset_obj)
+                    subset_base(subset_obj)
+                    pending_reanalysis(TRUE)
+                    state_obj(NULL)
+                    setProgress(1, message = "Subset PCA ready.")
+                    if (!is.null(integration) && n_samples < 2L) {
+                        showNotification(
+                            "Only one sample remains in the subset, so it was reprocessed without batch correction.",
+                            type = "warning",
+                            duration = 10
+                        )
+                    }
+                    showNotification(
+                        "Subset PCA updated. Review the new elbow plot, then run clustering again using the Step 3 PC setting.",
+                        type = "message",
+                        duration = 8
+                    )
+                }),
+                error = function(e) {
+                    showNotification(
+                        paste0("Subset reanalysis failed: ", conditionMessage(e)),
+                        type = "error",
+                        duration = 12
+                    )
+                }
+            )
         })
 
         observeEvent(input$apply_rename, {

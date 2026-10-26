@@ -38,7 +38,8 @@ run_qc_filter <- function(obj, mito_pattern = "^MT-",
 #' @param score_cell_cycle Logical. Whether to score cell-cycle phase.
 #' @param cc_organism Character. "human" or "mouse" for cell-cycle genes.
 #' @param regress_cc Logical. Whether to regress out cell-cycle scores.
-#' @return A normalized Seurat object with PCA computed.
+#' @return A normalized Seurat object with PCA computed. The regressed
+#'   variables are recorded in `obj@misc$ascseurat_scale_regress`.
 #' @keywords internal
 run_normalization <- function(obj, method = "lognorm",
                               nfeatures = 3000, scale_factor = 10000,
@@ -117,10 +118,14 @@ run_normalization <- function(obj, method = "lognorm",
         }
         obj <- ScaleData(obj, vars.to.regress = vars_to_regress, verbose = FALSE)
     }
+    # Read by the visualization module to scale extra genes the same way.
+    obj@misc$ascseurat_scale_regress <- as.character(vars_to_regress)
 
     # PCA
     message("Running PCA...")
-    obj <- RunPCA(obj, verbose = FALSE)
+    # Small subsets cannot support the default 50 PCs.
+    npcs <- min(50L, ncol(obj) - 1L, length(SeuratObject::VariableFeatures(obj)) - 1L)
+    obj <- RunPCA(obj, npcs = npcs, verbose = FALSE)
 
     return(obj)
 }
@@ -133,7 +138,8 @@ run_normalization <- function(obj, method = "lognorm",
 #' @param obj A Seurat object with PCA computed.
 #' @param dims Integer vector. PCA dimensions to use.
 #' @param resolution Numeric. Clustering resolution.
-#' @param run_tsne Logical. Whether to also run tSNE.
+#' @param run_tsne Logical. Whether to also run tSNE (skipped when there are
+#'   too few cells).
 #' @param reduction Character. Dimensionality reduction to use for neighbors
 #'   and UMAP. Defaults to "pca".
 #' @return A clustered Seurat object with UMAP (and optionally tSNE).
@@ -144,19 +150,29 @@ run_clustering <- function(obj, dims = 1:30, resolution = 0.6,
         stop("Reduction not found in Seurat object: ", reduction, call. = FALSE)
     }
     dims <- valid_reduction_dims(obj, reduction, dims)
+    n_cells <- ncol(obj)
 
     message("Finding neighbors...")
-    obj <- FindNeighbors(obj, reduction = reduction, dims = dims, verbose = FALSE)
+    obj <- FindNeighbors(obj, reduction = reduction, dims = dims,
+                         k.param = min(20L, n_cells - 1L), verbose = FALSE)
 
     message("Clustering at resolution ", resolution, "...")
     obj <- FindClusters(obj, resolution = resolution, verbose = FALSE)
 
     message("Running UMAP...")
-    obj <- RunUMAP(obj, reduction = reduction, dims = dims, verbose = FALSE)
+    obj <- RunUMAP(obj, reduction = reduction, dims = dims,
+                   n.neighbors = min(30L, n_cells - 1L), verbose = FALSE)
 
     if (run_tsne) {
-        message("Running tSNE...")
-        obj <- RunTSNE(obj, reduction = reduction, dims = dims)
+        # Rtsne requires 3 * perplexity <= cells - 1.
+        perplexity <- min(30, floor((n_cells - 1) / 3))
+        if (perplexity < 1) {
+            message("Skipping tSNE: too few cells (", n_cells, ").")
+        } else {
+            message("Running tSNE...")
+            obj <- RunTSNE(obj, reduction = reduction, dims = dims,
+                           perplexity = perplexity)
+        }
     }
 
     n_clusters <- length(levels(Idents(obj)))
@@ -178,7 +194,8 @@ run_clustering <- function(obj, dims = 1:30, resolution = 0.6,
 #' @param normalization_method Character. "lognorm" or "sctransform".
 #' @param nfeatures Integer. Number of variable features.
 #' @param scale_factor Numeric. Scale factor for LogNormalize.
-#' @return An integrated Seurat object.
+#' @return An integrated Seurat object. The integration parameters are
+#'   recorded in `obj@misc$ascseurat_integration`.
 #' @keywords internal
 run_integration <- function(obj, method = "rpca", dims = 1:30,
                             sample_col = "orig.ident",
@@ -222,7 +239,11 @@ run_integration <- function(obj, method = "rpca", dims = 1:30,
             nfeatures = nfeatures,
             scale_factor = scale_factor
         )
-        obj <- harmony::RunHarmony(obj, group.by.vars = sample_col)
+        obj <- harmony::RunHarmony(
+            obj,
+            group.by.vars = sample_col,
+            dims.use = valid_reduction_dims(obj, "pca", dims)
+        )
         attr(obj, "ascseurat_default_reduction") <- "harmony"
     } else {
         message("Integrating with RPCA via IntegrateLayers...")
@@ -258,6 +279,14 @@ run_integration <- function(obj, method = "rpca", dims = 1:30,
         )
         attr(obj, "ascseurat_default_reduction") <- "integrated.rpca"
     }
+    # Kept in misc (which survives subset()) so subset reclustering can
+    # repeat the same batch correction.
+    obj@misc$ascseurat_integration <- list(
+        method = method,
+        dims = dims,
+        normalization_method = normalization_method,
+        sample_col = sample_col
+    )
 
     return(obj)
 }
