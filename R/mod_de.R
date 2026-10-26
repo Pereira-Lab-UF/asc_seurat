@@ -167,18 +167,29 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
             if (length(found)) found[[1]] else NULL
         }
 
+        # A cleared numericInput arrives as NA.
+        pval_cutoff_ok <- function(value) {
+            !is.null(value) && !is.na(value) && value > 0 && value < 1
+        }
+
+        min_pct_ok <- function(value) {
+            !is.null(value) && !is.na(value) && value >= 0 && value <= 1
+        }
+
+        logfc_ok <- function(value) {
+            !is.null(value) && !is.na(value) && value >= 0
+        }
+
         observe({
             hideFeedback("pval_cutoff")
-            if (!is.null(input$pval_cutoff) &&
-                (input$pval_cutoff <= 0 || input$pval_cutoff >= 1)) {
+            if (!is.null(input$pval_cutoff) && !pval_cutoff_ok(input$pval_cutoff)) {
                 showFeedbackDanger("pval_cutoff", "P-value must be between 0 and 1")
             }
         })
 
         observe({
             hideFeedback("min_pct")
-            if (!is.null(input$min_pct) &&
-                (input$min_pct < 0 || input$min_pct > 1)) {
+            if (!is.null(input$min_pct) && !min_pct_ok(input$min_pct)) {
                 showFeedbackDanger("min_pct", "Minimum percent must be between 0 and 1")
             }
         })
@@ -200,14 +211,15 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
             req(seurat_obj())
             obj <- seurat_obj()
             meta <- obj@meta.data
-            sample_col <- sample_metadata_col(obj)
-
-            if (identical(input$de_type, "conditions") && !is.null(sample_col)) {
-                return(sample_col)
-            }
 
             candidate_cols <- names(meta)[vapply(meta, function(column) {
-                values <- unique(as.character(column[!is.na(column)]))
+                column <- column[!is.na(column)]
+                # Continuous values (QC percentages, scores) are not groups;
+                # whole-number codes such as time points or batches can be.
+                if (is.numeric(column) && any(column != round(column))) {
+                    return(FALSE)
+                }
+                values <- unique(as.character(column))
                 length(values) >= 2 && length(values) <= min(50, ncol(obj))
             }, logical(1))]
 
@@ -216,6 +228,13 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
                 "celltype.treat",
                 "ascseurat_condition"
             ))
+            # Cluster assignments and per-cell count QC are not conditions.
+            candidate_cols <- grep(
+                "(_snn$|_snn_res\\.|^nCount_|^nFeature_)",
+                candidate_cols,
+                value = TRUE,
+                invert = TRUE
+            )
 
             preferred <- c("samples", "sample_name", "treat", "orig.ident")
             c(intersect(preferred, candidate_cols), setdiff(candidate_cols, preferred))
@@ -223,22 +242,22 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
 
         output$condition_column_ui <- renderUI({
             cols <- condition_columns()
-            req(length(cols) > 0)
+            if (!length(cols)) {
+                return(tags$p(
+                    class = "text-muted small",
+                    "No metadata column with two or more groups is available to compare."
+                ))
+            }
 
-            default_col <- if ("treat" %in% cols) {
-                "treat"
-            } else if ("samples" %in% cols) {
-                "samples"
-            } else if ("sample_name" %in% cols) {
-                "sample_name"
-            } else if ("orig.ident" %in% cols) {
-                "orig.ident"
+            sample_col <- sample_metadata_col(seurat_obj())
+            default_col <- if (!is.null(sample_col) && sample_col %in% cols) {
+                sample_col
             } else {
                 cols[[1]]
             }
 
             labels <- cols
-            labels[labels %in% c("samples", "sample_name", "orig.ident")] <- "samples"
+            labels[labels %in% sample_col] <- "samples"
             choices <- stats::setNames(cols, labels)
 
             selectInput(
@@ -296,10 +315,41 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
             )
         })
 
-        markers <- eventReactive(input$run_de, {
+        de_result <- reactiveVal(NULL)
+
+        # Results from an earlier object (before re-clustering, renaming or
+        # subsetting) no longer match its clusters.
+        observeEvent(tryCatch(seurat_obj(), error = function(e) NULL), {
+            de_result(NULL)
+        }, ignoreNULL = FALSE, ignoreInit = TRUE)
+
+        observeEvent(input$run_de, {
+            de_result(NULL)
             req(seurat_obj())
-            req(is.null(input$pval_cutoff) || (input$pval_cutoff > 0 && input$pval_cutoff < 1))
-            req(is.null(input$min_pct) || (input$min_pct >= 0 && input$min_pct <= 1))
+            if (!pval_cutoff_ok(input$pval_cutoff)) {
+                showNotification(
+                    "Differential expression was not run: set the adjusted p-value cutoff to a number between 0 and 1.",
+                    type = "warning",
+                    duration = 12
+                )
+                return(invisible(NULL))
+            }
+            if (!min_pct_ok(input$min_pct)) {
+                showNotification(
+                    "Differential expression was not run: set the minimum fraction of cells expressing the gene to a number between 0 and 1.",
+                    type = "warning",
+                    duration = 12
+                )
+                return(invisible(NULL))
+            }
+            if (!logfc_ok(input$logfc_threshold)) {
+                showNotification(
+                    "Differential expression was not run: set the log2 fold-change threshold to a number of 0 or more.",
+                    type = "warning",
+                    duration = 12
+                )
+                return(invisible(NULL))
+            }
 
             withProgress(message = "Finding markers...", value = 0.3, {
                 obj <- seurat_obj()
@@ -431,15 +481,55 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
                                     call. = FALSE
                                 )
                             }
+                            if (identical(input$test_use, "roc")) {
+                                stop(
+                                    "The 'roc' test reports AUC scores instead of p-values, so markers ",
+                                    "cannot be combined across groups. Choose another statistical test ",
+                                    "for conserved markers.",
+                                    call. = FALSE
+                                )
+                            }
+
+                            # Seurat skips groups with fewer than min.cells.group cells
+                            # of the cluster; conservation needs at least two tested groups.
+                            min_cells <- 3
+                            group_labels <- as.character(obj[[input$conserved_grouping]][, 1])
+                            cluster_group_sizes <- table(
+                                group_labels[as.character(Seurat::Idents(obj)) == input$cluster_1]
+                            )
+                            tested_groups <- names(cluster_group_sizes)[cluster_group_sizes >= min_cells]
+                            if (length(tested_groups) < 2) {
+                                stop(
+                                    "Cluster ", input$cluster_1, " has at least ", min_cells,
+                                    " cells in ",
+                                    if (length(tested_groups)) {
+                                        paste0("only one group ('", tested_groups, "')")
+                                    } else {
+                                        "no group"
+                                    },
+                                    " of '", input$conserved_grouping,
+                                    "', so conservation across groups cannot be assessed. ",
+                                    "Use 'Find markers for one cluster' instead.",
+                                    call. = FALSE
+                                )
+                            }
 
                             result <- FindConservedMarkers(
                                 obj,
                                 ident.1 = input$cluster_1,
                                 grouping.var = input$conserved_grouping,
+                                test.use = input$test_use,
                                 logfc.threshold = input$logfc_threshold,
                                 min.pct = input$min_pct,
+                                min.cells.group = min_cells,
                                 only.pos = isTRUE(input$only_pos),
                                 verbose = FALSE
+                            )
+                            # FindConservedMarkers reports only unadjusted max_pval;
+                            # filter on the largest per-group adjusted p-value instead.
+                            adj_cols <- grep("_p_val_adj$", colnames(result), value = TRUE)
+                            result$max_p_val_adj <- apply(
+                                result[, adj_cols, drop = FALSE], 1, max
                             )
                             format_marker_results(result, cluster = input$cluster_1)
                         }
@@ -474,15 +564,20 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
                 if ("p_val_adj" %in% colnames(result)) {
                     keep <- !is.na(result$p_val_adj) & result$p_val_adj < input$pval_cutoff
                     result <- result[keep, , drop = FALSE]
-                } else if ("max_pval" %in% colnames(result)) {
-                    keep <- !is.na(result$max_pval) & result$max_pval < input$pval_cutoff
+                } else if ("max_p_val_adj" %in% colnames(result)) {
+                    keep <- !is.na(result$max_p_val_adj) & result$max_p_val_adj < input$pval_cutoff
                     result <- result[keep, , drop = FALSE]
                 }
 
                 rownames(result) <- NULL
                 setProgress(1, message = paste0(nrow(result), " markers found"))
-                result
+                de_result(result)
             })
+        })
+
+        markers <- reactive({
+            req(de_result())
+            de_result()
         })
 
         output$markers_table <- renderReactable({
