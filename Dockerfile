@@ -90,6 +90,10 @@ RUN git init /tmp/BPCells \
     && rm -rf /tmp/BPCells
 ARG MONOCLE3_REF=536f1033d6de7c957f26a1f403f81efbd825e0db
 RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install(c("bioc::batchelor", "bioc::ResidualMatrix", "classInt", "distributional", "furrr", "ggdist", "ggforce", "leidenbase", "lme4", "minqa", "nloptr", "pbmcapply", "pscl", "quadprog", "reformulas", "rsample", "s2", "sf", "slam", "slider", "spData", "spdep", "cole-trapnell-lab/speedglm", "tweenr", "units", "warp", "wk"), ask = FALSE)'
+# monocle3 is built with R CMD INSTALL, which does not resolve dependencies, so
+# install every package its DESCRIPTION imports at MONOCLE3_REF (BPCells and
+# speedglm are installed above).
+RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install(c("assertthat", "bioc::Biobase", "bioc::BiocGenerics", "bioc::BiocParallel", "bioc::DelayedArray", "bioc::DelayedMatrixStats", "digest", "dplyr", "future", "ggplot2", "ggrastr", "ggrepel", "bioc::HDF5Array", "igraph", "irlba", "bioc::limma", "lmtest", "MASS", "Matrix", "openssl", "pbapply", "pheatmap", "plotly", "plyr", "proxy", "purrr", "RANN", "RColorBrewer", "Rcpp", "reshape2", "RhpcBLASctl", "RcppAnnoy", "RcppHNSW", "Rtsne", "bioc::S4Vectors", "bioc::SingleCellExperiment", "shiny", "stringr", "bioc::SummarizedExperiment", "uwot", "tibble", "tidyr", "viridis"), ask = FALSE, upgrade = FALSE)'
 RUN git init /tmp/monocle3 \
     && cd /tmp/monocle3 \
     && git remote add origin https://github.com/cole-trapnell-lab/monocle3.git \
