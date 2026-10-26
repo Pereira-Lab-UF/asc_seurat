@@ -1128,32 +1128,15 @@ run_scmasigpro <- function(sce, gene_subset = NULL,
         poly_degree = poly_degree,
         path_col = "trajectory_path"
     )
-    scmasigpro_error <- NULL
-    scmp_obj <- tryCatch({
-        obj_fit <- scMaSigPro::sc.p.vector(
-            scmp_obj,
-            p_value = p_value,
-            verbose = FALSE,
-            parallel = FALSE
-        )
-        obj_fit <- scMaSigPro::sc.t.fit(
-            obj_fit,
-            p_value = p_value,
-            verbose = FALSE,
-            parallel = FALSE
-        )
-        scMaSigPro::sc.filter(
-            obj_fit,
-            rsq = rsq,
-            p_value = p_value,
-            vars = "groups",
-            includeInflu = TRUE
-        )
-    }, error = function(e) {
-        scmasigpro_error <<- conditionMessage(e)
-        scmp_obj
-    })
-    if (!is.null(scmasigpro_error)) {
+    scmp_obj <- scMaSigPro::sc.p.vector(
+        scmp_obj,
+        p_value = p_value,
+        verbose = FALSE,
+        parallel = FALSE
+    )
+    # sc.p.vector returns the object without a gene profile when nothing is
+    # significant; the later steps cannot run on that.
+    if (!length(scmp_obj@Profile@non_flat)) {
         return(empty_scmasigpro_result(
             paste(
                 "scMaSigPro completed, but no significant branching genes were detected",
@@ -1161,6 +1144,19 @@ run_scmasigpro <- function(sce, gene_subset = NULL,
             )
         ))
     }
+    scmp_obj <- scMaSigPro::sc.t.fit(
+        scmp_obj,
+        p_value = p_value,
+        verbose = FALSE,
+        parallel = FALSE
+    )
+    scmp_obj <- scMaSigPro::sc.filter(
+        scmp_obj,
+        rsq = rsq,
+        p_value = p_value,
+        vars = "groups",
+        includeInflu = TRUE
+    )
 
     solution_table <- tryCatch(
         scMaSigPro::showSol(
@@ -1243,7 +1239,10 @@ run_scmasigpro <- function(sce, gene_subset = NULL,
 
 #' Run PseudotimeDE-fast on Slingshot Output
 #'
-#' @param sce A SingleCellExperiment with trajectory_path and trajectory_pseudotime columns.
+#' Each Slingshot lineage is tested separately on its own cells, so the
+#' result has one row per gene and lineage.
+#'
+#' @param sce A SingleCellExperiment with Slingshot results.
 #' @param gene_subset Optional character vector of genes to test.
 #' @param cores Number of workers to use.
 #' @return A list containing the engine name and result table.
@@ -1251,14 +1250,7 @@ run_scmasigpro <- function(sce, gene_subset = NULL,
 run_pseudotimede_fast <- function(sce, gene_subset = NULL, cores = 2) {
     assert_pseudotimede_available()
 
-    keep_cells <- !is.na(sce$trajectory_path) &
-        is.finite(sce$trajectory_pseudotime)
-    sce <- sce[, keep_cells]
-
-    if (ncol(sce) < 5) {
-        stop("PseudotimeDE-fast requires at least five cells with finite pseudotime.",
-             call. = FALSE)
-    }
+    assignment <- extract_slingshot_assignments(sce)
 
     if (!is.null(gene_subset)) {
         gene_subset <- unique(intersect(as.character(gene_subset), rownames(sce)))
@@ -1272,26 +1264,46 @@ run_pseudotimede_fast <- function(sce, gene_subset = NULL, cores = 2) {
         cores <- 1L
     }
 
-    ori_tbl <- data.frame(
-        cell = colnames(sce),
-        pseudotime = as.numeric(sce$trajectory_pseudotime),
-        stringsAsFactors = FALSE
-    )
+    tables <- lapply(seq_along(assignment$path_names), function(i) {
+        pseudotime <- assignment$pseudotime[, i]
+        on_lineage <- assignment$weights[, i] > 0 & is.finite(pseudotime)
+        if (sum(on_lineage) < 5L) {
+            return(NULL)
+        }
 
-    result <- as.data.frame(PseudotimeDE::runTauStarDE(
-        gene.vec = rownames(sce),
-        ori.tbl = ori_tbl,
-        mat = SingleCellExperiment::counts(sce),
-        assay.use = "counts",
-        mode = "asymptotic",
-        mc.cores = cores,
-        SIMPLIFY = TRUE
-    ))
+        ori_tbl <- data.frame(
+            cell = colnames(sce)[on_lineage],
+            pseudotime = as.numeric(pseudotime[on_lineage]),
+            stringsAsFactors = FALSE
+        )
+        lineage_result <- as.data.frame(PseudotimeDE::runTauStarDE(
+            gene.vec = rownames(sce),
+            ori.tbl = ori_tbl,
+            mat = SingleCellExperiment::counts(sce),
+            assay.use = "counts",
+            mode = "asymptotic",
+            mc.cores = cores,
+            SIMPLIFY = TRUE
+        ))
+        data.frame(
+            gene = lineage_result$gene,
+            lineage = assignment$path_names[[i]],
+            lineage_result[setdiff(colnames(lineage_result), "gene")],
+            stringsAsFactors = FALSE,
+            check.names = FALSE
+        )
+    })
+    result <- do.call(rbind, tables)
+    if (is.null(result)) {
+        stop("PseudotimeDE-fast requires at least five cells with finite pseudotime.",
+             call. = FALSE)
+    }
 
     if ("taustar.pv" %in% colnames(result)) {
         result$p_value <- as.numeric(result$taustar.pv)
         result$adjusted_p_value <- stats::p.adjust(result$p_value, method = "BH")
-        result <- result[order(result$p_value, result$gene), , drop = FALSE]
+        result <- result[order(result$adjusted_p_value, -result$taustar,
+                               result$gene, result$lineage), , drop = FALSE]
     }
     rownames(result) <- NULL
 
@@ -1326,6 +1338,26 @@ assert_pseudotimede_available <- function() {
 }
 
 
+# Evaluates code with a fixed seed, then puts the caller's RNG state back.
+with_fixed_seed <- function(seed, code) {
+    env <- globalenv()
+    old_seed <- if (exists(".Random.seed", envir = env, inherits = FALSE)) {
+        get(".Random.seed", envir = env, inherits = FALSE)
+    }
+    on.exit({
+        if (is.null(old_seed)) {
+            if (exists(".Random.seed", envir = env, inherits = FALSE)) {
+                rm(".Random.seed", envir = env)
+            }
+        } else {
+            assign(".Random.seed", old_seed, envir = env)
+        }
+    }, add = TRUE)
+    set.seed(seed)
+    code
+}
+
+
 #' Run tradeSeq on Slingshot Output
 #'
 #' @param sce A SingleCellExperiment with Slingshot results.
@@ -1349,6 +1381,11 @@ run_tradeseq <- function(sce, assignment, gene_subset = NULL, nknots = 6) {
     cell_weights[!is.finite(cell_weights)] <- 0
     cell_weights[cell_weights < 0] <- 0
 
+    # Library sizes come from all genes, not only the tested subset.
+    library_size <- Matrix::colSums(SingleCellExperiment::counts(sce))
+    offset <- log(library_size)
+    offset[library_size == 0] <- 0
+
     if (!is.null(gene_subset)) {
         gene_subset <- unique(intersect(as.character(gene_subset), rownames(sce)))
         if (length(gene_subset)) {
@@ -1363,15 +1400,17 @@ run_tradeseq <- function(sce, assignment, gene_subset = NULL, nknots = 6) {
     } else {
         BiocParallel::MulticoreParam(workers = workers)
     }
-    fit <- tradeSeq::fitGAM(
+    # fitGAM assigns cells to lineages at random before the per-gene fits.
+    fit <- with_fixed_seed(1L, tradeSeq::fitGAM(
         counts = SingleCellExperiment::counts(sce),
         pseudotime = pseudotime,
         cellWeights = cell_weights,
+        offset = offset,
         nknots = as.integer(nknots),
         verbose = FALSE,
         parallel = workers >= 2L,
         BPPARAM = bpparam
-    )
+    ))
     association <- as.data.frame(tradeSeq::associationTest(fit))
 
     result <- data.frame(
@@ -1383,7 +1422,9 @@ run_tradeseq <- function(sce, assignment, gene_subset = NULL, nknots = 6) {
     p_col <- intersect(c("pvalue", "p.value", "p_value"), colnames(result))
     if (length(p_col)) {
         result$p_value <- result[[p_col[[1]]]]
-        result <- result[order(result$p_value, result$gene), , drop = FALSE]
+        result$adjusted_p_value <- stats::p.adjust(result$p_value, method = "BH")
+        result <- result[order(result$adjusted_p_value, -result$waldStat, result$gene),
+                         , drop = FALSE]
     }
     rownames(result) <- NULL
 
@@ -1460,7 +1501,10 @@ run_slingshot_trajectory <- function(obj, start_cluster = NULL, end_cluster = NU
         path = assignment$assigned_path
     )
     for (i in seq_along(assignment$path_names)) {
-        obj[[paste0("pseudotime_", assignment$path_names[[i]])]] <- assignment$pseudotime[, i]
+        # Cells off a lineage get NA; tradeSeq still uses the full matrix.
+        lineage_pseudotime <- assignment$pseudotime[, i]
+        lineage_pseudotime[!(assignment$weights[, i] > 0)] <- NA_real_
+        obj[[paste0("pseudotime_", assignment$path_names[[i]])]] <- lineage_pseudotime
     }
 
     sce$trajectory_path <- assignment$assigned_path
@@ -1480,13 +1524,36 @@ run_slingshot_trajectory <- function(obj, start_cluster = NULL, end_cluster = NU
 }
 
 
+paga_reduction_dims <- function(obj) {
+    reductions <- names(obj@reductions)
+    reduction <- attr(obj, "ascseurat_clustering_reduction", exact = TRUE)
+    if (is.null(reduction) || !reduction %in% reductions) {
+        candidates <- c("integrated.rpca", "harmony", "pca")
+        found <- candidates[candidates %in% reductions]
+        reduction <- if (length(found)) found[[1]] else "pca"
+    }
+
+    width <- ncol(get_reduction_embeddings(obj, reduction))
+    n_dims <- suppressWarnings(as.integer(
+        attr(obj, "ascseurat_clustering_n_pcs", exact = TRUE)[1]
+    ))
+    if (!length(n_dims) || is.na(n_dims) || n_dims < 1L) {
+        n_dims <- width
+    }
+
+    list(reduction = reduction, dims = seq_len(min(n_dims, width)))
+}
+
+
 #' Run PAGA Trajectory Inference
 #'
 #' @keywords internal
 run_paga_trajectory <- function(obj, start_cluster = NULL, end_cluster = NULL) {
     check_trajectory_dependencies("paga")
 
-    pca <- get_reduction_embeddings(obj, "pca")
+    # Same reduction and dimensions as clustering, e.g. Harmony after integration.
+    space <- paga_reduction_dims(obj)
+    pca <- get_reduction_embeddings(obj, space$reduction)[, space$dims, drop = FALSE]
     umap <- get_reduction_embeddings(obj, "umap")
     cells <- intersect(rownames(pca), rownames(umap))
     if (length(cells) < 3) {
@@ -1625,10 +1692,11 @@ run_monocle3_trajectory <- function(obj, start_cluster = NULL, end_cluster = NUL
         stop("Start cluster was not found for Monocle 3: ", root_cluster,
              call. = FALSE)
     }
+    root_pr_nodes <- monocle3_root_node(cds, root_cells)
     cds <- monocle3::order_cells(
         cds,
         reduction_method = "UMAP",
-        root_cells = root_cells
+        root_pr_nodes = root_pr_nodes
     )
 
     pseudotime <- as.numeric(monocle3::pseudotime(cds))
@@ -1654,8 +1722,22 @@ run_monocle3_trajectory <- function(obj, start_cluster = NULL, end_cluster = NUL
         method_label = "Monocle 3",
         root_cluster = root_cluster,
         root_cells = root_cells,
+        root_pr_nodes = root_pr_nodes,
         end_cluster = NULL
     )
+}
+
+
+# The principal-graph node closest to most start-cluster cells, as in
+# Monocle 3's get_earliest_principal_node() example.
+monocle3_root_node <- function(cds, root_cells) {
+    closest_vertex <- cds@principal_graph_aux[["UMAP"]]$pr_graph_cell_proj_closest_vertex
+    closest_vertex <- as.matrix(closest_vertex[colnames(cds), , drop = FALSE])
+    root_vertex <- closest_vertex[intersect(root_cells, colnames(cds)), 1]
+    # The closest-vertex indices point into the principal-point columns,
+    # which Monocle 3 names after the graph nodes.
+    node_names <- colnames(cds@principal_graph_aux[["UMAP"]]$dp_mst)
+    node_names[[as.integer(names(which.max(table(root_vertex))))]]
 }
 
 
@@ -1886,6 +1968,8 @@ run_paga_edge_markers <- function(res, edges, gene_subset = NULL,
     } else if (!"rho" %in% colnames(result)) {
         result$rho <- NA_real_
     }
+    result <- result[order(result$p_val_adj, -abs(result$avg_log2FC),
+                           result$gene, na.last = TRUE), , drop = FALSE]
     rownames(result) <- NULL
 
     list(
@@ -2017,6 +2101,8 @@ run_paga_pseudotime_genes <- function(res, edges, gene_subset = NULL) {
     if (is.null(result)) {
         result <- empty_paga_gene_table()
     }
+    result <- result[order(result$p_val_adj, -abs(result$rho), result$gene,
+                           na.last = TRUE), , drop = FALSE]
     rownames(result) <- NULL
 
     list(
@@ -2634,6 +2720,16 @@ download_content_or_stop <- function(get_value, analysis) {
 }
 
 
+# Gene results are shown only while they belong to the current trajectory run.
+current_run_result <- function(result, ti_res) {
+    if (is.null(result) || is.null(ti_res) ||
+        !identical(result$run_id, ti_res$run_id)) {
+        return(NULL)
+    }
+    result
+}
+
+
 #' Trajectory Inference Module - Server
 #'
 #' @param id Module namespace ID.
@@ -2663,6 +2759,15 @@ mod_trajectory_server <- function(id) {
                          call. = FALSE)
                 }
                 load_seurat_rds(rds_path)
+            }
+        })
+
+        # Identifies the RDS that ti_obj() loads, without loading it.
+        ti_obj_key <- reactive({
+            if ((input$rds_source %||% "upload") == "upload") {
+                paste0("upload:", input$rds_file$datapath %||% "")
+            } else {
+                paste0("path:", resolve_input_path(input$rds_path %||% ""))
             }
         })
 
@@ -2707,7 +2812,7 @@ mod_trajectory_server <- function(id) {
             )
         })
 
-        ti_result <- eventReactive(input$run_ti, {
+        ti_run <- eventReactive(input$run_ti, {
             if (!isTRUE(ti_obj_available())) {
                 message <- if (identical(input$rds_source %||% "upload", "path")) {
                     paste0(
@@ -2747,6 +2852,8 @@ mod_trajectory_server <- function(id) {
                         monocle3 = run_monocle3_trajectory(obj, start_cluster, end_cluster),
                         run_slingshot_trajectory(obj, start_cluster, end_cluster)
                     )
+                    res$run_id <- as.integer(input$run_ti)
+                    res$obj_key <- ti_obj_key()
 
                     setProgress(1, message = paste(res$method_label, "complete!"))
                     res
@@ -2761,14 +2868,25 @@ mod_trajectory_server <- function(id) {
             })
         })
 
+        # A result from a previously loaded RDS is no longer the current one.
+        ti_result <- reactive({
+            res <- ti_run()
+            if (is.null(res) || !identical(res$obj_key, ti_obj_key())) {
+                return(NULL)
+            }
+            res
+        })
+
         pseudotime_plot <- reactive({
             req(ti_result())
             res <- ti_result()
 
+            # na_cutoff = NULL keeps root cells at pseudotime 0 coloured.
             scCustomize::FeaturePlot_scCustom(
                 seurat_object = res$obj,
                 features = "pseudotime",
-                order = TRUE
+                order = TRUE,
+                na_cutoff = NULL
             ) +
                 ggplot2::labs(title = NULL) +
                 ggplot2::theme_void() +
@@ -2851,7 +2969,8 @@ mod_trajectory_server <- function(id) {
                     cat("No cluster connections above the display threshold.\n")
                 }
             } else if (identical(res$method, "monocle3")) {
-                cat("Root cells:", length(res$root_cells), "\n\n")
+                cat("Root principal graph node:", res$root_pr_nodes, "\n")
+                cat("Start-cluster cells used to choose it:", length(res$root_cells), "\n\n")
                 cat("Cells per Monocle 3 partition:\n")
                 print(table(res$obj$monocle3_partition, useNA = "ifany"))
             }
@@ -3015,7 +3134,7 @@ mod_trajectory_server <- function(id) {
             prefix = "custom_traj_hm"
         )
 
-        paga_gene_result <- eventReactive(input$run_paga_genes, {
+        paga_gene_run <- eventReactive(input$run_paga_genes, {
             req(ti_result())
             res <- ti_result()
             if (!identical(res$method, "paga")) {
@@ -3066,11 +3185,14 @@ mod_trajectory_server <- function(id) {
                 })
 
                 if (!is.null(result)) {
+                    result$run_id <- res$run_id
                     setProgress(1, message = paste0(nrow(result$table), " PAGA gene rows found"))
                 }
                 result
             })
         })
+
+        paga_gene_result <- reactive(current_run_result(paga_gene_run(), ti_result()))
 
         output$paga_genes_table <- renderReactable({
             req(paga_gene_result())
@@ -3187,7 +3309,7 @@ mod_trajectory_server <- function(id) {
             }
         )
 
-        monocle_gene_result <- eventReactive(input$run_monocle_genes, {
+        monocle_gene_run <- eventReactive(input$run_monocle_genes, {
             req(ti_result())
             res <- ti_result()
             if (!identical(res$method, "monocle3")) {
@@ -3224,13 +3346,16 @@ mod_trajectory_server <- function(id) {
                     NULL
                 })
                 if (!is.null(result)) {
+                    result$run_id <- res$run_id
                     setProgress(1, message = paste0(nrow(result$table), " trajectory genes tested"))
                 }
                 result
             })
         })
 
-        monocle_module_result <- eventReactive(input$run_monocle_modules, {
+        monocle_gene_result <- reactive(current_run_result(monocle_gene_run(), ti_result()))
+
+        monocle_module_run <- eventReactive(input$run_monocle_modules, {
             req(ti_result(), monocle_gene_result())
             res <- ti_result()
             genes <- monocle_gene_result()$table
@@ -3240,7 +3365,7 @@ mod_trajectory_server <- function(id) {
             }
 
             withProgress(message = "Finding Monocle 3 gene modules...", value = 0.4, {
-                tryCatch(
+                result <- tryCatch(
                     run_monocle3_gene_modules(res, genes$gene, cores = 2),
                     error = function(e) {
                         showNotification(
@@ -3251,8 +3376,14 @@ mod_trajectory_server <- function(id) {
                         NULL
                     }
                 )
+                if (!is.null(result)) {
+                    result$run_id <- res$run_id
+                }
+                result
             })
         })
+
+        monocle_module_result <- reactive(current_run_result(monocle_module_run(), ti_result()))
 
         output$monocle_genes_table <- renderReactable({
             req(monocle_gene_result())
@@ -3336,7 +3467,7 @@ mod_trajectory_server <- function(id) {
             }
         )
 
-        traj_de_result <- eventReactive(input$run_traj_de, {
+        traj_de_run <- eventReactive(input$run_traj_de, {
             req(ti_result())
             res <- ti_result()
 
@@ -3402,18 +3533,25 @@ mod_trajectory_server <- function(id) {
                     }
                 )
                 if (!is.null(result)) {
+                    result$run_id <- res$run_id
                     if (!is.null(result$message)) {
                         showNotification(result$message, type = "message", duration = 10)
                     }
-                    setProgress(1, message = paste0(nrow(result$table), " trajectory genes found"))
+                    setProgress(1, message = paste0(length(unique(result$table$gene)),
+                                                    " trajectory genes found"))
                 }
                 result
             })
         })
 
+        traj_de_result <- reactive(current_run_result(traj_de_run(), ti_result()))
+
         output$traj_genes_table <- renderReactable({
             req(traj_de_result())
-            df <- utils::head(traj_de_result()$table, input$n_top_genes)
+            # PseudotimeDE-fast has one row per gene and lineage; show each
+            # gene once, on its best-ranked lineage.
+            df <- traj_de_result()$table
+            df <- utils::head(df[!duplicated(df$gene), , drop = FALSE], input$n_top_genes)
             if (nrow(df) == 0) {
                 return(reactable(data.frame(Message = "No significant trajectory genes found")))
             }
@@ -3430,8 +3568,14 @@ mod_trajectory_server <- function(id) {
             if ("gene" %in% colnames(df)) {
                 columns$gene <- reactable::colDef(name = "Gene", minWidth = 95)
             }
+            if ("lineage" %in% colnames(df)) {
+                columns$lineage <- reactable::colDef(name = "Lineage", width = 85)
+            }
             if ("p_value" %in% colnames(df)) {
                 columns$p_value <- reactable::colDef(name = "P value", width = 90)
+            }
+            if ("adjusted_p_value" %in% colnames(df)) {
+                columns$adjusted_p_value <- reactable::colDef(name = "Adj. P value", width = 105)
             }
             if ("rsquared" %in% colnames(df)) {
                 columns$rsquared <- reactable::colDef(name = "R squared", width = 95)
@@ -3461,7 +3605,7 @@ mod_trajectory_server <- function(id) {
         output$traj_heatmap <- renderPlot({
             req(traj_de_result(), ti_result())
             obj <- ti_result()$obj
-            top_genes <- utils::head(traj_de_result()$table$gene, input$n_top_genes)
+            top_genes <- utils::head(unique(traj_de_result()$table$gene), input$n_top_genes)
             top_genes <- intersect(top_genes, rownames(obj))
             req(length(top_genes) > 0)
 
