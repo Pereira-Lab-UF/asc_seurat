@@ -29,6 +29,7 @@ Imports:
     sass,
     Seurat (>= 5.0.0),
     SeuratObject (>= 5.0.0),
+    Matrix,
     scCustomize,
     slingshot,
     harmony,
