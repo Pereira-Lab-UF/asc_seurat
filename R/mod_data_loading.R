@@ -156,6 +156,41 @@ mod_data_loading_server <- function(id, trigger_demo = NULL) {
             obj
         }
 
+        mito_pattern_error <- function(mito_pattern) {
+            mito_pattern <- trimws(as.character(mito_pattern %||% ""))
+            if (!nzchar(mito_pattern)) {
+                return(NULL)
+            }
+            check <- tryCatch(
+                suppressWarnings(grepl(mito_pattern, "")),
+                error = function(e) e
+            )
+            if (!inherits(check, "error")) {
+                return(NULL)
+            }
+            paste0(
+                "Invalid mitochondrial gene pattern: ", conditionMessage(check),
+                ". Correct the regular expression (e.g. ^MT-) or leave it empty."
+            )
+        }
+
+        # An uncaught error in an observer closes the whole session, so
+        # unexpected failures are shown as a notification instead.
+        notify_on_error <- function(prefix, expr) {
+            tryCatch(
+                expr,
+                shiny.silent.error = function(e) NULL,
+                error = function(e) {
+                    showNotification(
+                        paste0(prefix, conditionMessage(e)),
+                        type = "error",
+                        duration = 12
+                    )
+                    NULL
+                }
+            )
+        }
+
         output$data_ready <- shiny::renderText({
             if (is.null(state_obj())) "false" else "true"
         })
@@ -185,12 +220,18 @@ mod_data_loading_server <- function(id, trigger_demo = NULL) {
         if (!is.null(trigger_demo)) {
             observeEvent(trigger_demo(), {
                 req(trigger_demo() > 0)
-                do_load_demo()
+                notify_on_error("Demo data loading failed: ", do_load_demo())
             }, ignoreInit = TRUE)
         }
 
-        observeEvent(input$load_data, {
+        do_load_data <- function() {
             req(input$input_type)
+
+            mito_error <- mito_pattern_error(input$mito_pattern)
+            if (!is.null(mito_error)) {
+                showNotification(mito_error, type = "error", duration = 12)
+                return(NULL)
+            }
 
             withProgress(message = "Loading data...", value = 0.3, {
                 path <- if (input$input_type == "10x_dir") {
@@ -257,11 +298,17 @@ mod_data_loading_server <- function(id, trigger_demo = NULL) {
                 state_obj(obj)
                 setProgress(1, message = "Done!")
             })
+        }
+
+        observeEvent(input$load_data, {
+            notify_on_error("Data loading failed: ", do_load_data())
         })
 
-        observeEvent(input$load_demo, { do_load_demo() })
+        observeEvent(input$load_demo, {
+            notify_on_error("Demo data loading failed: ", do_load_demo())
+        })
 
-        observeEvent(input$apply_metadata, {
+        do_apply_metadata <- function() {
             req(state_obj(), input$metadata_file)
 
             metadata_df <- read_uploaded_table(
@@ -279,6 +326,31 @@ mod_data_loading_server <- function(id, trigger_demo = NULL) {
             }
 
             barcodes <- as.character(metadata_df[[1]])
+            missing_barcode <- is.na(barcodes) | !nzchar(trimws(barcodes))
+            duplicated_barcodes <- unique(barcodes[duplicated(barcodes) & !missing_barcode])
+            if (any(missing_barcode) || length(duplicated_barcodes)) {
+                problems <- c(
+                    if (any(missing_barcode)) {
+                        paste0(sum(missing_barcode), " row(s) with a missing or blank barcode")
+                    },
+                    if (length(duplicated_barcodes)) {
+                        paste0(
+                            length(duplicated_barcodes), " duplicated barcode(s), e.g. ",
+                            paste(utils::head(duplicated_barcodes, 3), collapse = ", ")
+                        )
+                    }
+                )
+                showNotification(
+                    paste0(
+                        "Metadata was not added: the file has ",
+                        paste(problems, collapse = " and "),
+                        ". The first column must hold one unique cell barcode per row."
+                    ),
+                    type = "error",
+                    duration = 12
+                )
+                return(NULL)
+            }
             metadata_df <- metadata_df[, -1, drop = FALSE]
             rownames(metadata_df) <- barcodes
 
@@ -309,6 +381,10 @@ mod_data_loading_server <- function(id, trigger_demo = NULL) {
                 type = "message",
                 duration = 6
             )
+        }
+
+        observeEvent(input$apply_metadata, {
+            notify_on_error("Adding metadata failed: ", do_apply_metadata())
         })
 
         output$data_summary <- renderPrint({

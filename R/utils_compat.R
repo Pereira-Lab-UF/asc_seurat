@@ -470,6 +470,71 @@ resolve_input_path <- function(path) {
 }
 
 
+#' Read Raw Counts from the .raw Slot of an h5ad File
+#'
+#' anndataR does not import \code{adata.raw}, where Scanpy and CELLxGENE files
+#' often keep the raw counts behind a normalized \code{X}.
+#'
+#' @param path Character. Path to the h5ad file.
+#' @return A sparse genes x cells matrix, or NULL when the file has no
+#'   \code{.raw} matrix.
+#' @keywords internal
+read_h5ad_raw_counts <- function(path) {
+    h5 <- hdf5r::H5File$new(path, mode = "r")
+    on.exit(h5$close_all(), add = TRUE)
+    if (!h5$exists("raw") || !h5[["raw"]]$exists("X") || !h5[["raw"]]$exists("var")) {
+        return(NULL)
+    }
+
+    read_index <- function(group) {
+        as.character(group[[hdf5r::h5attr(group, "_index")]]$read())
+    }
+    genes <- read_index(h5[["raw/var"]])
+    cells <- read_index(h5[["obs"]])
+
+    raw_x <- h5[["raw/X"]]
+    encoding <- if (raw_x$attr_exists("encoding-type")) {
+        hdf5r::h5attr(raw_x, "encoding-type")
+    } else {
+        "array"
+    }
+    counts <- switch(encoding,
+        # hdf5r returns the row-major cells x genes array as genes x cells.
+        "array" = SeuratObject::as.sparse(raw_x$read()),
+        "csr_matrix" = ,
+        "csc_matrix" = {
+            dims <- rev(as.integer(hdf5r::h5attr(raw_x, "shape")))
+            indices <- as.integer(raw_x[["indices"]]$read())
+            indptr <- as.integer(raw_x[["indptr"]]$read())
+            values <- as.numeric(raw_x[["data"]]$read())
+            # indptr runs over cells for CSR and over genes for CSC. Building
+            # from triplets sorts the indices and sums duplicate entries,
+            # both of which scipy allows.
+            pointer_index <- rep.int(seq_len(length(indptr) - 1L) - 1L, diff(indptr))
+            triplets <- if (encoding == "csr_matrix") {
+                methods::new("dgTMatrix", i = indices, j = pointer_index, x = values, Dim = dims)
+            } else {
+                methods::new("dgTMatrix", i = pointer_index, j = indices, x = values, Dim = dims)
+            }
+            methods::as(triplets, "CsparseMatrix")
+        },
+        stop("Unsupported .raw/X encoding in the h5ad file: ", encoding,
+             call. = FALSE)
+    )
+
+    if (!identical(dim(counts), c(length(genes), length(cells)))) {
+        stop(
+            "The h5ad .raw matrix has ", ncol(counts), " cells x ", nrow(counts),
+            " genes, which does not match the ", length(cells), " cells in obs and ",
+            length(genes), " genes in .raw var.",
+            call. = FALSE
+        )
+    }
+    dimnames(counts) <- list(genes, cells)
+    counts
+}
+
+
 #' Load Single-Cell Data from Multiple Formats
 #'
 #' Loads scRNA-seq data from various file formats and returns a Seurat object.
@@ -549,16 +614,61 @@ load_input_data <- function(path, project = "AscSeurat",
                      "Install it with: install.packages('anndataR')",
                      call. = FALSE)
             }
-            coerce_h5ad_seurat <- function(seurat_obj) {
-                layers <- SeuratObject::Layers(seurat_obj)
-                source_layer <- intersect(c("counts", "data", "X"), layers)
-                if (!length(source_layer)) {
-                    source_layer <- layers[[1]]
-                } else {
-                    source_layer <- source_layer[[1]]
+            is_integer_valued <- function(x) {
+                values <- if (methods::is(x, "dsparseMatrix")) x@x else x
+                isTRUE(all(values == round(values)))
+            }
+
+            # Built from the AnnData matrices directly, since anndataR's
+            # as = "Seurat" conversion fails on gene names with underscores.
+            coerce_h5ad_seurat <- function(adata) {
+                layers <- c(adata$layers_keys(), if (!is.null(adata$X)) "X")
+                if (!length(layers)) {
+                    stop("The h5ad file has no X matrix or layers.", call. = FALSE)
+                }
+                get_layer <- function(layer) {
+                    x <- if (identical(layer, "X")) adata$X else adata$layers[[layer]]
+                    # AnnData stores cells x genes.
+                    x <- Matrix::t(x)
+                    if (methods::is(x, "RsparseMatrix")) {
+                        x <- methods::as(x, "CsparseMatrix")
+                    }
+                    dimnames(x) <- list(adata$var_names, adata$obs_names)
+                    x
                 }
 
-                counts <- Seurat::GetAssayData(seurat_obj, layer = source_layer)
+                counts <- NULL
+                counts_layer <- intersect(c("counts", "raw_counts"), layers)
+                if (length(counts_layer)) {
+                    counts <- get_layer(counts_layer[[1]])
+                } else {
+                    raw_counts <- read_h5ad_raw_counts(path)
+                    # Scanpy's adata.raw can also hold log-normalized values.
+                    if (!is.null(raw_counts) && is_integer_valued(raw_counts)) {
+                        counts <- raw_counts
+                    }
+                }
+
+                if (is.null(counts)) {
+                    source_layer <- intersect(c("data", "X"), layers)
+                    if (!length(source_layer)) {
+                        source_layer <- layers[[1]]
+                    } else {
+                        source_layer <- source_layer[[1]]
+                    }
+                    counts <- get_layer(source_layer)
+                    if (!is_integer_valued(counts)) {
+                        stop(
+                            "This h5ad file holds normalized (non-integer) values in X and ",
+                            "no raw counts in layers['counts'], layers['raw_counts'] or .raw. ",
+                            "Asc-Seurat needs raw counts. In Python, add them and save again, e.g. ",
+                            "adata.layers['counts'] = adata.raw.X (or the original count matrix), ",
+                            "then adata.write_h5ad('counts.h5ad').",
+                            call. = FALSE
+                        )
+                    }
+                }
+
                 if (!inherits(counts, "Matrix")) {
                     warning(
                         "The AnnData X matrix is not sparse; converting it may use substantial memory.",
@@ -567,8 +677,13 @@ load_input_data <- function(path, project = "AscSeurat",
                     counts <- SeuratObject::as.sparse(as.matrix(counts))
                 }
 
-                metadata <- seurat_obj@meta.data
-                metadata <- metadata[colnames(counts), , drop = FALSE]
+                metadata <- adata$obs
+                rownames(metadata) <- adata$obs_names
+                # obs may carry these from an earlier analysis; let Seurat recompute them from counts.
+                qc_columns <- c("nCount_RNA", "nFeature_RNA")
+                metadata <- metadata[colnames(counts),
+                                     setdiff(colnames(metadata), qc_columns),
+                                     drop = FALSE]
 
                 Seurat::CreateSeuratObject(
                     counts = counts,
@@ -579,7 +694,7 @@ load_input_data <- function(path, project = "AscSeurat",
                 )
             }
 
-            adata <- anndataR::read_h5ad(path, as = "Seurat")
+            adata <- anndataR::read_h5ad(path, as = "InMemoryAnnData")
             coerce_h5ad_seurat(adata)
         },
 
