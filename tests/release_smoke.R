@@ -342,6 +342,7 @@ for (method in c("rpca", "harmony")) {
             )
             reduction <- attr(obj, "ascseurat_default_reduction", exact = TRUE)
             assert(reduction %in% names(obj@reductions), "Integrated reduction missing")
+            obj <- ascseurat:::run_clustering(obj, dims = 1:10, reduction = reduction)
             assert("umap" %in% names(obj@reductions), "Integrated UMAP missing")
         })
     }
@@ -521,7 +522,7 @@ check("UI", "Collapsed download options", {
 check("UI", "Busy RDS download button", {
     html <- htmltools::renderTags(ascseurat:::busy_download_button("download_rds", "Save Seurat Object (RDS)"))$html
     assert(grepl("asc-busy-download", html, fixed = TRUE), "Busy download class missing")
-    assert(grepl("Preparing download", html, fixed = TRUE), "Busy download label missing")
+    assert(grepl("data-busy-label=\"Preparing file", html, fixed = TRUE), "Busy download label missing")
 })
 
 write.csv(results, file.path(out_dir, "release_smoke_results.csv"), row.names = FALSE)

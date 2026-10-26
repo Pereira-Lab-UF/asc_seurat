@@ -16,7 +16,11 @@ ensure_expression_layer <- function(obj, genes, layer = "data") {
 
     assay <- SeuratObject::DefaultAssay(obj)
     scaled_features <- tryCatch(
-        rownames(SeuratObject::LayerData(obj, assay = assay, layer = "scale.data")),
+        if ("scale.data" %in% SeuratObject::Layers(obj[[assay]])) {
+            rownames(SeuratObject::LayerData(obj, assay = assay, layer = "scale.data"))
+        } else {
+            character()
+        },
         error = function(e) character()
     )
     missing_features <- setdiff(genes, scaled_features)
@@ -310,7 +314,6 @@ mod_visualization_ui <- function(id, step_number = 6) {
                     tags$hr(),
                     action_btn(ns("show_expression"), "Show Expression Plots",
                                icon = icon("chart-area")),
-                    uiOutput(ns("plot_generation_status")),
                     uiOutput(ns("plot_refresh_prompt"))
                 )
             )
@@ -634,31 +637,6 @@ mod_visualization_server <- function(id,
             plot_request(current_expression_selection())
         })
 
-        output$plot_generation_status <- renderUI({
-            show_count <- max(
-                input$show_expression %||% 0,
-                input$show_heatmap %||% 0,
-                input$show_features %||% 0
-            )
-            if (show_count <= 0) {
-                return(NULL)
-            }
-
-            req(plot_request())
-            genes <- requested_genes()
-            req(length(genes) > 0)
-
-            tags$div(
-                class = "alert alert-info small mt-3 mb-0",
-                icon("circle-info", class = "me-1"),
-                paste0(
-                    "Generating expression plots for ",
-                    length(genes),
-                    " genes. Please wait for the plots below to finish rendering."
-                )
-            )
-        })
-
         output$plot_refresh_prompt <- renderUI({
             request <- plot_request()
             if (is.null(request)) {
@@ -725,7 +703,13 @@ mod_visualization_server <- function(id,
             req(expression_obj(), requested_genes())
             genes <- intersect(requested_genes(), rownames(expression_obj()))
             n_genes <- length(genes)
-            height <- max(350, ceiling(n_genes / 4) * 300)
+            # Split plots use one row per gene, with one panel per sample.
+            n_rows <- if (is.null(requested_sample_split_col())) {
+                ceiling(n_genes / 4)
+            } else {
+                n_genes
+            }
+            height <- max(350, n_rows * 300)
             plotOutput(
                 ns("feature_plot_render"),
                 height = paste0(height, "px"),
@@ -744,11 +728,13 @@ mod_visualization_server <- function(id,
                     genes,
                     requested_slot()
                 )
+                # slot reaches Seurat::FeaturePlot; layer sets the colour
+                # limits scCustomize computes for split plots.
                 feature_args <- list(
                     seurat_object = plot_obj,
                     features = genes,
-                    num_columns = min(4, max(1, length(genes))),
                     slot = requested_slot(),
+                    layer = requested_slot(),
                     na_cutoff = if (identical(requested_slot(), "scale.data")) {
                         NULL
                     } else {
@@ -756,7 +742,11 @@ mod_visualization_server <- function(id,
                     }
                 )
                 if (!is.null(requested_sample_split_col())) {
+                    # scCustomize uses one column per sample and rejects
+                    # num_columns larger than the number of samples.
                     feature_args[["split.by"]] <- requested_sample_split_col()
+                } else {
+                    feature_args[["num_columns"]] <- min(4, max(1, length(genes)))
                 }
                 plot <- do.call(scCustomize::FeaturePlot_scCustom, feature_args)
                 setProgress(1)
@@ -855,6 +845,7 @@ mod_visualization_server <- function(id,
                             seurat_object = plot_obj,
                             features = gene,
                             slot = requested_slot(),
+                            layer = requested_slot(),
                             na_cutoff = if (identical(requested_slot(), "scale.data")) {
                                 NULL
                             } else {

@@ -34,7 +34,7 @@ data_path_help <- function(workdir = ascseurat_workdir()) {
                             "docker run --rm -p 3838:3838 \\",
                             '  -v "$PWD:/home/ascseurat/data:ro" \\',
                             "  pereiralabbio/asc-seurat:3",
-                            sep = "\\n"
+                            sep = "\n"
                         )
                     )
                 ),
@@ -165,13 +165,15 @@ card_plot_download <- function(prefix, download_id,
 #' @param label Button label.
 #' @param class CSS class.
 #' @param busy_label Label shown while the file is being prepared.
-#' @param timeout_ms Fallback time before the button is re-enabled.
+#' @param timeout_ms Optional fallback time before the button is re-enabled.
+#'   By default the button stays busy until the server reports that the file
+#'   is ready, because large objects can take several minutes to prepare.
 #' @return A download button UI element.
 #' @keywords internal
 busy_download_button <- function(output_id, label,
                                  class = "btn-download-soft w-100",
-                                 busy_label = "Preparing download...",
-                                 timeout_ms = 120000) {
+                                 busy_label = "Preparing file (large datasets can take several minutes)...",
+                                 timeout_ms = NULL) {
     tagList(
         downloadButton(
             output_id,
@@ -207,10 +209,12 @@ busy_download_button <- function(output_id, label,
     el.setAttribute('aria-disabled', 'true');
     el.setAttribute('aria-busy', 'true');
     el.innerHTML = '<span class=\"spinner-border spinner-border-sm me-2\" role=\"status\" aria-hidden=\"true\"></span>' + busyLabel;
-    var timeout = parseInt(el.dataset.busyTimeout || '120000', 10);
-    el.ascDownloadTimer = setTimeout(function() {
-      restoreDownloadButton(el);
-    }, timeout);
+    var timeout = parseInt(el.dataset.busyTimeout || '0', 10);
+    if (timeout > 0) {
+      el.ascDownloadTimer = setTimeout(function() {
+        restoreDownloadButton(el);
+      }, timeout);
+    }
   }
 
   document.addEventListener('click', function(event) {
@@ -301,10 +305,15 @@ input_norm_method <- function(id) {
 #' @param id Input ID.
 #' @keywords internal
 input_de_test <- function(id) {
+    tests <- c("wilcox", "bimod", "roc", "t")
+    # MAST is optional; offer it only when it is installed.
+    if (nzchar(system.file(package = "MAST"))) {
+        tests <- c(tests, "MAST")
+    }
     shinyWidgets::pickerInput(
         inputId = id,
         label = "Statistical test",
-        choices = c("wilcox", "bimod", "roc", "t", "MAST"),
+        choices = tests,
         selected = "wilcox",
         multiple = FALSE
     )

@@ -298,11 +298,20 @@ mod_celltype_annotation_server <- function(id,
                     singler_result(pred)
                     setProgress(1, message = "SingleR annotation complete.")
                 }, error = function(e) {
-                    showNotification(
-                        paste0("SingleR annotation failed: ", conditionMessage(e)),
-                        type = "error",
-                        duration = 15
-                    )
+                    # req() in get_input_object() signals an error with no message.
+                    if (nzchar(conditionMessage(e))) {
+                        showNotification(
+                            paste0("SingleR annotation failed: ", conditionMessage(e)),
+                            type = "error",
+                            duration = 15
+                        )
+                    } else {
+                        showNotification(
+                            "SingleR annotation was not run: upload a Seurat .rds file, or run clustering in the selected tab first.",
+                            type = "warning",
+                            duration = 15
+                        )
+                    }
                 })
             })
         })
@@ -384,7 +393,7 @@ mod_celltype_annotation_server <- function(id,
         output$download_annotated <- downloadHandler(
             filename = function() paste0("annotated_singler_", Sys.Date(), ".rds"),
             content = function(file) {
-                saveRDS(annotated_obj(), file)
+                save_download_rds(annotated_obj(), file)
             }
         )
 

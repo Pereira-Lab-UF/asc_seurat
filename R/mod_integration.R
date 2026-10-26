@@ -65,8 +65,7 @@ mod_integration_ui <- function(id) {
                     busy_download_button(
                         ns("download_int_rds"),
                         "Download Integrated Object (not clustered).",
-                        class = "btn btn-outline-secondary",
-                        busy_label = "Download Integrated Object (not clustered)."
+                        class = "btn btn-outline-secondary"
                     )
                 )
             ),
@@ -157,6 +156,10 @@ mod_integration_server <- function(id) {
         ns <- session$ns
         filtered_obj <- reactiveVal(NULL)
         qc_preview_cache <- reactiveVal(list())
+        # Counts read for the QC preview are reused when the samples are
+        # loaded for integration, so each sample is read from disk once.
+        preview_counts <- new.env(parent = emptyenv())
+        reusable_count_formats <- c("10x_dir", "10x_h5", "csv", "tsv")
 
         qc_defaults <- list(
             mito_pattern = "",
@@ -354,6 +357,41 @@ mod_integration_server <- function(id) {
             sanitize_qc_config(config)
         }
 
+        input_version_key <- function(resolved_path) {
+            # A directory's mtime does not change when its files are
+            # overwritten in place, so 10X folders are keyed by their files.
+            files <- if (dir.exists(resolved_path)) {
+                list.files(resolved_path, full.names = TRUE)
+            } else {
+                resolved_path
+            }
+            info <- file.info(files)
+            stamps <- paste(basename(files), as.character(info$mtime), info$size,
+                            sep = "|", collapse = ";")
+            paste(resolved_path, stamps, sep = "\r")
+        }
+
+        take_preview_counts <- function(resolved_path) {
+            key <- input_version_key(resolved_path)
+            if (!exists(key, envir = preview_counts, inherits = FALSE)) {
+                return(NULL)
+            }
+            counts <- get(key, envir = preview_counts, inherits = FALSE)
+            rm(list = key, envir = preview_counts)
+            counts
+        }
+
+        prune_preview_counts <- function(raw_paths) {
+            raw_paths <- trimws(as.character(raw_paths))
+            keep <- vapply(
+                raw_paths[nzchar(raw_paths)],
+                function(path) input_version_key(resolve_input_path(path)),
+                character(1)
+            )
+            stale <- setdiff(ls(preview_counts, all.names = TRUE), keep)
+            rm(list = stale, envir = preview_counts)
+        }
+
         sample_qc_defaults <- function(sample_name, raw_path, mito_pattern) {
             raw_path <- trimws(as.character(raw_path %||% ""))
             if (!nzchar(raw_path)) {
@@ -365,13 +403,8 @@ mod_integration_server <- function(id) {
                 return(NULL)
             }
 
-            info <- file.info(resolved_path)
-            modified <- if (nrow(info) && !is.na(info$mtime[[1]])) {
-                as.character(info$mtime[[1]])
-            } else {
-                ""
-            }
-            cache_key <- paste(resolved_path, modified, mito_pattern, sep = "\r")
+            version_key <- input_version_key(resolved_path)
+            cache_key <- paste(version_key, mito_pattern, sep = "\r")
             cache <- qc_preview_cache()
             cached <- cache[[cache_key]]
             if (!is.null(cached)) {
@@ -385,6 +418,13 @@ mod_integration_server <- function(id) {
                     min.cells = 0,
                     min.features = 0
                 )
+                if (detect_input_format(resolved_path) %in% reusable_count_formats) {
+                    assign(
+                        version_key,
+                        SeuratObject::LayerData(obj, layer = "counts"),
+                        envir = preview_counts
+                    )
+                }
                 if (nzchar(trimws(mito_pattern))) {
                     obj[["percent.mt"]] <- Seurat::PercentageFeatureSet(
                         obj,
@@ -409,6 +449,7 @@ mod_integration_server <- function(id) {
             if (!"data_path" %in% colnames(config)) {
                 return(config)
             }
+            prune_preview_counts(config$data_path)
             config <- sanitize_qc_config(config)
             for (i in seq_len(nrow(config))) {
                 defaults <- sample_qc_defaults(
@@ -634,12 +675,24 @@ mod_integration_server <- function(id) {
 
                 message("Loading: ", sample_name)
 
-                data <- load_input_data(
-                    path = data_path,
-                    project = sample_name,
-                    min.cells = 3,
-                    min.features = min_genes
-                )
+                counts <- take_preview_counts(data_path)
+                data <- if (!is.null(counts)) {
+                    # Same filters load_input_data() applies to these formats.
+                    Seurat::CreateSeuratObject(
+                        counts = counts,
+                        project = sample_name,
+                        min.cells = 3,
+                        min.features = min_genes
+                    )
+                } else {
+                    load_input_data(
+                        path = data_path,
+                        project = sample_name,
+                        min.cells = 3,
+                        min.features = min_genes
+                    )
+                }
+                rm(counts)
 
                 mito_genes <- if (nzchar(trimws(mito))) {
                     grep(mito, rownames(data), value = TRUE)
@@ -678,6 +731,8 @@ mod_integration_server <- function(id) {
 
                 data
             })
+
+            rm(list = ls(preview_counts, all.names = TRUE), envir = preview_counts)
 
             setProgress(0.4, message = "Merging samples...")
             obj <- if (length(obj_list) == 1L) {
@@ -989,7 +1044,7 @@ mod_integration_server <- function(id) {
                     ),
                     add = TRUE
                 )
-                saveRDS(active_integrated_obj(), file)
+                save_download_rds(active_integrated_obj(), file)
             }
         )
 

@@ -1356,12 +1356,21 @@ run_tradeseq <- function(sce, assignment, gene_subset = NULL, nknots = 6) {
         }
     }
 
+    # Genes are fitted independently, so a parallel fit gives the same results.
+    workers <- min(4L, BiocParallel::multicoreWorkers())
+    bpparam <- if (.Platform$OS.type == "windows" || workers < 2L) {
+        BiocParallel::SerialParam()
+    } else {
+        BiocParallel::MulticoreParam(workers = workers)
+    }
     fit <- tradeSeq::fitGAM(
         counts = SingleCellExperiment::counts(sce),
         pseudotime = pseudotime,
         cellWeights = cell_weights,
         nknots = as.integer(nknots),
-        verbose = FALSE
+        verbose = FALSE,
+        parallel = workers >= 2L,
+        BPPARAM = bpparam
     )
     association <- as.data.frame(tradeSeq::associationTest(fit))
 
@@ -2612,6 +2621,19 @@ plot_slingshot_mst <- function(res) {
 }
 
 
+# Returns what a download should write, or stops the download with a visible
+# message instead of saving an empty file when the analysis has not run.
+download_content_or_stop <- function(get_value, analysis) {
+    value <- tryCatch(get_value(), error = function(e) NULL)
+    if (is.null(value)) {
+        message <- paste0("Nothing to download yet: run ", analysis, " first.")
+        shiny::showNotification(message, type = "warning", duration = 8)
+        stop(message, call. = FALSE)
+    }
+    value
+}
+
+
 #' Trajectory Inference Module - Server
 #'
 #' @param id Module namespace ID.
@@ -2871,8 +2893,11 @@ mod_trajectory_server <- function(id) {
         output$download_ti_rds <- downloadHandler(
             filename = function() paste0("trajectory_", Sys.Date(), ".rds"),
             content = function(file) {
-                req(ti_result())
-                saveRDS(ti_result()$obj, file)
+                obj <- download_content_or_stop(
+                    function() ti_result()$obj,
+                    "trajectory inference"
+                )
+                save_download_rds(obj, file)
             }
         )
 
@@ -3154,7 +3179,11 @@ mod_trajectory_server <- function(id) {
         output$download_paga_genes <- downloadHandler(
             filename = function() paste0("paga_genes_", Sys.Date(), ".csv"),
             content = function(file) {
-                write.csv(paga_gene_result()$table, file, row.names = FALSE)
+                table <- download_content_or_stop(
+                    function() paga_gene_result()$table,
+                    "the PAGA gene analysis"
+                )
+                write.csv(table, file, row.names = FALSE)
             }
         )
 
@@ -3274,15 +3303,21 @@ mod_trajectory_server <- function(id) {
         output$download_monocle_genes <- downloadHandler(
             filename = function() paste0("monocle3_trajectory_genes_", Sys.Date(), ".csv"),
             content = function(file) {
-                write.csv(monocle_gene_result()$table, file, row.names = FALSE)
+                table <- download_content_or_stop(
+                    function() monocle_gene_result()$table,
+                    "the Monocle 3 gene analysis"
+                )
+                write.csv(table, file, row.names = FALSE)
             }
         )
 
         output$download_monocle_modules <- downloadHandler(
             filename = function() paste0("monocle3_module_genes_", Sys.Date(), ".csv"),
             content = function(file) {
-                req(monocle_module_result())
-                modules <- monocle_module_result()$modules
+                modules <- download_content_or_stop(
+                    function() monocle_module_result()$modules,
+                    "the Monocle 3 module analysis"
+                )
                 gene_col <- intersect(
                     c("gene_id", "id", "gene_short_name", "gene"),
                     colnames(modules)
@@ -3445,7 +3480,11 @@ mod_trajectory_server <- function(id) {
         output$download_traj_genes <- downloadHandler(
             filename = function() paste0("trajectory_genes_", Sys.Date(), ".csv"),
             content = function(file) {
-                write.csv(traj_de_result()$table, file, row.names = FALSE)
+                table <- download_content_or_stop(
+                    function() traj_de_result()$table,
+                    "the trajectory gene analysis"
+                )
+                write.csv(table, file, row.names = FALSE)
             }
         )
 

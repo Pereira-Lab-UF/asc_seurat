@@ -7,7 +7,8 @@
 mod_clustering_ui(
   id,
   step_number = 4,
-  download_label = "Download Clustered Object"
+  download_label = "Download Clustered Object",
+  tsne_option = TRUE
 )
 }
 \arguments{
@@ -16,6 +17,9 @@ mod_clustering_ui(
 \item{step_number}{Numeric step number to show in the workflow title.}
 
 \item{download_label}{Character label for the clustered object download.}
+
+\item{tsne_option}{Logical. Show the option to also compute tSNE
+(single-sample workflows only).}
 }
 \description{
 Clustering Module - UI

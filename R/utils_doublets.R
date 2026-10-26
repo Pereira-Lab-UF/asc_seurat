@@ -30,6 +30,14 @@ detect_doublets <- function(obj, sample_col = NULL) {
         sample_values <- obj[[sample_col]][, 1]
     }
 
+    # monocle3 overrides counts<- for SingleCellExperiment with a method that
+    # calls assay<- unqualified, so scDblFinder fails once monocle3 is loaded
+    # unless SummarizedExperiment is on the search path.
+    if (!"package:SummarizedExperiment" %in% search()) {
+        suppressPackageStartupMessages(attachNamespace("SummarizedExperiment"))
+        on.exit(detach("package:SummarizedExperiment", character.only = TRUE), add = TRUE)
+    }
+
     sce <- scDblFinder::scDblFinder(
         sce,
         samples = sample_values

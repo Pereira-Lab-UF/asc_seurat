@@ -37,6 +37,16 @@ load_seurat_rds <- function(path) {
 }
 
 
+# Saves an object for a browser download. gzip level 1 is ~4x faster than
+# saveRDS()'s default on large Seurat objects (files ~10% larger) and still
+# produces a standard .rds file for readRDS().
+save_download_rds <- function(obj, file) {
+    con <- gzfile(file, open = "wb", compression = 1)
+    on.exit(close(con), add = TRUE)
+    saveRDS(obj, con)
+}
+
+
 # Null-coalescing helper.
 `%||%` <- function(x, y) {
     if (is.null(x)) y else x

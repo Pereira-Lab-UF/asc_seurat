@@ -76,6 +76,8 @@ RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install(c( \
 
 RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install("samuel-marsh/scCustomize", ask = FALSE)'
 RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install("BioBam/scMaSigPro", ask = FALSE)'
+# presto gives Seurat's FindMarkers/FindAllMarkers a fast Wilcoxon test.
+RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install("immunogenomics/presto", ask = FALSE, upgrade = FALSE)'
 ARG BPCELLS_REF=adc4a3c30f60a03522f58947d733d7d77a6eb2cf
 RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install(c("hexbin", "RcppEigen", "readr", "scattermore", "ggrepel", "RColorBrewer", "tidyr", "tibble", "vctrs", "lifecycle", "stringr", "magrittr", "scales"), ask = FALSE)'
 RUN git init /tmp/BPCells \
@@ -100,7 +102,7 @@ RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install("dsong-la
 
 RUN R -q -e 'library(reticulate); use_python(Sys.getenv("RETICULATE_PYTHON"), required = TRUE); py_run_string("import scanpy, anndata"); print(py_config())'
 RUN R -q -e 'stopifnot(requireNamespace("PseudotimeDE", quietly = TRUE)); stopifnot(requireNamespace("monocle3", quietly = TRUE)); stopifnot(requireNamespace("tradeSeq", quietly = TRUE))'
-RUN R -q -e 'pkgs <- c("shiny", "bslib", "Seurat", "SeuratObject", "scCustomize", "slingshot", "harmony", "SingleCellExperiment", "SummarizedExperiment", "DelayedMatrixStats", "ggplot2", "dplyr", "patchwork", "reactable", "DT", "shinyWidgets", "shinyFeedback", "shinycssloaders", "reticulate", "sass", "hdf5r", "metap", "monocle3", "PseudotimeDE", "scMaSigPro", "tradeSeq", "anndataR", "scDblFinder", "SingleR", "celldex", "BPCells"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing)) stop("Missing R packages: ", paste(missing, collapse = ", "))'
+RUN R -q -e 'pkgs <- c("shiny", "bslib", "Seurat", "SeuratObject", "scCustomize", "slingshot", "harmony", "SingleCellExperiment", "SummarizedExperiment", "DelayedMatrixStats", "ggplot2", "dplyr", "patchwork", "reactable", "DT", "shinyWidgets", "shinyFeedback", "shinycssloaders", "reticulate", "sass", "hdf5r", "metap", "monocle3", "PseudotimeDE", "scMaSigPro", "tradeSeq", "anndataR", "scDblFinder", "SingleR", "celldex", "BPCells", "presto"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing)) stop("Missing R packages: ", paste(missing, collapse = ", "))'
 
 COPY . /tmp/ascseurat
 RUN R -q -e 'pak::local_install("/tmp/ascseurat", dependencies = FALSE)' \

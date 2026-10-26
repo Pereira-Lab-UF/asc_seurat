@@ -49,6 +49,7 @@ Imports:
     PseudotimeDE,
     scMaSigPro,
     tradeSeq,
+    BiocParallel,
     anndataR,
     SummarizedExperiment,
     scDblFinder,

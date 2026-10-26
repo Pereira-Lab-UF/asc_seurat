@@ -445,11 +445,20 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
                         }
                     ),
                     error = function(e) {
-                        showNotification(
-                            paste0("Differential expression failed: ", conditionMessage(e)),
-                            type = "error",
-                            duration = 12
-                        )
+                        # req() inside the branches signals an error with no message.
+                        if (nzchar(conditionMessage(e))) {
+                            showNotification(
+                                paste0("Differential expression failed: ", conditionMessage(e)),
+                                type = "error",
+                                duration = 12
+                            )
+                        } else {
+                            showNotification(
+                                "Differential expression was not run: select the cluster(s) and condition values for this comparison first.",
+                                type = "warning",
+                                duration = 12
+                            )
+                        }
                         NULL
                     }
                 )

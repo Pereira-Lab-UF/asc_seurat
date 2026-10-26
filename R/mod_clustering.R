@@ -3,11 +3,14 @@
 #' @param id Module namespace ID.
 #' @param step_number Numeric step number to show in the workflow title.
 #' @param download_label Character label for the clustered object download.
+#' @param tsne_option Logical. Show the option to also compute tSNE
+#'   (single-sample workflows only).
 #' @export
 #' @keywords internal
 mod_clustering_ui <- function(id,
                               step_number = 4,
-                              download_label = "Download Clustered Object") {
+                              download_label = "Download Clustered Object",
+                              tsne_option = TRUE) {
     ns <- NS(id)
     if (is.null(step_number) || !is.finite(step_number)) {
         step_number <- 4L
@@ -30,7 +33,12 @@ mod_clustering_ui <- function(id,
                                  "Clustering resolution",
                                  value = 0.6, min = 0.05, max = 3, step = 0.1),
                     tags$p(class = "text-muted small",
-                           "Uses the selected number of PCs from the previous step. Typical resolution: 0.4-1.2; higher values create more clusters.")
+                           "Uses the selected number of PCs from the previous step. Typical resolution: 0.4-1.2; higher values create more clusters."),
+                    if (isTRUE(tsne_option)) {
+                        checkboxInput(ns("run_tsne"),
+                                      "Also compute tSNE (slow for large datasets)",
+                                      value = TRUE)
+                    }
                 )
             ),
             card(
@@ -43,8 +51,7 @@ mod_clustering_ui <- function(id,
                         condition = sprintf("output['%s'] == 'true'", ns("clustering_ready")),
                         busy_download_button(
                             ns("download_rds"),
-                            download_label,
-                            busy_label = download_label
+                            download_label
                         )
                     )
                 )
@@ -85,17 +92,7 @@ mod_clustering_ui <- function(id,
         conditionalPanel(
             condition = sprintf("output['%s'] == 'true'", ns("clustering_ready")),
             tags$hr(),
-            layout_columns(
-                col_widths = c(6, 6),
-                card(
-                    card_header("UMAP - Clusters"),
-                    card_body(
-                        class = "plot-container plot-container-wide",
-                        with_spinner(plotOutput(ns("umap_clusters"), height = "500px", width = "100%"))
-                    )
-                ),
-                uiOutput(ns("secondary_plot_card"))
-            ),
+            uiOutput(ns("dimred_plots")),
             uiOutput(ns("sample_split_plot_card")),
 
             # Cluster info
@@ -322,7 +319,8 @@ mod_clustering_server <- function(id, norm_result) {
             withProgress(message = "Clustering...", value = 0.3, {
                 reduction <- default_reduction(obj_for_clustering)
                 n_dims <- selected_n_pcs(obj_for_clustering)
-                tsne_requested <- is_single_sample(obj_for_clustering)
+                tsne_requested <- is_single_sample(obj_for_clustering) &&
+                    !isFALSE(input$run_tsne)
                 obj <- run_clustering(
                     obj = obj_for_clustering,
                     dims = seq_len(n_dims),
@@ -438,19 +436,35 @@ mod_clustering_server <- function(id, norm_result) {
                 ggplot2::labs(color = "Cluster")
         }, height = function() 500, width = function() plot_width("umap_clusters"))
 
-        output$secondary_plot_card <- renderUI({
+        output$dimred_plots <- renderUI({
             req(active_obj())
+            umap_card <- card(
+                card_header("UMAP - Clusters"),
+                card_body(
+                    class = "plot-container plot-container-wide",
+                    with_spinner(plotOutput(ns("umap_clusters"), height = "500px", width = "100%"))
+                )
+            )
+            # Single-sample runs without tSNE show the UMAP across the full row.
+            if (is_single_sample(active_obj()) &&
+                !"tsne" %in% names(active_obj()@reductions)) {
+                return(umap_card)
+            }
             title <- if (is_single_sample(active_obj())) {
                 "tSNE - Clusters"
             } else {
                 "UMAP - Samples"
             }
 
-            card(
-                card_header(title),
-                card_body(
-                    class = "plot-container plot-container-wide",
-                    with_spinner(plotOutput(ns("secondary_plot"), height = "500px", width = "100%"))
+            layout_columns(
+                col_widths = c(6, 6),
+                umap_card,
+                card(
+                    card_header(title),
+                    card_body(
+                        class = "plot-container plot-container-wide",
+                        with_spinner(plotOutput(ns("secondary_plot"), height = "500px", width = "100%"))
+                    )
                 )
             )
         })
@@ -589,7 +603,7 @@ mod_clustering_server <- function(id, norm_result) {
                     ),
                     add = TRUE
                 )
-                saveRDS(active_obj(), file)
+                save_download_rds(active_obj(), file)
             }
         )
 

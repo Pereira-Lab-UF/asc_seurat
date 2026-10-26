@@ -36,6 +36,11 @@ test_that("SCTransform keeps RNA prepared for downstream DE and plots", {
 
     SeuratObject::DefaultAssay(norm_obj) <- "RNA"
     expect_gt(ncol(Seurat::GetAssayData(norm_obj, layer = "data")), 0)
+
+    # RNA scaled values are computed on demand for plots.
+    genes <- head(SeuratObject::VariableFeatures(norm_obj), 3)
+    scaled <- ascseurat:::fetch_expression_layer(norm_obj, genes, "scale.data")
+    expect_identical(colnames(scaled), genes)
 })
 
 test_that("clustering can use an integrated reduction", {

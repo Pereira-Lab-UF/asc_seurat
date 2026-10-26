@@ -256,3 +256,21 @@ test_that("PseudotimeDE-fast missing dependency message is friendly", {
         expect_false(grepl("Package 'PseudotimeDE'", error_message, fixed = TRUE))
     }
 })
+
+test_that("trajectory downloads stop with a message when no result exists", {
+    shiny::testServer(function(input, output, session) {}, {
+        expect_error(
+            ascseurat:::download_content_or_stop(function() NULL, "the trajectory gene analysis"),
+            "Nothing to download yet: run the trajectory gene analysis first"
+        )
+        expect_error(
+            ascseurat:::download_content_or_stop(function() shiny::req(FALSE), "trajectory inference"),
+            "Nothing to download yet: run trajectory inference first"
+        )
+        table <- data.frame(gene = "A")
+        expect_identical(
+            ascseurat:::download_content_or_stop(function() table, "x"),
+            table
+        )
+    })
+})

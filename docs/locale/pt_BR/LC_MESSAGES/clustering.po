@@ -213,11 +213,16 @@ msgstr ""
 
 #: ../../clustering.rst:100 4e499a4c03434231a662de5dacd84fd7
 msgid ""
-"After clustering, the Single Sample workflow displays a UMAP plot and a tSNE"
-" plot colored by cluster."
+"After clustering, the Single Sample workflow displays a UMAP plot colored by"
+" cluster. A tSNE plot is shown next to it when **Also compute tSNE (slow for"
+" large datasets)** is checked, which is the default; uncheck it before "
+"clicking :guilabel:`Run Clustering` to skip tSNE on large datasets."
 msgstr ""
-"Após clustering, o Single Sample workflow exibe um gráfico UMAP e um gráfico"
-" tSNE colorido por cluster."
+"Após clustering, o Single Sample workflow exibe um gráfico UMAP colorido por"
+" cluster. Um gráfico tSNE é exibido ao lado quando **Also compute tSNE (slow"
+" for large datasets)** está marcado, que é o padrão; desmarque essa opção "
+"antes de clicar em :guilabel:`Run Clustering` para pular o tSNE em conjuntos"
+" de dados grandes."
 
 #: ../../clustering.rst:108 e98618b08a3d40d98a7467d231ba065d
 msgid "Asc-Seurat v3 UMAP and tSNE cluster visualizations."

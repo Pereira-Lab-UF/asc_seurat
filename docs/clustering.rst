@@ -97,8 +97,10 @@ biological question and marker-gene interpretation.
    downstream differential expression agree with the resulting cluster
    structure.
 
-After clustering, the Single Sample workflow displays a UMAP plot and a
-tSNE plot colored by cluster.
+After clustering, the Single Sample workflow displays a UMAP plot colored
+by cluster. A tSNE plot is shown next to it when **Also compute tSNE
+(slow for large datasets)** is checked, which is the default; uncheck it
+before clicking :guilabel:`Run Clustering` to skip tSNE on large datasets.
 
 .. figure:: images/v3/v3_clustering_umap_tsne.png
    :alt: Asc-Seurat v3 UMAP and tSNE cluster visualizations.

@@ -13,6 +13,26 @@ options(shiny.maxRequestSize = getOption("shiny.maxRequestSize", 5120 * 1024^2))
 
 enableBookmarking("server")
 
+# Keep server-side bookmarks in the writable work directory instead of the
+# installed package folder, which is read-only in the Docker image.
+bookmark_state_dir <- function(id) {
+    file.path(
+        getOption("ascseurat.workdir", getwd()),
+        "shiny_bookmarks",
+        id
+    )
+}
+shinyOptions(
+    save.interface = function(id, callback) {
+        state_dir <- bookmark_state_dir(id)
+        dir.create(state_dir, recursive = TRUE, showWarnings = FALSE)
+        callback(state_dir)
+    },
+    load.interface = function(id, callback) {
+        callback(bookmark_state_dir(id))
+    }
+)
+
 asc_theme <- bs_theme(
     version = 5,
     # No bootswatch — we want to start from a clean Bootstrap base and apply
@@ -337,7 +357,7 @@ ui <- function(request) {
 
                     tags$p(
                         class = "text-center text-muted small",
-                        "Asc-Seurat v3.0.0 \u2014 ",
+                        paste0("Asc-Seurat v", utils::packageVersion("ascseurat"), " \u2014 "),
                         tags$a(
                             href = "https://github.com/Pereira-Lab-UF/asc_seurat",
                             "GitHub",
@@ -397,7 +417,8 @@ ui <- function(request) {
                         mod_clustering_ui(
                             "multi_clust",
                             step_number = 2,
-                            download_label = "Download Integrated and Clustered Object"
+                            download_label = "Download Integrated and Clustered Object",
+                            tsne_option = FALSE
                         )
                     ),
                     conditionalPanel(
@@ -490,6 +511,14 @@ ui <- function(request) {
 }
 
 server <- function(input, output, session) {
+    # Bookmarks restore parameters only: restoring action-button counts would
+    # re-run the analysis steps those buttons trigger.
+    onBookmark(function(state) {
+        values <- reactiveValuesToList(input)
+        is_button <- vapply(values, inherits, logical(1), what = "shinyActionButtonValue")
+        state$exclude <- unique(c(state$exclude, names(values)[is_button]))
+    })
+
     onBookmarked(function(url) {
         showModal(modalDialog(
             title = "Bookmark created",
@@ -543,13 +572,11 @@ server <- function(input, output, session) {
     }
 
     log_map <- list(
-        list(id = "demo_data-load_demo", action = "Load demo data (demo tab)", prefix = "demo_data-"),
         list(id = "demo_qc-apply_filter", action = "QC filter (demo)", prefix = "demo_qc-"),
         list(id = "demo_norm-run_norm", action = "Normalize (demo)", prefix = "demo_norm-"),
         list(id = "demo_clust-run_clustering", action = "Cluster (demo)", prefix = "demo_clust-"),
         list(id = "demo_de-run_de", action = "Run DE (demo)", prefix = "demo_de-"),
         list(id = "single_data-load_data", action = "Load single-sample data", prefix = "single_data-"),
-        list(id = "single_data-load_demo", action = "Load demo data", prefix = "single_data-"),
         list(id = "single_data-apply_metadata", action = "Add single-sample metadata", prefix = "single_data-"),
         list(id = "single_qc-apply_filter", action = "QC filter (single sample)", prefix = "single_qc-"),
         list(id = "single_norm-run_norm", action = "Normalize single sample", prefix = "single_norm-"),
@@ -575,6 +602,11 @@ server <- function(input, output, session) {
             }, ignoreInit = TRUE)
         })
     }
+    # The demo dataset is loaded through demo_trigger, not an input button.
+    observeEvent(demo_trigger(), {
+        req(demo_trigger() > 0)
+        append_log("Load demo data (demo tab)", "demo_data-")
+    }, ignoreInit = TRUE)
 
     build_session_report <- function() {
         pkg_version <- function(pkg) {

@@ -208,6 +208,8 @@ run_integration <- function(obj, method = "rpca", dims = 1:30,
         ")."
     )
 
+    # run_normalization() already runs PCA; neighbors and UMAP are computed by
+    # run_clustering() with the PCs chosen for clustering.
     if (method == "harmony") {
         message("Integrating with Harmony...")
         if (!requireNamespace("harmony", quietly = TRUE)) {
@@ -220,13 +222,7 @@ run_integration <- function(obj, method = "rpca", dims = 1:30,
             nfeatures = nfeatures,
             scale_factor = scale_factor
         )
-        obj <- RunPCA(obj, verbose = FALSE)
         obj <- harmony::RunHarmony(obj, group.by.vars = sample_col)
-        integration_dims <- valid_reduction_dims(obj, "harmony", dims)
-        obj <- FindNeighbors(obj, reduction = "harmony",
-                             dims = integration_dims, verbose = FALSE)
-        obj <- RunUMAP(obj, reduction = "harmony",
-                       dims = integration_dims, verbose = FALSE)
         attr(obj, "ascseurat_default_reduction") <- "harmony"
     } else {
         message("Integrating with RPCA via IntegrateLayers...")
@@ -236,7 +232,6 @@ run_integration <- function(obj, method = "rpca", dims = 1:30,
             nfeatures = nfeatures,
             scale_factor = scale_factor
         )
-        obj <- RunPCA(obj, verbose = FALSE)
 
         integration_assay <- if (identical(normalization_method, "sctransform") &&
             "SCT" %in% names(obj@assays)) {
@@ -261,11 +256,6 @@ run_integration <- function(obj, method = "rpca", dims = 1:30,
             k.weight = min(100, max(1, floor(as.integer(min_sample_cells) / 4))),
             verbose = FALSE
         )
-        integration_dims <- valid_reduction_dims(obj, "integrated.rpca", dims)
-        obj <- FindNeighbors(obj, reduction = "integrated.rpca",
-                             dims = integration_dims, verbose = FALSE)
-        obj <- RunUMAP(obj, reduction = "integrated.rpca",
-                       dims = integration_dims, verbose = FALSE)
         attr(obj, "ascseurat_default_reduction") <- "integrated.rpca"
     }
 
@@ -276,12 +266,15 @@ run_integration <- function(obj, method = "rpca", dims = 1:30,
 #' Prepare RNA Assay for Differential Expression and Visualization
 #'
 #' SCTransform is used through PCA/clustering, while RNA-normalized values are
-#' kept available for DE and expression plots.
+#' kept available for DE and expression plots. RNA scaled values are not
+#' precomputed: expression plots scale the requested genes on demand, which
+#' avoids storing a second dense matrix next to the SCT scale.data.
 #'
 #' @param obj A Seurat object.
 #' @param nfeatures Integer. Number of variable features.
 #' @param scale_factor Numeric. Scale factor for LogNormalize.
-#' @return A Seurat object with RNA data and scale.data prepared when possible.
+#' @return A Seurat object with RNA data and variable features prepared when
+#'   possible.
 #' @keywords internal
 prepare_rna_assay_for_de <- function(obj, nfeatures = 3000,
                                      scale_factor = 10000) {
@@ -305,7 +298,6 @@ prepare_rna_assay_for_de <- function(obj, nfeatures = 3000,
         nfeatures = nfeatures,
         verbose = FALSE
     )
-    obj <- ScaleData(obj, verbose = FALSE)
     obj
 }
 

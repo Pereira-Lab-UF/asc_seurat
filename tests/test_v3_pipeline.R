@@ -348,19 +348,21 @@ merged_norm <- run_normalization(merged, method = "lognorm", nfeatures = 2000)
 if (has_harmony) {
     test("run_integration() — Harmony", {
         merged_int <- run_integration(merged, method = "harmony", dims = 1:20)
-        stopifnot("umap" %in% names(merged_int@reductions))
+        stopifnot("harmony" %in% names(merged_int@reductions))
         cat(sprintf(" [%d cells integrated]", ncol(merged_int)))
     })
 
     merged_int <- run_integration(merged, method = "harmony", dims = 1:20)
 
     test("Clustering on integrated data", {
-        merged_clust <- FindClusters(merged_int, resolution = 0.6, verbose = FALSE)
+        merged_clust <- run_clustering(merged_int, dims = 1:20, resolution = 0.6,
+                                       reduction = "harmony")
         n_clust <- length(levels(Idents(merged_clust)))
         cat(sprintf(" [%d clusters]", n_clust))
     })
 
-    merged_clust <- FindClusters(merged_int, resolution = 0.6, verbose = FALSE)
+    merged_clust <- run_clustering(merged_int, dims = 1:20, resolution = 0.6,
+                                   reduction = "harmony")
 
     if (has_scCustomize) {
         test("Integration UMAP — by cluster", {
