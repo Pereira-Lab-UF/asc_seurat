@@ -796,8 +796,11 @@ mod_integration_server <- function(id) {
             filtered_obj(NULL)
             updateRadioButtons(session, "post_filter_mode", selected = "none")
             obj <- integrated_obj()
+            # Clustering uses the integrated reduction, which for Harmony only
+            # has the integration PCs.
+            reduction <- attr(obj, "ascseurat_default_reduction", exact = TRUE) %||% "pca"
             available <- tryCatch(
-                ncol(Seurat::Embeddings(obj, "pca")),
+                ncol(Seurat::Embeddings(obj, reduction)),
                 error = function(e) input$n_dims %||% 30L
             )
             available <- suppressWarnings(as.integer(available))

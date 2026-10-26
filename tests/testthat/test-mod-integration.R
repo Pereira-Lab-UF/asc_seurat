@@ -230,6 +230,46 @@ test_that("the first integration updates the number of PCs for clustering", {
     })
 })
 
+test_that("clustering PCs are capped to the integrated reduction", {
+    root <- withr::local_tempdir()
+    sample_path <- write_10x_fixture(file.path(root, "s1"), 1:300)
+    updates <- local_numeric_updates()
+    testthat::local_mocked_bindings(
+        run_integration = function(obj, ...) {
+            reduction <- function(n, key) {
+                embeddings <- matrix(
+                    stats::rnorm(ncol(obj) * n),
+                    nrow = ncol(obj),
+                    dimnames = list(colnames(obj), paste0(key, seq_len(n)))
+                )
+                SeuratObject::CreateDimReducObject(embeddings = embeddings, key = key, assay = "RNA")
+            }
+            obj[["pca"]] <- reduction(50, "PC_")
+            obj[["harmony"]] <- reduction(10, "harmony_")
+            attr(obj, "ascseurat_default_reduction") <- "harmony"
+            obj
+        },
+        .package = "ascseurat"
+    )
+
+    shiny::testServer(ascseurat::mod_integration_server, {
+        session$setInputs(
+            n_samples = 1,
+            sample_name_1 = "s1", sample_path_1 = sample_path,
+            qc_mito_pattern_1 = "", qc_min_genes_1 = 0,
+            qc_max_genes_1 = 1e6, qc_max_mito_1 = 100,
+            int_method = "harmony", norm_method = "lognorm", n_dims = 30
+        )
+        updates$calls <- list()
+        suppressMessages(session$setInputs(run_integration = 1))
+
+        expect_equal(
+            Filter(function(call) identical(call$id, "cluster_n_dims"), updates$calls),
+            list(list(id = "cluster_n_dims", value = 10, max = 10))
+        )
+    })
+})
+
 test_that("integration reuses the counts read for the QC preview", {
     root <- withr::local_tempdir()
     sample_path <- write_10x_fixture(file.path(root, "s1"), 1:300)
