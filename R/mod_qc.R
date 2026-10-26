@@ -125,13 +125,19 @@ mod_qc_server <- function(id, seurat_obj) {
 
         filtered_obj <- reactiveVal(NULL)
 
-        observeEvent(seurat_obj(), {
-            defaults <- qc_filter_defaults(seurat_obj()@meta.data)
+        # Also fires when the upstream becomes unavailable (req-blocked), so a
+        # stale filtered object is never kept.
+        observeEvent(tryCatch(seurat_obj(), error = function(e) NULL), {
+            filtered_obj(NULL)
+            obj <- tryCatch(seurat_obj(), error = function(e) NULL)
+            if (is.null(obj)) {
+                return(invisible(NULL))
+            }
+            defaults <- qc_filter_defaults(obj@meta.data)
             updateNumericInput(session, "min_genes", value = defaults$min_genes)
             updateNumericInput(session, "max_genes", value = defaults$max_genes)
             updateNumericInput(session, "max_mito", value = defaults$max_mito)
-            filtered_obj(NULL)
-        }, ignoreNULL = TRUE)
+        }, ignoreNULL = FALSE)
 
         observeEvent(input$filter_mode, {
             filtered_obj(NULL)
@@ -143,7 +149,9 @@ mod_qc_server <- function(id, seurat_obj) {
 
         observe({
             hideFeedback("max_mito")
-            if (!is.null(input$max_mito) && (input$max_mito < 0 || input$max_mito > 100)) {
+            max_mito <- input$max_mito
+            # A cleared numericInput arrives as NA.
+            if (!is.null(max_mito) && (is.na(max_mito) || max_mito < 0 || max_mito > 100)) {
                 showFeedbackDanger("max_mito", "Mitochondrial percentage must be between 0 and 100")
             }
         })
@@ -160,13 +168,28 @@ mod_qc_server <- function(id, seurat_obj) {
         observeEvent(input$apply_filter, {
             req(seurat_obj())
 
+            filter_mode <- input$filter_mode %||% "none"
+            if (identical(filter_mode, "filter")) {
+                thresholds <- list(input$min_genes, input$max_genes, input$max_mito)
+                blank <- vapply(thresholds, function(value) {
+                    length(value) != 1 || is.na(value)
+                }, logical(1))
+                if (any(blank)) {
+                    showNotification(
+                        "Enter a value for every filtering threshold (min genes, max genes and max mitochondrial %) before applying filters.",
+                        type = "error",
+                        duration = 10
+                    )
+                    return(invisible(NULL))
+                }
+            }
+
             withProgress(message = "Filtering cells...", value = 0.4, {
                 obj <- seurat_obj()
                 meta <- obj@meta.data
                 keep <- rep(TRUE, nrow(meta))
                 names(keep) <- rownames(meta)
 
-                filter_mode <- input$filter_mode %||% "none"
                 if (identical(filter_mode, "filter")) {
                     if ("nFeature_RNA" %in% colnames(meta)) {
                         keep <- keep &

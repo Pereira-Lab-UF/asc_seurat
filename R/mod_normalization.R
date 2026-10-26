@@ -149,11 +149,17 @@ mod_normalization_server <- function(id, seurat_obj) {
             }
         }
 
-        observeEvent(seurat_obj(), {
+        # Also fires when the QC result becomes unavailable (req-blocked), so a
+        # stale normalized object is never passed downstream.
+        observeEvent(tryCatch(seurat_obj(), error = function(e) NULL), {
             normalized_obj(NULL)
+            obj <- tryCatch(seurat_obj(), error = function(e) NULL)
+            if (is.null(obj)) {
+                return(invisible(NULL))
+            }
             metadata_choices <- grep(
                 "^(orig\\.ident|seurat_clusters|RNA_snn)",
-                colnames(seurat_obj()@meta.data),
+                colnames(obj@meta.data),
                 invert = TRUE,
                 value = TRUE
             )
@@ -163,7 +169,24 @@ mod_normalization_server <- function(id, seurat_obj) {
                 choices = metadata_choices,
                 server = FALSE
             )
-        }, ignoreNULL = TRUE)
+        }, ignoreNULL = FALSE)
+
+        # Reset controls when they become hidden, so the inputs recorded for a
+        # run match what is applied.
+        observeEvent(input$score_cc, {
+            if (!isTRUE(input$score_cc)) {
+                updateCheckboxInput(session, "regress_cc", value = FALSE)
+            }
+        }, ignoreInit = TRUE)
+
+        observeEvent(input$norm_method, {
+            if (!identical(input$norm_method, "sctransform")) {
+                updateSelectizeInput(session, "vars_to_regress", selected = character(0))
+            }
+            if (!identical(input$norm_method, "lognorm")) {
+                updateNumericInput(session, "scale_factor", value = 10000)
+            }
+        }, ignoreInit = TRUE)
 
         output$norm_ready <- shiny::renderText({
             if (is.null(normalized_obj())) "false" else "true"
@@ -186,17 +209,56 @@ mod_normalization_server <- function(id, seurat_obj) {
                 )
                 return(invisible(NULL))
             }
-            withProgress(message = "Normalizing data...", value = 0.2, {
-                obj <- run_normalization(
-                    obj = obj_in,
-                    method = input$norm_method,
-                    nfeatures = input$n_variable_features,
-                    scale_factor = if (!is.null(input$scale_factor)) input$scale_factor else 10000,
-                    vars_to_regress = input$vars_to_regress,
-                    score_cell_cycle = isTRUE(input$score_cc),
-                    cc_organism = if (!is.null(input$cc_organism)) input$cc_organism else "human",
-                    regress_cc = isTRUE(input$regress_cc)
+            # Hidden controls keep their values, so only pass the ones
+            # that are visible for the current choices.
+            score_cc <- isTRUE(input$score_cc)
+            use_sct <- identical(input$norm_method, "sctransform")
+            nfeatures <- input$n_variable_features
+            scale_factor <- if (use_sct) 10000 else input$scale_factor %||% 10000
+            # A cleared numericInput arrives as NA.
+            not_positive <- function(value) {
+                !is.null(value) && (length(value) != 1 || is.na(value) || value <= 0)
+            }
+            invalid <- c(
+                "Number of variable features" = not_positive(nfeatures),
+                "Scale factor" = not_positive(scale_factor)
+            )
+            if (any(invalid)) {
+                showNotification(
+                    paste0(
+                        "Enter a positive value for ",
+                        paste(names(invalid)[invalid], collapse = " and "),
+                        " before running Normalization + PCA."
+                    ),
+                    type = "error",
+                    duration = 10
                 )
+                return(invisible(NULL))
+            }
+            withProgress(message = "Normalizing data...", value = 0.2, {
+                obj <- tryCatch(
+                    run_normalization(
+                        obj = obj_in,
+                        method = input$norm_method,
+                        nfeatures = nfeatures,
+                        scale_factor = scale_factor,
+                        vars_to_regress = if (use_sct) input$vars_to_regress else NULL,
+                        score_cell_cycle = score_cc,
+                        cc_organism = if (!is.null(input$cc_organism)) input$cc_organism else "human",
+                        regress_cc = score_cc && isTRUE(input$regress_cc)
+                    ),
+                    error = function(e) {
+                        showNotification(
+                            paste0("Normalization failed: ", conditionMessage(e)),
+                            type = "error",
+                            duration = 12
+                        )
+                        NULL
+                    }
+                )
+                if (is.null(obj)) {
+                    return(invisible(NULL))
+                }
                 setProgress(1, message = "Normalization complete!")
                 normalized_obj(obj)
             })
