@@ -445,38 +445,15 @@ mod_integration_server <- function(id) {
             defaults
         }
 
-        add_qc_suggestions <- function(config) {
-            if (!"data_path" %in% colnames(config)) {
-                return(config)
-            }
-            prune_preview_counts(config$data_path)
-            config <- sanitize_qc_config(config)
-            for (i in seq_len(nrow(config))) {
-                defaults <- sample_qc_defaults(
-                    sample_name = config$sample_name[[i]],
-                    raw_path = config$data_path[[i]],
-                    mito_pattern = config$mito_pattern[[i]]
-                )
-                if (is.null(defaults)) {
-                    next
-                }
-                config$min_genes[[i]] <- defaults$min_genes
-                config$max_genes[[i]] <- defaults$max_genes
-                config$max_mito[[i]] <- defaults$max_mito
-            }
-            config
-        }
-
         qc_controls <- function(config) {
             config <- sanitize_qc_config(config)
             tagList(lapply(seq_len(nrow(config)), function(i) {
-                sample_label <- config$sample_name[[i]]
-                if (is.na(sample_label) || !nzchar(trimws(as.character(sample_label)))) {
-                    sample_label <- paste("Sample", i)
-                }
                 tags$div(
                     class = "asc-qc-sample",
-                    tags$div(class = "asc-qc-sample-title", sample_label),
+                    tags$div(
+                        class = "asc-qc-sample-title",
+                        shiny::textOutput(ns(paste0("qc_title_", i)), inline = TRUE)
+                    ),
                     tags$div(
                         class = "asc-qc-grid",
                         textInput(
@@ -551,13 +528,14 @@ mod_integration_server <- function(id) {
                         textInput(
                             ns(paste0("sample_name_", i)),
                             label = NULL,
-                            value = paste0("sample_", i),
+                            value = isolate(input[[paste0("sample_name_", i)]]) %||%
+                                paste0("sample_", i),
                             placeholder = paste0("sample_", i)
                         ),
                         textInput(
                             ns(paste0("sample_path_", i)),
                             label = NULL,
-                            value = "",
+                            value = isolate(input[[paste0("sample_path_", i)]]) %||% "",
                             placeholder = file.path("data", paste0("sample_", i))
                         )
                     )
@@ -566,28 +544,65 @@ mod_integration_server <- function(id) {
         })
 
         output$qc_params_ui <- renderUI({
-            config <- sample_config_for_qc()
+            input$n_samples
+            # Only the sample count re-renders the controls: a re-render on a
+            # name or path edit replaces values the browser has not sent yet.
+            config <- isolate(apply_qc_inputs(sample_config_for_qc()))
             qc_controls(config)
         })
 
+        lapply(seq_len(24L), function(i) {
+            output[[paste0("qc_title_", i)]] <- shiny::renderText({
+                config <- sample_config_for_qc()
+                req(i <= nrow(config))
+                config$sample_name[[i]]
+            })
+        })
+
+        # Data path each sample's thresholds were last suggested for, so a
+        # suggestion never overwrites values typed for an unchanged sample.
+        suggested_paths <- character()
+
+        # A restored bookmark keeps its thresholds, so its paths count as
+        # already suggested.
+        shiny::onRestore(function(state) {
+            ids <- grep("^sample_path_[0-9]+$", names(state$input), value = TRUE)
+            for (id in ids) {
+                i <- as.integer(sub("sample_path_", "", id, fixed = TRUE))
+                suggested_paths[i] <<- trimws(as.character(state$input[[id]] %||% ""))
+            }
+        })
+
         observeEvent(qc_preview_config(), {
-            config <- add_qc_suggestions(qc_preview_config())
-            config <- sanitize_qc_config(config)
+            config <- sanitize_qc_config(qc_preview_config())
+            prune_preview_counts(config$data_path)
             for (i in seq_len(nrow(config))) {
+                if (identical(config$data_path[[i]], suggested_paths[i])) {
+                    next
+                }
+                defaults <- sample_qc_defaults(
+                    sample_name = config$sample_name[[i]],
+                    raw_path = config$data_path[[i]],
+                    mito_pattern = config$mito_pattern[[i]]
+                )
+                if (is.null(defaults)) {
+                    next
+                }
+                suggested_paths[i] <<- config$data_path[[i]]
                 updateNumericInput(
                     session,
                     paste0("qc_min_genes_", i),
-                    value = config$min_genes[[i]]
+                    value = defaults$min_genes
                 )
                 updateNumericInput(
                     session,
                     paste0("qc_max_genes_", i),
-                    value = config$max_genes[[i]]
+                    value = defaults$max_genes
                 )
                 updateNumericInput(
                     session,
                     paste0("qc_max_mito_", i),
-                    value = config$max_mito[[i]]
+                    value = defaults$max_mito
                 )
             }
         }, ignoreInit = TRUE)
@@ -799,7 +814,7 @@ mod_integration_server <- function(id) {
                 value = max(1L, min(selected, available)),
                 max = available
             )
-        }, ignoreInit = TRUE)
+        })
 
         active_integrated_obj <- reactive({
             req(integrated_obj())
