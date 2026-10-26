@@ -7,7 +7,7 @@
 run_pseudotimede_fast(sce, gene_subset = NULL, cores = 2)
 }
 \arguments{
-\item{sce}{A SingleCellExperiment with trajectory_path and trajectory_pseudotime columns.}
+\item{sce}{A SingleCellExperiment with Slingshot results.}
 
 \item{gene_subset}{Optional character vector of genes to test.}
 
@@ -17,6 +17,7 @@ run_pseudotimede_fast(sce, gene_subset = NULL, cores = 2)
 A list containing the engine name and result table.
 }
 \description{
-Run PseudotimeDE-fast on Slingshot Output
+Each Slingshot lineage is tested separately on its own cells, so the
+result has one row per gene and lineage.
 }
 \keyword{internal}

@@ -19,7 +19,8 @@ run_clustering(
 
 \item{resolution}{Numeric. Clustering resolution.}
 
-\item{run_tsne}{Logical. Whether to also run tSNE.}
+\item{run_tsne}{Logical. Whether to also run tSNE (skipped when there are
+too few cells).}
 
 \item{reduction}{Character. Dimensionality reduction to use for neighbors
 and UMAP. Defaults to "pca".}

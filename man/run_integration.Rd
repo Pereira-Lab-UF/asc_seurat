@@ -30,7 +30,8 @@ run_integration(
 \item{scale_factor}{Numeric. Scale factor for LogNormalize.}
 }
 \value{
-An integrated Seurat object.
+An integrated Seurat object. The integration parameters are
+recorded in \code{obj@misc$ascseurat_integration}.
 }
 \description{
 Integrates multiple samples using either RPCA or Harmony.

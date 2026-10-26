@@ -33,7 +33,8 @@ run_normalization(
 \item{regress_cc}{Logical. Whether to regress out cell-cycle scores.}
 }
 \value{
-A normalized Seurat object with PCA computed.
+A normalized Seurat object with PCA computed. The regressed
+variables are recorded in \code{obj@misc$ascseurat_scale_regress}.
 }
 \description{
 Normalizes data using either LogNormalize or SCTransform v2.
