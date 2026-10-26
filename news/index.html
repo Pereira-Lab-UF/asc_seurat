@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ascseurat</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,39 @@
       <small>Source: <a href="https://github.com/Pereira-Lab-UF/asc_seurat/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.0.8" id="ascseurat-308">ascseurat 3.0.8<a class="anchor" aria-label="anchor" href="#ascseurat-308"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-3-0-8">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-0-8"></a></h3>
+<ul><li>Downloading the integrated, clustered, annotated, or trajectory object is about 4x faster: objects are saved with fast gzip compression (files are ~10% larger and still open with <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS()</a></code>). The download button now stays busy until the file is ready instead of resetting after two minutes, and its label says that large datasets can take several minutes.</li>
+<li>Doublet detection no longer fails with <code>could not find function "assay&lt;-"</code> after Monocle 3 has been used in the same R session.</li>
+<li>Feature plots split by sample no longer fail when more genes than samples are selected, and their height now fits one row of sample panels per gene.</li>
+<li>The Docker path setup snippet now shows one command per line.</li>
+<li>The home page shows the installed Asc-Seurat version.</li>
+<li>Server-side bookmarks are stored in the app work directory (the installed package folder is read-only in Docker), and restoring a bookmark no longer re-runs the analysis steps whose buttons had been clicked.</li>
+<li>Differential expression and SingleR show a clear message when a required selection is missing instead of an empty error.</li>
+<li>The “Generating expression plots” alert no longer stays on screen after the plots have rendered.</li>
+<li>The session report records demo-data loading.</li>
+<li>Trajectory gene-table and object downloads show a message instead of saving an empty file when the analysis has not been run.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="performance-3-0-8">Performance<a class="anchor" aria-label="anchor" href="#performance-3-0-8"></a></h3>
+<ul><li>The Docker image includes <code>presto</code>, which speeds up Wilcoxon marker detection. MAST is offered as a DE test only when it is installed.</li>
+<li>Integration no longer runs PCA twice or builds neighbors and a UMAP that clustering recomputes; the “not clustered” integrated download therefore no longer contains a UMAP.</li>
+<li>tSNE is optional in single-sample clustering.</li>
+<li>Integration reuses the counts read for the per-sample QC preview instead of reading each 10X, h5, CSV, or TSV sample from disk again.</li>
+<li>SCTransform workflows no longer store a second dense scaled matrix for the RNA assay; scaled expression plots compute it for the requested genes.</li>
+<li>tradeSeq fits genes in parallel (up to four workers).</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.0.7" id="ascseurat-307">ascseurat 3.0.7<a class="anchor" aria-label="anchor" href="#ascseurat-307"></a></h2>
+<div class="section level3">
+<h3 id="new-features-3-0-7">New features<a class="anchor" aria-label="anchor" href="#new-features-3-0-7"></a></h3>
+<ul><li>Gene visualization plots can split clusters by sample for integrated data.</li>
+<li>Data-path help explains how Docker bind mounts map host folders into the app.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.0.6" id="ascseurat-306">ascseurat 3.0.6<a class="anchor" aria-label="anchor" href="#ascseurat-306"></a></h2>
 <div class="section level3">

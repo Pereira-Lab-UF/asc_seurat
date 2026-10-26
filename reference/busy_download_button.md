@@ -10,8 +10,8 @@ busy_download_button(
   output_id,
   label,
   class = "btn-download-soft w-100",
-  busy_label = "Preparing download...",
-  timeout_ms = 120000
+  busy_label = "Preparing file (large datasets can take several minutes)...",
+  timeout_ms = NULL
 )
 ```
 
@@ -35,7 +35,9 @@ busy_download_button(
 
 - timeout_ms:
 
-  Fallback time before the button is re-enabled.
+  Optional fallback time before the button is re-enabled. By default the
+  button stays busy until the server reports that the file is ready,
+  because large objects can take several minutes to prepare.
 
 ## Value
 

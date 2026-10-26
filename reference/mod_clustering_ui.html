@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ascseurat</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mod_clustering_ui</span><span class="op">(</span></span>
 <span>  <span class="va">id</span>,</span>
 <span>  step_number <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  download_label <span class="op">=</span> <span class="st">"Download Clustered Object"</span></span>
+<span>  download_label <span class="op">=</span> <span class="st">"Download Clustered Object"</span>,</span>
+<span>  tsne_option <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -70,6 +71,11 @@
 
 <dt id="arg-download-label">download_label<a class="anchor" aria-label="anchor" href="#arg-download-label"></a></dt>
 <dd><p>Character label for the clustered object download.</p></dd>
+
+
+<dt id="arg-tsne-option">tsne_option<a class="anchor" aria-label="anchor" href="#arg-tsne-option"></a></dt>
+<dd><p>Logical. Show the option to also compute tSNE
+(single-sample workflows only).</p></dd>
 
 </dl></div>
 

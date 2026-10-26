@@ -1,5 +1,60 @@
 # Changelog
 
+## ascseurat 3.0.8
+
+### Bug fixes
+
+- Downloading the integrated, clustered, annotated, or trajectory object
+  is about 4x faster: objects are saved with fast gzip compression
+  (files are ~10% larger and still open with
+  [`readRDS()`](https://rdrr.io/r/base/readRDS.html)). The download
+  button now stays busy until the file is ready instead of resetting
+  after two minutes, and its label says that large datasets can take
+  several minutes.
+- Doublet detection no longer fails with
+  `could not find function "assay<-"` after Monocle 3 has been used in
+  the same R session.
+- Feature plots split by sample no longer fail when more genes than
+  samples are selected, and their height now fits one row of sample
+  panels per gene.
+- The Docker path setup snippet now shows one command per line.
+- The home page shows the installed Asc-Seurat version.
+- Server-side bookmarks are stored in the app work directory (the
+  installed package folder is read-only in Docker), and restoring a
+  bookmark no longer re-runs the analysis steps whose buttons had been
+  clicked.
+- Differential expression and SingleR show a clear message when a
+  required selection is missing instead of an empty error.
+- The “Generating expression plots” alert no longer stays on screen
+  after the plots have rendered.
+- The session report records demo-data loading.
+- Trajectory gene-table and object downloads show a message instead of
+  saving an empty file when the analysis has not been run.
+
+### Performance
+
+- The Docker image includes `presto`, which speeds up Wilcoxon marker
+  detection. MAST is offered as a DE test only when it is installed.
+- Integration no longer runs PCA twice or builds neighbors and a UMAP
+  that clustering recomputes; the “not clustered” integrated download
+  therefore no longer contains a UMAP.
+- tSNE is optional in single-sample clustering.
+- Integration reuses the counts read for the per-sample QC preview
+  instead of reading each 10X, h5, CSV, or TSV sample from disk again.
+- SCTransform workflows no longer store a second dense scaled matrix for
+  the RNA assay; scaled expression plots compute it for the requested
+  genes.
+- tradeSeq fits genes in parallel (up to four workers).
+
+## ascseurat 3.0.7
+
+### New features
+
+- Gene visualization plots can split clusters by sample for integrated
+  data.
+- Data-path help explains how Docker bind mounts map host folders into
+  the app.
+
 ## ascseurat 3.0.6
 
 ### Install and distribution

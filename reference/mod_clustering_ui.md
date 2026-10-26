@@ -8,7 +8,8 @@ Clustering Module - UI
 mod_clustering_ui(
   id,
   step_number = 4,
-  download_label = "Download Clustered Object"
+  download_label = "Download Clustered Object",
+  tsne_option = TRUE
 )
 ```
 
@@ -25,3 +26,8 @@ mod_clustering_ui(
 - download_label:
 
   Character label for the clustered object download.
+
+- tsne_option:
+
+  Logical. Show the option to also compute tSNE (single-sample workflows
+  only).

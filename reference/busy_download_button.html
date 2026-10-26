@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ascseurat</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,8 +53,8 @@
 <span>  <span class="va">output_id</span>,</span>
 <span>  <span class="va">label</span>,</span>
 <span>  class <span class="op">=</span> <span class="st">"btn-download-soft w-100"</span>,</span>
-<span>  busy_label <span class="op">=</span> <span class="st">"Preparing download..."</span>,</span>
-<span>  timeout_ms <span class="op">=</span> <span class="fl">120000</span></span>
+<span>  busy_label <span class="op">=</span> <span class="st">"Preparing file (large datasets can take several minutes)..."</span>,</span>
+<span>  timeout_ms <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -79,7 +79,9 @@
 
 
 <dt id="arg-timeout-ms">timeout_ms<a class="anchor" aria-label="anchor" href="#arg-timeout-ms"></a></dt>
-<dd><p>Fallback time before the button is re-enabled.</p></dd>
+<dd><p>Optional fallback time before the button is re-enabled.
+By default the button stays busy until the server reports that the file
+is ready, because large objects can take several minutes to prepare.</p></dd>
 
 </dl></div>
     <div class="section level2">
