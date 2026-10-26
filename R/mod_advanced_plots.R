@@ -1,3 +1,24 @@
+# FALSE when the RNA assay has no data layer, or its data layer is only a copy
+# of counts (unnormalized v4 objects keep counts in data).
+rna_assay_is_normalized <- function(obj) {
+    layers <- tryCatch(
+        SeuratObject::Layers(obj[["RNA"]]),
+        error = function(e) character()
+    )
+    data_layers <- grep("^data($|[.])", layers, value = TRUE)
+    if (!length(data_layers)) {
+        return(FALSE)
+    }
+    counts_layer <- sub("^data", "counts", data_layers[[1]])
+    if (!counts_layer %in% layers) {
+        return(TRUE)
+    }
+    !identical(
+        SeuratObject::LayerData(obj, assay = "RNA", layer = data_layers[[1]]),
+        SeuratObject::LayerData(obj, assay = "RNA", layer = counts_layer)
+    )
+}
+
 #' Advanced Plots Module — UI
 #'
 #' @param id Module namespace ID.
@@ -138,7 +159,24 @@ mod_advanced_plots_server <- function(id, seurat_obj_single = NULL,
                 return(NULL)
             }
             if ("RNA" %in% names(obj@assays)) {
-                SeuratObject::DefaultAssay(obj) <- "RNA"
+                if (rna_assay_is_normalized(obj)) {
+                    SeuratObject::DefaultAssay(obj) <- "RNA"
+                } else if ("SCT" %in% names(obj@assays)) {
+                    SeuratObject::DefaultAssay(obj) <- "SCT"
+                    showNotification(
+                        "The RNA assay has no normalized data, so the SCT assay is used for these plots.",
+                        type = "message",
+                        duration = 8
+                    )
+                } else {
+                    SeuratObject::DefaultAssay(obj) <- "RNA"
+                    obj <- Seurat::NormalizeData(obj, assay = "RNA", verbose = FALSE)
+                    showNotification(
+                        "The RNA assay had no normalized data, so it was log-normalized for these plots.",
+                        type = "message",
+                        duration = 8
+                    )
+                }
             }
             obj
         }

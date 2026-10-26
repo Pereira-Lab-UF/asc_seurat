@@ -25,12 +25,33 @@ ensure_expression_layer <- function(obj, genes, layer = "data") {
     )
     missing_features <- setdiff(genes, scaled_features)
     if (length(missing_features)) {
-        obj <- suppressWarnings(Seurat::ScaleData(
+        # Scale only the missing genes, with the regression used at
+        # normalization, so already scaled genes keep their values.
+        regress_vars <- intersect(
+            as.character(obj@misc$ascseurat_scale_regress),
+            colnames(obj@meta.data)
+        )
+        if (!length(regress_vars)) {
+            regress_vars <- NULL
+        }
+        scaled_obj <- suppressWarnings(Seurat::ScaleData(
             obj,
             assay = assay,
-            features = genes,
+            features = missing_features,
+            vars.to.regress = regress_vars,
             verbose = FALSE
         ))
+        scaled <- SeuratObject::LayerData(scaled_obj, assay = assay, layer = "scale.data")
+        # Keep only the requested rows; copying the full dense layer is
+        # slow and memory heavy on large objects.
+        kept <- intersect(genes, scaled_features)
+        if (length(kept)) {
+            existing <- SeuratObject::LayerData(obj, assay = assay, layer = "scale.data")[kept, , drop = FALSE]
+            scaled <- rbind(existing, scaled[, colnames(existing), drop = FALSE])
+        }
+        suppressWarnings(
+            SeuratObject::LayerData(obj, assay = assay, layer = "scale.data") <- scaled
+        )
     }
     obj
 }
@@ -144,24 +165,31 @@ clustered_expression_dot_plot <- function(obj, genes, layer = "data",
         x_label <- "Cluster"
     }
 
-    avg_mat <- vapply(
-        group_levels,
-        function(group) {
-            colMeans(expr_mat[group_values == group, , drop = FALSE], na.rm = TRUE)
-        },
-        numeric(length(genes))
+    # vapply() returns a plain vector when only one gene is plotted.
+    avg_mat <- matrix(
+        vapply(
+            group_levels,
+            function(group) {
+                colMeans(expr_mat[group_values == group, , drop = FALSE], na.rm = TRUE)
+            },
+            numeric(length(genes))
+        ),
+        nrow = length(genes),
+        dimnames = list(genes, group_levels)
     )
-    rownames(avg_mat) <- genes
 
-    pct_mat <- vapply(
-        group_levels,
-        function(group) {
-            colMeans(pct_mat_source[group_values == group, , drop = FALSE] > 0,
-                     na.rm = TRUE) * 100
-        },
-        numeric(length(genes))
+    pct_mat <- matrix(
+        vapply(
+            group_levels,
+            function(group) {
+                colMeans(pct_mat_source[group_values == group, , drop = FALSE] > 0,
+                         na.rm = TRUE) * 100
+            },
+            numeric(length(genes))
+        ),
+        nrow = length(genes),
+        dimnames = list(genes, group_levels)
     )
-    rownames(pct_mat) <- genes
 
     order_mat <- avg_mat
     order_mat[!is.finite(order_mat)] <- 0
@@ -503,6 +531,16 @@ mod_visualization_server <- function(id,
             }
         })
 
+        top_n_message <- "Top N genes must be a whole number of at least 1."
+        # Returns NA for an invalid Top N (an emptied numericInput arrives as NA).
+        top_n_value <- function() {
+            n <- suppressWarnings(as.numeric(input$top_n_genes %||% 10))
+            if (length(n) != 1L || !is.finite(n) || n < 1 || n != round(n)) {
+                return(NA_real_)
+            }
+            n
+        }
+
         # DE results path — preview of selected genes
         output$de_genes_preview <- renderUI({
             if (is.null(markers_de)) return(NULL)
@@ -515,7 +553,9 @@ mod_visualization_server <- function(id,
             if ("p_val_adj" %in% colnames(df)) {
                 df <- df[order(df$p_val_adj), , drop = FALSE]
             }
-            n <- min(input$top_n_genes %||% 10, nrow(df))
+            n_top <- top_n_value()
+            validate(need(!is.na(n_top), top_n_message))
+            n <- min(n_top, nrow(df))
             genes <- df$gene[seq_len(n)]
             if (!is.null(expression_obj())) {
                 genes <- intersect(genes, rownames(expression_obj()))
@@ -543,7 +583,9 @@ mod_visualization_server <- function(id,
                 if ("p_val_adj" %in% colnames(df)) {
                     df <- df[order(df$p_val_adj), , drop = FALSE]
                 }
-                n <- min(input$top_n_genes %||% 10, nrow(df))
+                n_top <- top_n_value()
+                req(!is.na(n_top))
+                n <- min(n_top, nrow(df))
                 genes <- df$gene[seq_len(n)]
                 if (!is.null(expression_obj())) {
                     genes <- intersect(genes, rownames(expression_obj()))
@@ -620,6 +662,10 @@ mod_visualization_server <- function(id,
         })
 
         observeEvent(input$show_expression, {
+            if (isTRUE(input$marker_source == "de_results") && is.na(top_n_value())) {
+                showNotification(top_n_message, type = "warning", duration = 8)
+                return(NULL)
+            }
             selection <- current_expression_selection()
             plot_request(selection)
             showNotification(
