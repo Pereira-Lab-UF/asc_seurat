@@ -64,13 +64,21 @@ mod_celltype_annotation_ui <- function(id) {
                 card_body(
                     action_btn(ns("run_singler"),
                                "Annotate Cells",
-                               icon = icon("tags"))
+                               icon = icon("tags")),
+                    conditionalPanel(
+                        condition = sprintf("output['%s'] == 'outdated'", ns("singler_state")),
+                        tags$p(
+                            class = "text-muted small mt-2",
+                            "The annotated object has changed or is no longer available in its tab, ",
+                            "so the results were cleared. Click \"Annotate Cells\" to annotate the current object."
+                        )
+                    )
                 )
             )
         ),
 
         conditionalPanel(
-            condition = sprintf("input['%s'] > 0", ns("run_singler")),
+            condition = sprintf("output['%s'] == 'ready'", ns("singler_state")),
             tags$hr(),
             layout_columns(
                 col_widths = c(6, 6),
@@ -216,6 +224,54 @@ mod_celltype_annotation_server <- function(id,
         setBookmarkExclude(c("rds_file"))
         annotated_obj <- reactiveVal(NULL)
         singler_result <- reactiveVal(NULL)
+        # Tab and object the results were computed from; NULL for uploads.
+        annotated_source <- reactiveVal(NULL)
+        annotation_outdated <- reactiveVal(FALSE)
+
+        tab_object <- function(source) {
+            obj_reactive <- switch(
+                source,
+                single = seurat_obj_single,
+                integration = seurat_obj_multi,
+                NULL
+            )
+            if (is.null(obj_reactive)) {
+                return(NULL)
+            }
+            tryCatch(obj_reactive(), error = function(e) NULL)
+        }
+
+        # NULL while the tab's object is req()-blocked, so results are also
+        # cleared when the object stops being available.
+        current_source_obj <- reactive({
+            source <- annotated_source()
+            if (is.null(source)) {
+                return(NULL)
+            }
+            tab_object(source$tab)
+        })
+
+        observeEvent(current_source_obj(), {
+            source <- annotated_source()
+            if (is.null(source) || identical(current_source_obj(), source$obj)) {
+                return(NULL)
+            }
+            annotated_obj(NULL)
+            singler_result(NULL)
+            annotated_source(NULL)
+            annotation_outdated(TRUE)
+        }, ignoreInit = TRUE, ignoreNULL = FALSE)
+
+        output$singler_state <- shiny::renderText({
+            if (!is.null(annotated_obj())) {
+                "ready"
+            } else if (annotation_outdated()) {
+                "outdated"
+            } else {
+                "none"
+            }
+        })
+        shiny::outputOptions(output, "singler_state", suspendWhenHidden = FALSE)
 
         get_reference <- function(reference_name) {
             if (!requireNamespace("celldex", quietly = TRUE)) {
@@ -275,6 +331,7 @@ mod_celltype_annotation_server <- function(id,
             withProgress(message = "Running SingleR...", value = 0.2, {
                 tryCatch({
                     obj <- get_input_object()
+                    source_obj <- obj
                     ref <- get_reference(input$reference)
                     labels <- ref[[input$granularity]]
                     if (all(is.na(labels))) {
@@ -296,6 +353,11 @@ mod_celltype_annotation_server <- function(id,
                     obj$singler_label <- pred$labels
                     annotated_obj(obj)
                     singler_result(pred)
+                    tracked <- input$data_source %in% c("single", "integration")
+                    annotated_source(
+                        if (tracked) list(tab = input$data_source, obj = source_obj) else NULL
+                    )
+                    annotation_outdated(FALSE)
                     setProgress(1, message = "SingleR annotation complete.")
                 }, error = function(e) {
                     # req() in get_input_object() signals an error with no message.

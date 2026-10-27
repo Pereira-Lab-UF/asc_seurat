@@ -85,12 +85,20 @@ mod_advanced_plots_ui <- function(id) {
             card(
                 card_header("Download"),
                 card_body(
-                    downloadButton(ns("download_per_gene"),
-                                   "Download per-gene bundle (zip)",
-                                   class = "btn btn-outline-secondary w-100 mb-3"),
-                    card_plot_download("adv", ns("download_adv"),
-                                       height_default = 15, width_default = 20,
-                                       ns = ns)
+                    conditionalPanel(
+                        condition = sprintf("output['%s'] == 'true'", ns("plot_ready")),
+                        downloadButton(ns("download_per_gene"),
+                                       "Download per-gene bundle (zip)",
+                                       class = "btn btn-outline-secondary w-100 mb-3"),
+                        card_plot_download("adv", ns("download_adv"),
+                                           height_default = 15, width_default = 20,
+                                           ns = ns)
+                    ),
+                    conditionalPanel(
+                        condition = sprintf("output['%s'] != 'true'", ns("plot_ready")),
+                        tags$p(class = "text-muted small",
+                               "Generate a plot to enable downloads.")
+                    )
                 )
             )
         ),
@@ -218,7 +226,22 @@ mod_advanced_plots_server <- function(id, seurat_obj_single = NULL,
             as.character(current_levels)
         }
 
-        plot_state <- eventReactive(input$make_plot, {
+        # Object currently offered by the Single Sample or Integration tab;
+        # NULL for uploads or when the tab has none.
+        tab_object <- function(source) {
+            obj_reactive <- switch(
+                source %||% "upload",
+                single = seurat_obj_single,
+                integration = seurat_obj_multi,
+                NULL
+            )
+            if (is.null(obj_reactive)) {
+                return(NULL)
+            }
+            tryCatch(obj_reactive(), error = function(e) NULL)
+        }
+
+        plot_snapshot <- eventReactive(input$make_plot, {
             obj <- load_advanced_object()
             if (is.null(obj)) {
                 return(NULL)
@@ -250,9 +273,35 @@ mod_advanced_plots_server <- function(id, seurat_obj_single = NULL,
             list(
                 obj = obj,
                 genes = genes,
-                plot_type = input$plot_type %||% "stacked_vln"
+                plot_type = input$plot_type %||% "stacked_vln",
+                source = input$data_source,
+                source_obj = tab_object(input$data_source)
             )
         })
+
+        # A plot of a Single Sample or Integration object is outdated once
+        # that tab replaces or clears the object; uploads are not tracked.
+        plot_state <- reactive({
+            state <- plot_snapshot()
+            if (!is.null(state$source_obj)) {
+                label <- if (identical(state$source, "single")) "Single Sample" else "Integration"
+                validate(need(
+                    identical(tab_object(state$source), state$source_obj),
+                    paste0(
+                        "The ", label, " object this plot was built from has changed ",
+                        "or is no longer available. Click \"Generate Plot\" to plot ",
+                        "the current object."
+                    )
+                ))
+            }
+            state
+        })
+
+        # Downloads are shown only while there is a current plot.
+        output$plot_ready <- shiny::renderText({
+            if (is.null(tryCatch(plot_state(), error = function(e) NULL))) "false" else "true"
+        })
+        shiny::outputOptions(output, "plot_ready", suspendWhenHidden = FALSE)
 
         selected_genes <- reactive({
             state <- plot_state()

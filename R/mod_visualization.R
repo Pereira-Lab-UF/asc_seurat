@@ -24,9 +24,21 @@ ensure_expression_layer <- function(obj, genes, layer = "data") {
         error = function(e) character()
     )
     missing_features <- setdiff(genes, scaled_features)
+    scale_cells <- obj@misc$ascseurat_scale_cells
+    if (is.null(scale_cells)) {
+        # Without a record of the cells scale.data was computed on, rescale
+        # all requested genes together so a plot never mixes two scalings.
+        if (length(missing_features)) {
+            missing_features <- genes
+        }
+    } else if (!isTRUE(scale_cells == ncol(obj))) {
+        # scale.data was computed on other cells (e.g. before a subset that
+        # kept the current clusters), so none of its rows can be reused.
+        missing_features <- genes
+    }
     if (length(missing_features)) {
-        # Scale only the missing genes, with the regression used at
-        # normalization, so already scaled genes keep their values.
+        # Scale only the genes that cannot be reused, with the regression
+        # used at normalization, so reused rows keep their values.
         regress_vars <- intersect(
             as.character(obj@misc$ascseurat_scale_regress),
             colnames(obj@meta.data)
@@ -44,7 +56,7 @@ ensure_expression_layer <- function(obj, genes, layer = "data") {
         scaled <- SeuratObject::LayerData(scaled_obj, assay = assay, layer = "scale.data")
         # Keep only the requested rows; copying the full dense layer is
         # slow and memory heavy on large objects.
-        kept <- intersect(genes, scaled_features)
+        kept <- setdiff(genes, missing_features)
         if (length(kept)) {
             existing <- SeuratObject::LayerData(obj, assay = assay, layer = "scale.data")[kept, , drop = FALSE]
             scaled <- rbind(existing, scaled[, colnames(existing), drop = FALSE])
@@ -52,6 +64,9 @@ ensure_expression_layer <- function(obj, genes, layer = "data") {
         suppressWarnings(
             SeuratObject::LayerData(obj, assay = assay, layer = "scale.data") <- scaled
         )
+        # Every remaining row now comes from these cells, so a second call on
+        # this copy reuses them instead of scaling again.
+        obj@misc$ascseurat_scale_cells <- ncol(obj)
     }
     obj
 }
@@ -349,7 +364,7 @@ mod_visualization_ui <- function(id, step_number = 6) {
 
         # Clustered dot plot
         conditionalPanel(
-            condition = sprintf("input['%s'] > 0", ns("show_expression")),
+            condition = sprintf("output['%s'] == 'true'", ns("plots_requested")),
             tags$hr(),
             layout_columns(
                 col_widths = c(9, 3),
@@ -368,7 +383,7 @@ mod_visualization_ui <- function(id, step_number = 6) {
 
         # Feature + violin plots
         conditionalPanel(
-            condition = sprintf("input['%s'] > 0", ns("show_expression")),
+            condition = sprintf("output['%s'] == 'true'", ns("plots_requested")),
             tags$hr(),
             card(
                 card_header("Feature Plots"),
@@ -422,6 +437,12 @@ mod_visualization_server <- function(id,
         setBookmarkExclude(c("markers_file"))
         de_step_label <- paste0("Step ", de_step_number)
         plot_request <- reactiveVal(NULL)
+        # Clicks up to the last reset do not bring the cleared plots back.
+        cleared_clicks <- 0
+        clear_plot_request <- function() {
+            cleared_clicks <<- input$show_expression %||% 0
+            plot_request(NULL)
+        }
 
         plot_width <- function(output_id, fallback = 1100) {
             width <- session$clientData[[sprintf(
@@ -443,6 +464,35 @@ mod_visualization_server <- function(id,
             }
             obj
         })
+
+        # NULL while the upstream is req()-blocked, so the plots are also
+        # cleared when the object stops being available.
+        upstream_obj <- reactive(tryCatch(seurat_obj(), error = function(e) NULL))
+        # ignoreInit skips the first value, so record it here.
+        last_obj <- isolate(upstream_obj())
+        observeEvent(upstream_obj(), {
+            if (identical(upstream_obj(), last_obj)) {
+                return(NULL)
+            }
+            last_obj <<- upstream_obj()
+            clear_plot_request()
+        }, ignoreInit = TRUE, ignoreNULL = FALSE)
+
+        # NULL when there are no DE results (not run yet, cleared, or a
+        # re-run that found no markers).
+        available_markers_de <- reactive({
+            if (is.null(markers_de)) {
+                return(NULL)
+            }
+            df <- tryCatch(markers_de(), error = function(e) NULL)
+            if (is.null(df) || nrow(df) == 0) NULL else df
+        })
+        observeEvent(available_markers_de(), {
+            if (is.null(available_markers_de()) &&
+                identical(plot_request()$source, "de_results")) {
+                clear_plot_request()
+            }
+        }, ignoreInit = TRUE, ignoreNULL = FALSE)
 
         # Load marker gene list (upload path)
         markers_data <- eventReactive(input$load_markers, {
@@ -616,7 +666,8 @@ mod_visualization_server <- function(id,
                 genes = genes,
                 slot = input$slot_selection %||% "data",
                 split_by_sample = isTRUE(input$split_by_sample) &&
-                    !is.null(sample_split_col())
+                    !is.null(sample_split_col()),
+                source = input$marker_source %||% "upload"
             )
         })
 
@@ -666,7 +717,19 @@ mod_visualization_server <- function(id,
                 showNotification(top_n_message, type = "warning", duration = 8)
                 return(NULL)
             }
-            selection <- current_expression_selection()
+            selection <- tryCatch(current_expression_selection(), error = function(e) NULL)
+            if (is.null(selection)) {
+                showNotification(
+                    paste0(
+                        "No genes can be selected for plotting. Run clustering, then load a ",
+                        "marker gene list or use the DE results from ", de_step_label,
+                        " with genes present in the dataset."
+                    ),
+                    type = "warning",
+                    duration = 8
+                )
+                return(NULL)
+            }
             plot_request(selection)
             showNotification(
                 "Generating expression plots. Please wait while the plots render below.",
@@ -676,12 +739,21 @@ mod_visualization_server <- function(id,
         }, ignoreInit = TRUE)
 
         observe({
-            req((input$show_expression %||% 0) > 0)
+            req((input$show_expression %||% 0) > cleared_clicks)
             if (!is.null(plot_request())) {
                 return(NULL)
             }
-            plot_request(current_expression_selection())
+            # The click observer already warned when nothing can be selected.
+            selection <- tryCatch(current_expression_selection(), error = function(e) NULL)
+            req(selection)
+            plot_request(selection)
         })
+
+        # Plots and their downloads are shown only while there is a request.
+        output$plots_requested <- shiny::renderText({
+            if (is.null(plot_request())) "false" else "true"
+        })
+        shiny::outputOptions(output, "plots_requested", suspendWhenHidden = FALSE)
 
         output$plot_refresh_prompt <- renderUI({
             request <- plot_request()
