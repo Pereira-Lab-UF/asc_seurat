@@ -1,5 +1,13 @@
 # Changelog
 
+## ascseurat 3.0.10
+
+### Install and distribution
+
+- scMaSigPro is pinned to v0.0.4. Version 0.6.0 changed its API, and the
+  3.0.9 Docker image, which installed it, failed trajectory DE with
+  scMaSigPro (“unused argument (parallel = FALSE)”).
+
 ## ascseurat 3.0.9
 
 ### Install and distribution
