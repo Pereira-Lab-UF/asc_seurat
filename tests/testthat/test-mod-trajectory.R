@@ -497,3 +497,151 @@ test_that("Monocle 3 gene results go stale after re-running trajectory inference
         }
     )
 })
+
+test_that("Monocle 3 trajectory graph works on objects with a sample_name column", {
+    skip_if_not_installed("monocle3")
+
+    # The Integration tab adds sample_name; monocle3::plot_cells() adds
+    # sample_name, data_dim_1 and data_dim_2 to its own plotting data.
+    obj <- clustered_fixture()
+    obj$sample_name <- rep(c("WT", "rhd6"), length.out = ncol(obj))
+    obj$data_dim_1 <- 0
+    rds_path <- tempfile("ascseurat_traj_sample_name_", fileext = ".rds")
+    saveRDS(obj, rds_path)
+
+    shiny::testServer(
+        ascseurat::mod_trajectory_server,
+        {
+            session$setInputs(
+                rds_source = "upload",
+                rds_file = list(datapath = rds_path),
+                trajectory_method = "monocle3",
+                set_start = 1,
+                run_ti = 1
+            )
+            res <- ti_result()
+            expect_false(is.null(res))
+            expect_equal(res$obj$sample_name, obj$sample_name)
+
+            plot <- monocle3::plot_cells(
+                res$cds,
+                color_cells_by = "pseudotime",
+                label_groups_by_cluster = FALSE,
+                label_leaves = FALSE,
+                label_branch_points = FALSE
+            )
+            expect_no_error(ggplot2::ggplot_build(plot))
+
+            session$setInputs(ti_plot_choice = "trajectory", ti_format = "png",
+                              ti_width = 10, ti_height = 8, ti_res = 72)
+            expect_gt(file.size(output$download_ti_plot), 0)
+            expect_false(session$isClosed())
+        }
+    )
+})
+
+test_that("custom heatmap of the current trajectory goes stale after re-running or loading new data", {
+    skip_if_not_installed("DelayedMatrixStats")
+
+    obj <- clustered_fixture()
+    first_path <- tempfile("ascseurat_traj_hm_a_", fileext = ".rds")
+    second_path <- tempfile("ascseurat_traj_hm_b_", fileext = ".rds")
+    saveRDS(obj, first_path)
+    saveRDS(obj, second_path)
+    genes_path <- tempfile("ascseurat_traj_hm_genes_", fileext = ".csv")
+    utils::write.csv(data.frame(gene = head(Seurat::VariableFeatures(obj), 5)),
+                     genes_path, row.names = FALSE)
+
+    shiny::testServer(
+        ascseurat::mod_trajectory_server,
+        {
+            session$setInputs(
+                rds_source = "upload",
+                rds_file = list(datapath = first_path),
+                trajectory_method = "slingshot",
+                set_start = 1,
+                run_ti = 1
+            )
+            session$setInputs(
+                custom_hm_source = "current",
+                custom_hm_genes_file = list(datapath = genes_path),
+                custom_hm_gene_header = "1",
+                custom_hm_max_genes = 20,
+                custom_traj_hm_format = "png",
+                custom_traj_hm_width = 10,
+                custom_traj_hm_height = 8,
+                custom_traj_hm_res = 72,
+                custom_hm_run = 1
+            )
+            expect_match(output$custom_traj_heatmap_info, "Genes plotted: 5", fixed = TRUE)
+            expect_gt(file.size(output$download_custom_traj_heatmap), 0)
+            traj_path <- tempfile("ascseurat_traj_hm_saved_", fileext = ".rds")
+            saveRDS(ti_result()$obj, traj_path)
+
+            session$setInputs(run_ti = 2)
+            expect_error(output$custom_traj_heatmap_info)
+            expect_error(output$download_custom_traj_heatmap, "Nothing to download yet")
+
+            session$setInputs(custom_hm_run = 2)
+            expect_match(output$custom_traj_heatmap_info, "Genes plotted: 5", fixed = TRUE)
+
+            session$setInputs(rds_file = list(datapath = second_path))
+            expect_error(output$custom_traj_heatmap_info)
+            expect_error(output$download_custom_traj_heatmap, "Nothing to download yet")
+
+            # A heatmap of a loaded trajectory RDS does not depend on the current run.
+            session$setInputs(
+                custom_hm_source = "rds",
+                custom_hm_rds_source = "path",
+                custom_hm_rds_path = traj_path,
+                custom_hm_run = 3
+            )
+            expect_match(output$custom_traj_heatmap_info, "Genes plotted: 5", fixed = TRUE)
+            session$setInputs(run_ti = 3)
+            expect_match(output$custom_traj_heatmap_info, "Genes plotted: 5", fixed = TRUE)
+            expect_false(session$isClosed())
+        }
+    )
+})
+
+test_that("trajectory runs drop per-run columns left by an earlier run", {
+    obj <- clustered_fixture()
+    obj$pseudotime_Path3 <- 1
+    obj$paga_cluster <- "0"
+    obj$monocle3_partition <- "1"
+    obj$pseudotime_Path_notes <- "kept"
+
+    out <- ascseurat:::assign_common_trajectory_metadata(
+        obj,
+        method = "PAGA",
+        pseudotime = seq_len(ncol(obj)),
+        path = "0"
+    )
+    expect_false(any(c("pseudotime_Path3", "paga_cluster", "monocle3_partition") %in%
+        colnames(out@meta.data)))
+    expect_true(all(c("seurat_clusters", "pseudotime_Path_notes", "pseudotime",
+                      "trajectory_path", "trajectory_method") %in% colnames(out@meta.data)))
+})
+
+test_that("re-running Slingshot on a saved trajectory keeps only the new lineages", {
+    skip_if_not_installed("DelayedMatrixStats")
+
+    # A saved trajectory RDS from an earlier run with more lineages.
+    obj <- slingshot_fixture()$obj
+    obj$pseudotime_Path9 <- 1
+
+    res <- ascseurat:::run_slingshot_trajectory(obj)
+    expect_setequal(
+        grep("^pseudotime_Path[0-9]+$", colnames(res$obj@meta.data), value = TRUE),
+        paste0("pseudotime_", res$assignment$path_names)
+    )
+})
+
+test_that("Monocle 3 on a saved Slingshot trajectory drops its lineage columns", {
+    skip_if_not_installed("DelayedMatrixStats")
+    skip_if_not_installed("monocle3")
+
+    res <- ascseurat:::run_monocle3_trajectory(slingshot_fixture()$obj)
+    expect_false(any(grepl("^pseudotime_Path[0-9]+$", colnames(res$obj@meta.data))))
+    expect_true("monocle3_partition" %in% colnames(res$obj@meta.data))
+})

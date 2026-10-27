@@ -986,6 +986,14 @@ representative_cell_for_cluster <- function(embedding, clusters, cluster) {
 
 
 assign_common_trajectory_metadata <- function(obj, method, pseudotime, path) {
+    # A saved trajectory RDS still has the per-run columns of its earlier run.
+    metadata <- obj@meta.data
+    stale <- c(
+        grep("^pseudotime_Path[0-9]+$", colnames(metadata), value = TRUE),
+        intersect(c("paga_cluster", "monocle3_partition"), colnames(metadata))
+    )
+    obj@meta.data <- metadata[, setdiff(colnames(metadata), stale), drop = FALSE]
+
     obj$trajectory_method <- method
     obj$pseudotime <- as.numeric(pseudotime)
     obj$trajectory_path <- as.character(path)
@@ -1655,6 +1663,13 @@ run_monocle3_trajectory <- function(obj, start_cluster = NULL, end_cluster = NUL
     counts <- get_counts_matrix(obj)
     counts <- counts[, colnames(obj), drop = FALSE]
     cell_metadata <- obj@meta.data
+    # plot_cells() adds these columns to its plotting data and fails on
+    # duplicates, e.g. the sample_name column added by the Integration tab.
+    cell_metadata <- cell_metadata[
+        ,
+        setdiff(colnames(cell_metadata), c("sample_name", "data_dim_1", "data_dim_2")),
+        drop = FALSE
+    ]
     cell_metadata$seurat_cluster <- seurat_clusters(obj)[rownames(cell_metadata)]
     gene_metadata <- data.frame(
         gene_short_name = rownames(counts),
@@ -3027,6 +3042,7 @@ mod_trajectory_server <- function(id) {
                          call. = FALSE)
                 }
 
+                run_id <- NULL
                 obj <- if (identical(input$custom_hm_source %||% "current", "current")) {
                     current <- tryCatch(ti_result(), error = function(e) NULL)
                     if (is.null(current)) {
@@ -3035,6 +3051,7 @@ mod_trajectory_server <- function(id) {
                             call. = FALSE
                         )
                     }
+                    run_id <- current$run_id
                     current$obj
                 } else if (identical(input$custom_hm_rds_source %||% "upload", "upload")) {
                     if (is.null(input$custom_hm_rds_file) ||
@@ -3089,7 +3106,8 @@ mod_trajectory_server <- function(id) {
                     obj = obj,
                     genes = present_genes,
                     requested_genes = length(genes),
-                    missing_genes = length(missing_genes)
+                    missing_genes = length(missing_genes),
+                    run_id = run_id
                 )
             }, error = function(e) {
                 showNotification(
@@ -3101,8 +3119,18 @@ mod_trajectory_server <- function(id) {
             })
         }, ignoreInit = TRUE)
 
-        custom_traj_heatmap_plot <- reactive({
+        # A heatmap of the current trajectory is shown only while that run is
+        # current; one from a loaded trajectory RDS has no run_id.
+        custom_traj_heatmap_result <- reactive({
             request <- custom_traj_heatmap_request()
+            if (is.null(request$run_id)) {
+                return(request)
+            }
+            current_run_result(request, tryCatch(ti_result(), error = function(e) NULL))
+        })
+
+        custom_traj_heatmap_plot <- reactive({
+            request <- custom_traj_heatmap_result()
             req(request)
             trajectory_heatmap_plot(request$obj, request$genes)
         })
@@ -3112,7 +3140,7 @@ mod_trajectory_server <- function(id) {
         })
 
         output$custom_traj_heatmap_info <- renderPrint({
-            request <- custom_traj_heatmap_request()
+            request <- custom_traj_heatmap_result()
             req(request)
             metadata <- request$obj[[]]
             paths <- sort_cluster_labels(unique(as.character(metadata$trajectory_path)))
@@ -3128,7 +3156,12 @@ mod_trajectory_server <- function(id) {
         })
 
         output$download_custom_traj_heatmap <- plot_download_handler(
-            plot_reactive = reactive(custom_traj_heatmap_plot()),
+            plot_reactive = function() {
+                download_content_or_stop(
+                    custom_traj_heatmap_plot,
+                    "the custom trajectory heatmap"
+                )
+            },
             filename_base = "custom_trajectory_heatmap",
             input = input,
             prefix = "custom_traj_hm"
