@@ -563,50 +563,42 @@ server <- function(input, output, session) {
         })
     }
 
-    append_log <- function(action, prefix) {
-        session_log$events <- c(session_log$events, list(list(
+    log_event <- function(action, prefix) {
+        list(
             timestamp = Sys.time(),
             action = action,
             params = extract_scoped_inputs(prefix)
-        )))
+        )
     }
 
-    log_map <- list(
-        list(id = "demo_qc-apply_filter", action = "QC filter (demo)", prefix = "demo_qc-"),
-        list(id = "demo_norm-run_norm", action = "Normalize (demo)", prefix = "demo_norm-"),
-        list(id = "demo_clust-run_clustering", action = "Cluster (demo)", prefix = "demo_clust-"),
-        list(id = "demo_de-run_de", action = "Run DE (demo)", prefix = "demo_de-"),
-        list(id = "single_data-load_data", action = "Load single-sample data", prefix = "single_data-"),
-        list(id = "single_data-apply_metadata", action = "Add single-sample metadata", prefix = "single_data-"),
-        list(id = "single_qc-apply_filter", action = "QC filter (single sample)", prefix = "single_qc-"),
-        list(id = "single_norm-run_norm", action = "Normalize single sample", prefix = "single_norm-"),
-        list(id = "single_clust-run_clustering", action = "Cluster single sample", prefix = "single_clust-"),
-        list(id = "single_clust-apply_rename", action = "Rename single-sample clusters", prefix = "single_clust-"),
-        list(id = "single_clust-reanalyze", action = "Reanalyze single-sample subset", prefix = "single_clust-"),
-        list(id = "single_de-run_de", action = "Run single-sample DE", prefix = "single_de-"),
-        list(id = "multi_int-run_integration", action = "Run integration", prefix = "multi_int-"),
-        list(id = "multi_clust-run_clustering", action = "Cluster integrated data", prefix = "multi_clust-"),
-        list(id = "multi_clust-apply_rename", action = "Rename integrated clusters", prefix = "multi_clust-"),
-        list(id = "multi_clust-reanalyze", action = "Reanalyze integrated subset", prefix = "multi_clust-"),
-        list(id = "multi_de-run_de", action = "Run integrated DE", prefix = "multi_de-"),
-        list(id = "traj-run_ti", action = "Run trajectory inference", prefix = "traj-"),
-        list(id = "traj-run_traj_de", action = "Run trajectory DE", prefix = "traj-"),
-        list(id = "celltype-run_singler", action = "Run SingleR annotation", prefix = "celltype-"),
-        list(id = "adv_plots-make_plot", action = "Generate advanced plot", prefix = "adv_plots-")
-    )
-    for (entry in log_map) {
-        local({
-            current <- entry
-            observeEvent(input[[current$id]], {
-                append_log(current$action, current$prefix)
-            }, ignoreInit = TRUE)
-        })
+    append_log <- function(event) {
+        session_log$events <- c(session_log$events, list(event))
     }
-    # The demo dataset is loaded through demo_trigger, not an input button.
-    observeEvent(demo_trigger(), {
-        req(demo_trigger() > 0)
-        append_log("Load demo data (demo tab)", "demo_data-")
-    }, ignoreInit = TRUE)
+
+    # A click is logged only if the module result it drives changes while the
+    # click is handled, so refused or failed runs stay out of the report. The
+    # inputs are recorded at the click.
+    log_completed_step <- function(event, result, action, prefix, clears_result = FALSE) {
+        pending <- NULL
+        last_seen <- NULL
+        # Highest priority: runs before the module and the result observer.
+        observeEvent(event(), {
+            pending <<- log_event(action, prefix)
+        }, ignoreInit = TRUE, priority = 100)
+        observeEvent(tryCatch(result(), error = function(e) NULL), {
+            value <- tryCatch(result(), error = function(e) NULL)
+            changed <- !is.null(pending) && !identical(value, last_seen)
+            last_seen <<- value
+            if (changed && (!is.null(value) || clears_result)) {
+                append_log(pending)
+                pending <<- NULL
+            }
+        }, ignoreNULL = FALSE)
+        # Lowest priority: runs after the module has handled the click.
+        observeEvent(event(), {
+            pending <<- NULL
+        }, ignoreInit = TRUE, priority = -100)
+    }
 
     build_session_report <- function() {
         pkg_version <- function(pkg) {
@@ -708,17 +700,70 @@ server <- function(input, output, session) {
         }
     }, ignoreInit = TRUE)
 
-    mod_trajectory_server("traj")
-    mod_celltype_annotation_server(
+    traj <- mod_trajectory_server("traj")
+    celltype <- mod_celltype_annotation_server(
         "celltype",
         seurat_obj_single = single_clust,
         seurat_obj_multi = multi_clust
     )
-    mod_advanced_plots_server(
+    adv_plots <- mod_advanced_plots_server(
         "adv_plots",
         seurat_obj_single = single_clust,
         seurat_obj_multi = multi_clust
     )
+
+    # result: the module result a completed click changes. clears_result: the
+    # step may complete by clearing it (Reanalyze Subset with recomputed PCA).
+    log_map <- list(
+        list(id = "demo_qc-apply_filter", action = "QC filter (demo)", prefix = "demo_qc-", result = demo_qc),
+        list(id = "demo_norm-run_norm", action = "Normalize (demo)", prefix = "demo_norm-", result = demo_norm$obj),
+        list(id = "demo_clust-run_clustering", action = "Cluster (demo)", prefix = "demo_clust-", result = demo_clust),
+        list(id = "demo_clust-apply_rename", action = "Rename clusters (demo)", prefix = "demo_clust-", result = demo_clust),
+        list(id = "demo_clust-reanalyze", action = "Reanalyze subset (demo)", prefix = "demo_clust-", result = demo_clust, clears_result = TRUE),
+        list(id = "demo_de-run_de", action = "Run DE (demo)", prefix = "demo_de-", result = demo_de),
+        list(id = "single_data-load_data", action = "Load single-sample data", prefix = "single_data-", result = single_data),
+        list(id = "single_data-apply_metadata", action = "Add single-sample metadata", prefix = "single_data-", result = single_data),
+        list(id = "single_qc-apply_filter", action = "QC filter (single sample)", prefix = "single_qc-", result = single_qc),
+        list(id = "single_norm-run_norm", action = "Normalize single sample", prefix = "single_norm-", result = single_norm$obj),
+        list(id = "single_clust-run_clustering", action = "Cluster single sample", prefix = "single_clust-", result = single_clust),
+        list(id = "single_clust-apply_rename", action = "Rename single-sample clusters", prefix = "single_clust-", result = single_clust),
+        list(id = "single_clust-reanalyze", action = "Reanalyze single-sample subset", prefix = "single_clust-", result = single_clust, clears_result = TRUE),
+        list(id = "single_de-run_de", action = "Run single-sample DE", prefix = "single_de-", result = single_de),
+        list(id = "multi_int-run_integration", action = "Run integration", prefix = "multi_int-", result = multi_int$obj),
+        list(id = "multi_int-apply_int_filter", action = "Apply post-integration filter", prefix = "multi_int-", result = multi_int$obj),
+        list(id = "multi_int-reset_int_filter", action = "Reset post-integration filter", prefix = "multi_int-", result = multi_int$obj),
+        list(id = "multi_clust-run_clustering", action = "Cluster integrated data", prefix = "multi_clust-", result = multi_clust),
+        list(id = "multi_clust-apply_rename", action = "Rename integrated clusters", prefix = "multi_clust-", result = multi_clust),
+        list(id = "multi_clust-reanalyze", action = "Reanalyze integrated subset", prefix = "multi_clust-", result = multi_clust, clears_result = TRUE),
+        list(id = "multi_de-run_de", action = "Run integrated DE", prefix = "multi_de-", result = multi_de),
+        list(id = "traj-run_ti", action = "Run trajectory inference", prefix = "traj-", result = traj$ti_result),
+        list(id = "traj-run_traj_de", action = "Run trajectory DE", prefix = "traj-", result = traj$traj_de_result),
+        list(id = "celltype-run_singler", action = "Run SingleR annotation", prefix = "celltype-", result = celltype$singler_result),
+        # Clicks are logged as they come while the Advanced Plots module returns
+        # no plot_state to watch.
+        list(id = "adv_plots-make_plot", action = "Generate advanced plot", prefix = "adv_plots-",
+             result = if (is.list(adv_plots)) adv_plots$plot_state)
+    )
+    for (entry in log_map) {
+        local({
+            current <- entry
+            if (is.null(current$result)) {
+                observeEvent(input[[current$id]], {
+                    append_log(log_event(current$action, current$prefix))
+                }, ignoreInit = TRUE)
+            } else {
+                log_completed_step(
+                    function() input[[current$id]],
+                    current$result,
+                    current$action,
+                    current$prefix,
+                    clears_result = isTRUE(current$clears_result)
+                )
+            }
+        })
+    }
+    # The demo dataset is loaded through demo_trigger, not an input button.
+    log_completed_step(demo_trigger, demo_data, "Load demo data (demo tab)", "demo_data-")
 }
 
 shinyApp(ui = ui, server = server)
