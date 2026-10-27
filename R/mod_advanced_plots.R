@@ -113,6 +113,8 @@ mod_advanced_plots_ui <- function(id) {
 #' @param id Module namespace ID.
 #' @param seurat_obj_single Reactive Seurat object from single-sample pipeline.
 #' @param seurat_obj_multi Reactive Seurat object from integration pipeline.
+#' @return A list with `plot_state`, a reactive holding the current plot
+#'   request.
 #' @export
 #' @keywords internal
 mod_advanced_plots_server <- function(id, seurat_obj_single = NULL,
@@ -559,5 +561,7 @@ mod_advanced_plots_server <- function(id, seurat_obj_single = NULL,
             },
             contentType = "application/zip"
         )
+
+        list(plot_state = plot_state)
     })
 }

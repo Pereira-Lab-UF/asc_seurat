@@ -739,27 +739,18 @@ server <- function(input, output, session) {
         list(id = "traj-run_ti", action = "Run trajectory inference", prefix = "traj-", result = traj$ti_result),
         list(id = "traj-run_traj_de", action = "Run trajectory DE", prefix = "traj-", result = traj$traj_de_result),
         list(id = "celltype-run_singler", action = "Run SingleR annotation", prefix = "celltype-", result = celltype$singler_result),
-        # Clicks are logged as they come while the Advanced Plots module returns
-        # no plot_state to watch.
-        list(id = "adv_plots-make_plot", action = "Generate advanced plot", prefix = "adv_plots-",
-             result = if (is.list(adv_plots)) adv_plots$plot_state)
+        list(id = "adv_plots-make_plot", action = "Generate advanced plot", prefix = "adv_plots-", result = adv_plots$plot_state)
     )
     for (entry in log_map) {
         local({
             current <- entry
-            if (is.null(current$result)) {
-                observeEvent(input[[current$id]], {
-                    append_log(log_event(current$action, current$prefix))
-                }, ignoreInit = TRUE)
-            } else {
-                log_completed_step(
-                    function() input[[current$id]],
-                    current$result,
-                    current$action,
-                    current$prefix,
-                    clears_result = isTRUE(current$clears_result)
-                )
-            }
+            log_completed_step(
+                function() input[[current$id]],
+                current$result,
+                current$action,
+                current$prefix,
+                clears_result = isTRUE(current$clears_result)
+            )
         })
     }
     # The demo dataset is loaded through demo_trigger, not an input button.

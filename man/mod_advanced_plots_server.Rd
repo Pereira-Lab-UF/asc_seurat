@@ -17,6 +17,10 @@ mod_advanced_plots_server(
 
 \item{seurat_obj_multi}{Reactive Seurat object from integration pipeline.}
 }
+\value{
+A list with \code{plot_state}, a reactive holding the current plot
+request.
+}
 \description{
 Advanced Plots Module — Server
 }

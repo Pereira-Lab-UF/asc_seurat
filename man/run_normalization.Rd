@@ -34,7 +34,10 @@ run_normalization(
 }
 \value{
 A normalized Seurat object with PCA computed. The regressed
-variables are recorded in \code{obj@misc$ascseurat_scale_regress}.
+variables are recorded in \code{obj@misc$ascseurat_scale_regress}, the number
+of cells scaled in \code{obj@misc$ascseurat_scale_cells} and the arguments in
+\code{obj@misc$ascseurat_normalization}. Batch-corrected reductions and the
+integration record are dropped, since they no longer match the new PCA.
 }
 \description{
 Normalizes data using either LogNormalize or SCTransform v2.
