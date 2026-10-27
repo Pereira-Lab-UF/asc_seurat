@@ -56,7 +56,7 @@ mod_integration_ui <- function(id) {
 
         # Post-integration summary
         conditionalPanel(
-            condition = sprintf("input['%s'] > 0", ns("run_integration")),
+            condition = sprintf("output['%s'] == 'true'", ns("integration_ready")),
             tags$hr(),
             card(
                 card_header("Integration Summary"),
@@ -412,13 +412,27 @@ mod_integration_server <- function(id) {
             }
 
             defaults <- tryCatch({
-                obj <- load_input_data(
-                    resolved_path,
-                    project = sample_name,
-                    min.cells = 0,
-                    min.features = 0
-                )
-                if (detect_input_format(resolved_path) %in% reusable_count_formats) {
+                # A new mito pattern reuses the counts already read for this file.
+                counts <- if (exists(version_key, envir = preview_counts, inherits = FALSE)) {
+                    get(version_key, envir = preview_counts, inherits = FALSE)
+                }
+                obj <- if (!is.null(counts)) {
+                    Seurat::CreateSeuratObject(
+                        counts = counts,
+                        project = sample_name,
+                        min.cells = 0,
+                        min.features = 0
+                    )
+                } else {
+                    load_input_data(
+                        resolved_path,
+                        project = sample_name,
+                        min.cells = 0,
+                        min.features = 0
+                    )
+                }
+                if (is.null(counts) &&
+                    detect_input_format(resolved_path) %in% reusable_count_formats) {
                     assign(
                         version_key,
                         SeuratObject::LayerData(obj, layer = "counts"),
@@ -502,6 +516,9 @@ mod_integration_server <- function(id) {
                 data_path = vapply(seq_len(n_samples), function(i) {
                     trimws(as.character(input[[paste0("sample_path_", i)]] %||% ""))
                 }, character(1)),
+                mito_pattern = vapply(seq_len(n_samples), function(i) {
+                    trimws(as.character(input[[paste0("qc_mito_pattern_", i)]] %||% ""))
+                }, character(1)),
                 stringsAsFactors = FALSE
             )
         })
@@ -559,12 +576,16 @@ mod_integration_server <- function(id) {
             })
         })
 
-        # Data path each sample's thresholds were last suggested for, so a
-        # suggestion never overwrites values typed for an unchanged sample.
+        # Data path and mito pattern each sample's thresholds were last
+        # suggested for, so a suggestion never overwrites values typed for an
+        # unchanged sample. A new pattern only re-suggests Max mito %, and only
+        # while it still holds the suggested value.
         suggested_paths <- character()
+        suggested_patterns <- character()
+        suggested_max_mito <- numeric()
 
         # A restored bookmark keeps its thresholds, so its paths count as
-        # already suggested.
+        # already suggested and its Max mito % as typed.
         shiny::onRestore(function(state) {
             ids <- grep("^sample_path_[0-9]+$", names(state$input), value = TRUE)
             for (id in ids) {
@@ -577,8 +598,21 @@ mod_integration_server <- function(id) {
             config <- sanitize_qc_config(qc_preview_config())
             prune_preview_counts(config$data_path)
             for (i in seq_len(nrow(config))) {
-                if (identical(config$data_path[[i]], suggested_paths[i])) {
+                path_changed <- !identical(config$data_path[[i]], suggested_paths[i])
+                if (!path_changed &&
+                    identical(config$mito_pattern[[i]], suggested_patterns[i])) {
                     next
+                }
+                if (!path_changed) {
+                    suggested_patterns[i] <<- config$mito_pattern[[i]]
+                    current_max_mito <- qc_input_value(
+                        paste0("qc_max_mito_", i),
+                        NA,
+                        numeric = TRUE
+                    )
+                    if (!isTRUE(all.equal(current_max_mito, suggested_max_mito[i]))) {
+                        next
+                    }
                 }
                 defaults <- sample_qc_defaults(
                     sample_name = config$sample_name[[i]],
@@ -589,16 +623,20 @@ mod_integration_server <- function(id) {
                     next
                 }
                 suggested_paths[i] <<- config$data_path[[i]]
-                updateNumericInput(
-                    session,
-                    paste0("qc_min_genes_", i),
-                    value = defaults$min_genes
-                )
-                updateNumericInput(
-                    session,
-                    paste0("qc_max_genes_", i),
-                    value = defaults$max_genes
-                )
+                suggested_patterns[i] <<- config$mito_pattern[[i]]
+                suggested_max_mito[i] <<- defaults$max_mito
+                if (path_changed) {
+                    updateNumericInput(
+                        session,
+                        paste0("qc_min_genes_", i),
+                        value = defaults$min_genes
+                    )
+                    updateNumericInput(
+                        session,
+                        paste0("qc_max_genes_", i),
+                        value = defaults$max_genes
+                    )
+                }
                 updateNumericInput(
                     session,
                     paste0("qc_max_mito_", i),
@@ -763,8 +801,23 @@ mod_integration_server <- function(id) {
             ensure_samples_metadata(obj)
         }
 
-        integrated_obj <- eventReactive(input$run_integration, {
-            tryCatch(
+        # Only a successful run replaces the integration, so a failed run keeps
+        # the previous object and everything computed from it.
+        integrated_obj <- reactiveVal(NULL)
+
+        observeEvent(input$run_integration, {
+            n_dims <- suppressWarnings(as.numeric(input$n_dims))
+            if (length(n_dims) != 1 || !is.finite(n_dims) || n_dims != round(n_dims) ||
+                n_dims < 5 || n_dims > 100) {
+                showNotification(
+                    "Integration was not run: Number of PCs for integration must be a whole number between 5 and 100.",
+                    type = "warning",
+                    duration = 15
+                )
+                return(invisible(NULL))
+            }
+
+            obj <- tryCatch(
                 withProgress(message = "Loading and integrating samples...", value = 0.1, {
                     config <- manual_sample_config()
                     config <- apply_qc_inputs(config)
@@ -790,6 +843,9 @@ mod_integration_server <- function(id) {
                 }),
                 error = notify_integration_error
             )
+            if (!is.null(obj)) {
+                integrated_obj(obj)
+            }
         })
 
         observeEvent(integrated_obj(), {
@@ -852,7 +908,19 @@ mod_integration_server <- function(id) {
             if (!is.null(sample_col)) {
                 cat("Samples:", length(unique(obj[[sample_col]][, 1])), "\n")
             }
-            cat("Method:", input$int_method, "\n")
+            integration <- obj@misc$ascseurat_integration
+            if (is.null(integration)) {
+                cat("Method:", input$int_method, "\n")
+            } else {
+                cat("Method:", integration$method, "\n")
+                cat("Normalization:", integration$normalization_method, "\n")
+                n_pcs <- length(integration$dims)
+                if ("pca" %in% names(obj@reductions)) {
+                    # run_integration() drops requested PCs that PCA did not compute.
+                    n_pcs <- min(n_pcs, ncol(Seurat::Embeddings(obj, "pca")))
+                }
+                cat("PCs for integration:", n_pcs, "\n")
+            }
             filter_summary <- attr(obj, "ascseurat_filter_summary", exact = TRUE)
             if (!is.null(filter_summary)) {
                 cat(
@@ -1062,7 +1130,10 @@ mod_integration_server <- function(id) {
                     ),
                     add = TRUE
                 )
-                save_download_rds(active_integrated_obj(), file)
+                save_download_rds(
+                    download_content_or_stop(active_integrated_obj, "Load & Integrate"),
+                    file
+                )
             }
         )
 
