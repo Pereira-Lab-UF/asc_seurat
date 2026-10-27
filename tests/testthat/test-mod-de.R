@@ -285,3 +285,143 @@ test_that("DE results are cleared when the clustered object changes", {
         }
     )
 })
+
+test_that("DE results survive upstream re-evaluations that return the same object", {
+    obj <- clustered_fixture()
+    cluster <- largest_cluster(obj)
+    tick <- shiny::reactiveVal(0)
+
+    shiny::testServer(
+        ascseurat::mod_de_server,
+        args = list(
+            seurat_obj = shiny::reactive({
+                tick()
+                obj
+            }),
+            allow_conserved = FALSE
+        ),
+        {
+            session$setInputs(
+                de_type = "one",
+                cluster_1 = cluster,
+                test_use = "wilcox",
+                pval_cutoff = 0.05,
+                logfc_threshold = 0.25,
+                min_pct = 0.1,
+                only_pos = TRUE,
+                run_de = 1
+            )
+            res <- markers()
+            expect_gt(nrow(res), 0)
+
+            tick(1)
+            session$flushReact()
+            expect_identical(markers(), res)
+        }
+    )
+})
+
+test_that("cleared DE results report not ready and the download explains why", {
+    obj <- clustered_fixture()
+    cluster <- largest_cluster(obj)
+    current_obj <- shiny::reactiveVal(obj)
+    notifications <- local_de_notifications()
+
+    shiny::testServer(
+        ascseurat::mod_de_server,
+        args = list(seurat_obj = shiny::reactive(current_obj()), allow_conserved = FALSE),
+        {
+            expect_identical(output$de_ready, "false")
+            session$setInputs(
+                de_type = "one",
+                cluster_1 = cluster,
+                test_use = "wilcox",
+                pval_cutoff = 0.05,
+                logfc_threshold = 0.25,
+                min_pct = 0.1,
+                only_pos = TRUE,
+                run_de = 1
+            )
+            expect_identical(output$de_ready, "true")
+            expect_gt(nrow(utils::read.csv(output$download_markers)), 0)
+
+            renamed <- obj
+            Seurat::Idents(renamed) <- factor(paste0("C", as.character(Seurat::Idents(obj))))
+            current_obj(renamed)
+            session$flushReact()
+            expect_identical(output$de_ready, "false")
+            # The mock session errors when no file is written; a real session
+            # answers 404 instead of a server error (see the browser test).
+            expect_error(output$download_markers)
+            expect_match(notifications(), "no marker results to download", all = FALSE)
+            expect_false(session$isClosed())
+        }
+    )
+})
+
+test_that("the browser hides DE results and their download once they are cleared", {
+    skip_on_cran()
+    skip_if_not_installed("shinytest2")
+    skip_if(
+        is.null(tryCatch(chromote::find_chrome(), error = function(e) NULL)),
+        "Chrome is not available"
+    )
+
+    app_dir <- withr::local_tempdir()
+    writeLines(c(
+        "library(shiny)",
+        "library(ascseurat)",
+        sprintf("obj <- readRDS(%s)", deparse(clustered_fixture_path())),
+        "ui <- bslib::page_fluid(",
+        "    shinyFeedback::useShinyFeedback(),",
+        "    actionButton('rename', 'Rename clusters'),",
+        "    mod_de_ui('de')",
+        ")",
+        "server <- function(input, output, session) {",
+        "    current <- reactiveVal(obj)",
+        "    observeEvent(input$rename, {",
+        "        renamed <- obj",
+        "        Seurat::Idents(renamed) <- factor(paste0('C', as.character(Seurat::Idents(obj))))",
+        "        current(renamed)",
+        "    })",
+        "    mod_de_server('de', seurat_obj = reactive(current()))",
+        "}",
+        "shinyApp(ui, server)"
+    ), file.path(app_dir, "app.R"))
+
+    app <- shinytest2::AppDriver$new(
+        app_dir,
+        name = "mod-de-ready",
+        shiny_args = list(port = httpuv::randomPort(5000, 5900)),
+        load_timeout = 180000,
+        timeout = 120000
+    )
+    withr::defer(app$stop())
+
+    download_visible <- "$('#de-download_markers').is(':visible')"
+    card_visible <- paste0(
+        "$('.card-header').filter(function() {",
+        " return $(this).text().trim() === 'Marker Genes'; }).is(':visible')"
+    )
+    download_status <- paste0(
+        "fetch($('#de-download_markers').attr('href'))",
+        ".then(function(response) { return response.status; })"
+    )
+
+    expect_false(app$get_js(download_visible))
+    app$click("de-run_de")
+    app$wait_for_idle(duration = 1000, timeout = 120000)
+    expect_true(app$get_js(download_visible))
+    expect_true(app$get_js(card_visible))
+    expect_equal(app$get_js(download_status), 200)
+
+    app$click("rename")
+    app$wait_for_idle(duration = 1000)
+    expect_false(app$get_js(download_visible))
+    expect_false(app$get_js(card_visible))
+    expect_equal(app$get_js(download_status), 404)
+    app$wait_for_js(
+        "$('.shiny-notification').text().indexOf('no marker results to download') >= 0"
+    )
+    expect_true(app$get_js("Shiny.shinyapp.isConnected()"))
+})

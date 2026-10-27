@@ -110,7 +110,7 @@ mod_de_ui <- function(id, allow_conserved = FALSE, step_number = 5) {
                     action_btn(ns("run_de"), "Find Markers", icon = icon("search")),
                     tags$hr(),
                     conditionalPanel(
-                        condition = sprintf("input['%s'] > 0", ns("run_de")),
+                        condition = sprintf("output['%s'] == 'true'", ns("de_ready")),
                         downloadButton(
                             ns("download_markers"),
                             "Download Results (CSV)",
@@ -122,7 +122,7 @@ mod_de_ui <- function(id, allow_conserved = FALSE, step_number = 5) {
         ),
 
         conditionalPanel(
-            condition = sprintf("input['%s'] > 0", ns("run_de")),
+            condition = sprintf("output['%s'] == 'true'", ns("de_ready")),
             tags$hr(),
             card(
                 card_header("Marker Genes"),
@@ -317,11 +317,28 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
 
         de_result <- reactiveVal(NULL)
 
+        # NULL while the upstream is req()-blocked, so the reset also runs when
+        # the previous object stops being available.
+        upstream_obj <- reactive(tryCatch(seurat_obj(), error = function(e) NULL))
+        last_upstream_obj <- NULL
+
         # Results from an earlier object (before re-clustering, renaming or
-        # subsetting) no longer match its clusters.
-        observeEvent(tryCatch(seurat_obj(), error = function(e) NULL), {
+        # subsetting) no longer match its clusters; re-evaluations that return
+        # the same object keep them. Runs at start-up too, so the first object
+        # is recorded rather than compared against NULL later.
+        observeEvent(upstream_obj(), {
+            obj <- upstream_obj()
+            if (identical(obj, last_upstream_obj)) {
+                return(invisible(NULL))
+            }
+            last_upstream_obj <<- obj
             de_result(NULL)
-        }, ignoreNULL = FALSE, ignoreInit = TRUE)
+        }, ignoreNULL = FALSE)
+
+        output$de_ready <- shiny::renderText({
+            if (is.null(de_result())) "false" else "true"
+        })
+        shiny::outputOptions(output, "de_ready", suspendWhenHidden = FALSE)
 
         observeEvent(input$run_de, {
             de_result(NULL)
@@ -601,7 +618,17 @@ mod_de_server <- function(id, seurat_obj, allow_conserved = FALSE) {
         output$download_markers <- downloadHandler(
             filename = function() paste0("markers_", Sys.Date(), ".csv"),
             content = function(file) {
-                write.csv(markers(), file, row.names = FALSE)
+                result <- de_result()
+                if (is.null(result)) {
+                    showNotification(
+                        "There are no marker results to download: run Find Markers for the current data first.",
+                        type = "warning",
+                        duration = 12
+                    )
+                    # Writing no file makes the download fail without a server error.
+                    return(invisible(NULL))
+                }
+                write.csv(result, file, row.names = FALSE)
             }
         )
 
