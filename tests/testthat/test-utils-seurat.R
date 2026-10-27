@@ -62,6 +62,27 @@ test_that("SCTransform keeps RNA prepared for downstream DE and plots", {
     expect_identical(colnames(scaled), genes)
 })
 
+test_that("SCTransform drops RNA scaled values carried in from an uploaded object", {
+    # An uploaded clustered object keeps RNA scale.data from its own cells;
+    # after QC and SCTransform those values no longer match the object.
+    uploaded <- clustered_fixture()
+    qc_obj <- subset(uploaded, cells = colnames(uploaded)[uploaded$nFeature_RNA > 600])
+    genes <- head(SeuratObject::VariableFeatures(uploaded), 3)
+
+    norm_obj <- suppressWarnings(ascseurat:::run_normalization(
+        qc_obj,
+        method = "sctransform",
+        nfeatures = 500
+    ))
+    expect_false("scale.data" %in% SeuratObject::Layers(norm_obj[["RNA"]]))
+
+    SeuratObject::DefaultAssay(norm_obj) <- "RNA"
+    plotted <- ascseurat:::fetch_expression_layer(norm_obj, genes, "scale.data")
+    fresh <- Seurat::ScaleData(norm_obj, features = genes, verbose = FALSE)
+    fresh <- t(as.matrix(SeuratObject::LayerData(fresh, assay = "RNA", layer = "scale.data")[genes, ]))
+    expect_equal(unname(as.matrix(plotted[colnames(norm_obj), genes])), unname(fresh[colnames(norm_obj), ]))
+})
+
 test_that("clustering can use an integrated reduction", {
     obj <- ascseurat:::run_normalization(demo_fixture(), method = "lognorm", nfeatures = 500)
     obj[["integrated.rpca"]] <- obj[["pca"]]

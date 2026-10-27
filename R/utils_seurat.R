@@ -338,6 +338,11 @@ prepare_rna_assay_for_de <- function(obj, nfeatures = 3000,
     on.exit(SeuratObject::DefaultAssay(obj) <- current_assay, add = TRUE)
 
     SeuratObject::DefaultAssay(obj) <- "RNA"
+    # A scale.data layer carried in from an uploaded object was computed on
+    # other cells or settings; expression plots rescale RNA genes on demand.
+    if ("scale.data" %in% SeuratObject::Layers(obj[["RNA"]])) {
+        SeuratObject::LayerData(obj, assay = "RNA", layer = "scale.data") <- NULL
+    }
     obj <- NormalizeData(
         obj,
         normalization.method = "LogNormalize",
