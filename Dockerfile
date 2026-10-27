@@ -75,7 +75,7 @@ RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install(c( \
     "bioc::anndataR"), ask = FALSE)'
 
 RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install("samuel-marsh/scCustomize", ask = FALSE)'
-RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install("BioBam/scMaSigPro", ask = FALSE)'
+RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install("BioBam/scMaSigPro@v0.0.4", ask = FALSE)'
 # presto gives Seurat's FindMarkers/FindAllMarkers a fast Wilcoxon test.
 RUN R -q -e 'options(Ncpus = 1, pkg.sysreqs = FALSE); pak::pkg_install("immunogenomics/presto", ask = FALSE, upgrade = FALSE)'
 ARG BPCELLS_REF=adc4a3c30f60a03522f58947d733d7d77a6eb2cf

@@ -75,7 +75,7 @@ Remotes:
     cole-trapnell-lab/monocle3,
     dsong-lab/PseudotimeDE,
     samuel-marsh/scCustomize,
-    BioBam/scMaSigPro
+    BioBam/scMaSigPro@v0.0.4
 Config/testthat/edition: 3
 biocViews: SingleCell, RNASeq, GeneExpression, Clustering,
     DifferentialExpression, QualityControl
