@@ -30,7 +30,8 @@ run_clustering(
 
 - run_tsne:
 
-  Logical. Whether to also run tSNE.
+  Logical. Whether to also run tSNE (skipped when there are too few
+  cells).
 
 - reduction:
 

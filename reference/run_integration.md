@@ -48,4 +48,5 @@ run_integration(
 
 ## Value
 
-An integrated Seurat object.
+An integrated Seurat object. The integration parameters are recorded in
+`obj@misc$ascseurat_integration`.

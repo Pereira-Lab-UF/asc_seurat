@@ -25,3 +25,7 @@ mod_advanced_plots_server(
 - seurat_obj_multi:
 
   Reactive Seurat object from integration pipeline.
+
+## Value
+
+A list with `plot_state`, a reactive holding the current plot request.

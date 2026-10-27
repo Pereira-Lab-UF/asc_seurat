@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ascseurat</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,7 +99,11 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A normalized Seurat object with PCA computed.</p>
+    <p>A normalized Seurat object with PCA computed. The regressed
+variables are recorded in <code>obj@misc$ascseurat_scale_regress</code>, the number
+of cells scaled in <code>obj@misc$ascseurat_scale_cells</code> and the arguments in
+<code>obj@misc$ascseurat_normalization</code>. Batch-corrected reductions and the
+integration record are dropped, since they no longer match the new PCA.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -53,4 +53,8 @@ run_normalization(
 
 ## Value
 
-A normalized Seurat object with PCA computed.
+A normalized Seurat object with PCA computed. The regressed variables
+are recorded in `obj@misc$ascseurat_scale_regress`, the number of cells
+scaled in `obj@misc$ascseurat_scale_cells` and the arguments in
+`obj@misc$ascseurat_normalization`. Batch-corrected reductions and the
+integration record are dropped, since they no longer match the new PCA.

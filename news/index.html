@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ascseurat</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,39 @@
       <small>Source: <a href="https://github.com/Pereira-Lab-UF/asc_seurat/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.0.9" id="ascseurat-309">ascseurat 3.0.9<a class="anchor" aria-label="anchor" href="#ascseurat-309"></a></h2>
+<div class="section level3">
+<h3 id="install-and-distribution-3-0-9">Install and distribution<a class="anchor" aria-label="anchor" href="#install-and-distribution-3-0-9"></a></h3>
+<ul><li>The Docker image builds again: Monocle 3’s dependencies are installed explicitly before it is built (the 3.0.8 image was never published).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-the-session-no-longer-closes-3-0-9">Bug fixes: the session no longer closes<a class="anchor" aria-label="anchor" href="#bug-fixes-the-session-no-longer-closes-3-0-9"></a></h3>
+<ul><li>Blank or invalid inputs no longer close the session: a cleared Max mitochondrial %, p-value, minimum fraction, or Log2FC field, an empty or negative Top N, an invalid mitochondrial regex, metadata with duplicate or missing barcodes, and hidden normalization options (cell-cycle regression after unticking Score cell cycle) now show a message instead.</li>
+<li>Reanalyzing or re-clustering a very small subset (fewer than 10 cells, or every cluster excluded) is refused with a message.</li>
+<li>A 0-byte marker file shows a warning instead of closing the session, and one-gene dot plots now render.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-results-3-0-9">Bug fixes: results<a class="anchor" aria-label="anchor" href="#bug-fixes-results-3-0-9"></a></h3>
+<ul><li>Conserved markers are filtered on the largest per-group adjusted p-value (new column <code>max_p_val_adj</code>), use the selected test (<code>roc</code> is refused), and explain when fewer than two groups can be tested. DE between conditions can use any suitable metadata column.</li>
+<li>Harmony uses “Number of PCs for integration”, and the clustering PC input is capped to the integrated reduction.</li>
+<li>Recomputing a subset of an integrated object repeats the batch correction (RPCA or Harmony) as far as the subset allows; samples too small to be their own batch are grouped with the largest one, and the subset falls back to plain normalization with a warning when integration is not possible.</li>
+<li>Recomputing a subset repeats the Step 3 normalization settings (method, variable features, scale factor, regressed variables, cell-cycle scoring), and keeps no duplicate RNA layers.</li>
+<li>Scaled expression plots keep the values of genes that were already scaled, regress the same variables as normalization, and rescale all genes after a subset that kept the current clusters. After SCTransform they no longer show RNA scaled values carried in from an uploaded object.</li>
+<li>Advanced Plots use normalized values for uploaded SCTransform objects whose RNA assay was never normalized.</li>
+<li>h5ad files: raw counts are read from <code>layers['counts']</code>, <code>layers['raw_counts']</code>, <code>.raw</code>, or an integer <code>X</code>; normalized-only files are rejected with an explanation, and gene names with underscores load.</li>
+<li>Trajectory: Monocle 3 orders cells from a single root node, PAGA uses the clustering reduction (Harmony or RPCA after integration), tradeSeq uses whole-transcriptome library sizes and a fixed seed, PseudotimeDE-fast tests each Slingshot lineage separately, gene tables are ranked consistently, <code>pseudotime_PathN</code> is <code>NA</code> off-lineage, scMaSigPro failures are reported as errors, and the Monocle 3 graph works on Integration-tab objects.</li>
+<li>Re-normalizing an integrated <code>.rds</code> drops its stale Harmony/RPCA reduction.</li>
+<li>tSNE runs only when its box is ticked and the object has one sample.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-inputs-stale-results-and-downloads-3-0-9">Bug fixes: inputs, stale results, and downloads<a class="anchor" aria-label="anchor" href="#bug-fixes-inputs-stale-results-and-downloads-3-0-9"></a></h3>
+<ul><li>Results that no longer match the current object are cleared: QC, normalization, clustering, DE tables and downloads, expression plots, Advanced Plots, SingleR results, and trajectory DE, heatmaps and gene tables. Re-runs that return the same object keep them.</li>
+<li>A failed Load &amp; Integrate keeps the previous integration; the Integration Summary reports the method and PCs actually used, and Number of PCs for integration must be a whole number from 5 to 100.</li>
+<li>Integration-tab sample names, paths, and QC thresholds keep typed values when samples are renamed or added, QC suggestions use each sample’s Mito pattern, and restored bookmarks keep their thresholds. The clustering PC input is updated after the first integration.</li>
+<li>The Session Report lists only steps that completed, and now records demo cluster renaming and subset reanalysis and the post-integration filter.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.0.8" id="ascseurat-308">ascseurat 3.0.8<a class="anchor" aria-label="anchor" href="#ascseurat-308"></a></h2>
 <div class="section level3">

@@ -1,6 +1,7 @@
 # Run PseudotimeDE-fast on Slingshot Output
 
-Run PseudotimeDE-fast on Slingshot Output
+Each Slingshot lineage is tested separately on its own cells, so the
+result has one row per gene and lineage.
 
 ## Usage
 
@@ -12,8 +13,7 @@ run_pseudotimede_fast(sce, gene_subset = NULL, cores = 2)
 
 - sce:
 
-  A SingleCellExperiment with trajectory_path and trajectory_pseudotime
-  columns.
+  A SingleCellExperiment with Slingshot results.
 
 - gene_subset:
 
