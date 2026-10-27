@@ -104,18 +104,26 @@ be used to keep or remove selected clusters before downstream analysis.
 
 When **Recompute PCA and clusters** is selected, Asc-Seurat creates a
 new subset object, repeats the integration with the same method (RPCA or
-Harmony), normalization, and number of PCs, and shows an updated elbow
-plot before clustering the subset again. If only one sample remains in
-the subset, it is normalized without batch correction and a warning is
-shown. When **Keep current reduction and clusters** is selected, the
+Harmony), normalization, and number of PCs as far as the subset allows,
+and shows an updated elbow plot before clustering the subset again.
+Samples with too few cells in the subset (fewer than 31 for RPCA, fewer
+than 10 for Harmony) are not corrected as separate batches: their cells
+are grouped with the largest sample, and a warning names them. RPCA also
+uses fewer PCs when the smallest sample has fewer cells than the
+selected number of PCs. If fewer than two samples have enough cells, or
+the batch correction fails, the subset is normalized without batch
+correction and a warning is shown. When **Keep current reduction and
+clusters** is selected, the
 current embedding and cluster labels are carried forward for the
 selected subset.
 
 The subset must contain at least 10 cells. After a subset is reanalyzed
 with either option, later clicks on :guilabel:`Run Clustering`
 re-cluster that subset rather than the full integrated object, until the
-integrated object changes (for example, after integrating again or
-changing the additional cell filtering).
+integrated object changes (for example, after integrating again, or
+after applying, resetting, or turning off the additional cell
+filtering). Selecting an option under additional cell filtering without
+applying it keeps the current clustering.
 
 .. warning::
 

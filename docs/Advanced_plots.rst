@@ -43,6 +43,11 @@ Use **Genes to plot** to include all matching genes or only the first
 the ordering panel lets you adjust the display order of genes and
 clusters before regenerating the plot.
 
+A plot made from the Single Sample or Integration object is marked as
+outdated when that tab re-clusters, renames, subsets, or clears its
+object; click :guilabel:`Generate Plot` again to plot the current
+object. The download buttons appear once a plot has been generated.
+
 Stacked violin plot
 ===================
 

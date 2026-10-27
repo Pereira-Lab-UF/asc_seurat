@@ -106,6 +106,9 @@ After clustering, the Single Sample workflow displays a UMAP plot colored
 by cluster. A tSNE plot is shown next to it when **Also compute tSNE
 (slow for large datasets)** is checked, which is the default; uncheck it
 before clicking :guilabel:`Run Clustering` to skip tSNE on large datasets.
+tSNE is only computed for objects with a single sample: if the metadata
+defines several samples, tSNE is skipped with a notification and a UMAP
+split by sample is shown instead.
 
 .. figure:: images/v3/v3_clustering_umap_tsne.png
    :alt: Asc-Seurat v3 UMAP and tSNE cluster visualizations.
@@ -138,9 +141,15 @@ analysis. Enable **Reanalyze subset?**, choose whether to **Select** or
 **Exclude** clusters, and click :guilabel:`Reanalyze Subset`.
 
 When **Recompute PCA and clusters** is selected, Asc-Seurat creates a
-new subset object, recomputes normalization and PCA, and shows an
-updated elbow plot. Review the new elbow plot, keep or adjust the
-number of PCs in Step 3, and click :guilabel:`Run Clustering` again.
+new subset object, repeats the normalization with the Step 3 settings
+of the current object (method, number of variable features, scale
+factor, regressed variables, and cell-cycle scoring), recomputes PCA,
+and shows an updated elbow plot. Regressed variables that are no longer
+in the metadata, or that have a single value in the subset, are skipped
+with a warning. Objects without recorded settings (for example,
+uploaded ``.rds`` files) use the default settings. Review the new elbow
+plot, keep or adjust the number of PCs in Step 3, and click
+:guilabel:`Run Clustering` again.
 
 When **Keep current reduction and clusters** is selected, Asc-Seurat
 keeps the current embeddings and cluster labels for the selected subset.

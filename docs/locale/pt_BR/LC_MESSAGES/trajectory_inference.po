@@ -127,6 +127,18 @@ msgstr ""
 msgid "export the trajectory object."
 msgstr "exporte o objeto de trajetória."
 
+#: ../../trajectory_inference.rst:44 2660857447f04dc58fead3f7d1c327a6
+msgid ""
+"Running trajectory inference again on an exported trajectory object replaces"
+" the per-run columns of the earlier run (``pseudotime_PathN``, "
+"``paga_cluster``, ``monocle3_partition``), so the object only contains the "
+"columns of the latest run."
+msgstr ""
+"Executar a inferência de trajetória novamente em um objeto de trajetória "
+"exportado substitui as colunas por execução da execução anterior "
+"(``pseudotime_PathN``, ``paga_cluster``, ``monocle3_partition``), de modo "
+"que o objeto contém apenas as colunas da execução mais recente."
+
 #: ../../trajectory_inference.rst:44 4393a3ff51274827b09b90f429412888
 msgid "Trajectory Inference tab."
 msgstr "Guia Trajectory Inference."

@@ -41,6 +41,11 @@ For all three methods you can:
 - inspect the resulting pseudotime plot and trajectory graph,
 - export the trajectory object.
 
+Running trajectory inference again on an exported trajectory object
+replaces the per-run columns of the earlier run (``pseudotime_PathN``,
+``paga_cluster``, ``monocle3_partition``), so the object only contains
+the columns of the latest run.
+
 .. figure:: images/v3/v3_trajectory.png
    :alt: Trajectory Inference tab.
    :width: 100%

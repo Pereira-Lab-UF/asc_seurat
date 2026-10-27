@@ -50,7 +50,10 @@ conditions stored in the object's metadata.
 
 After the search runs, Asc-Seurat displays an interactive marker table.
 Users can search within the table and download the significant markers
-or DEGs as a CSV file.
+or DEGs as a CSV file. If clustering is re-run, clusters are renamed, or
+the data are re-normalized, the table and its download are hidden until
+:guilabel:`Find Markers` is clicked again, because the earlier results no
+longer match the current clusters.
 
 .. figure:: images/v3/v3_de_marker_table.png
    :alt: Asc-Seurat v3 marker genes result table.

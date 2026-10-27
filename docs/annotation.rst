@@ -17,3 +17,9 @@ files uploaded directly.
    Cell-type Annotation tab. Point it at a processed Seurat object
    (from the Single Sample or Integration tab, or uploaded as RDS),
    choose a ``celldex`` reference atlas, and pick main or fine labels.
+
+SingleR results computed on the Single Sample or Integration object are
+cleared when that tab re-clusters, renames, subsets, or clears its
+object, and a note asks you to annotate again. Results and their
+downloads are shown only after a successful run; results from an
+uploaded object are not affected.

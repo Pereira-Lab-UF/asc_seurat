@@ -104,6 +104,19 @@ msgstr ""
 "gráfico, o painel de ordenação permite ajustar a ordem de exibição dos genes"
 " e clusters antes de regenerar o gráfico."
 
+#: ../../Advanced_plots.rst:46 d26132848547445f9168da3c1f47bd82
+msgid ""
+"A plot made from the Single Sample or Integration object is marked as "
+"outdated when that tab re-clusters, renames, subsets, or clears its object; "
+"click :guilabel:`Generate Plot` again to plot the current object. The "
+"download buttons appear once a plot has been generated."
+msgstr ""
+"Um gráfico feito a partir do objeto Single Sample ou Integration é marcado "
+"como desatualizado quando essa guia refaz o clustering, renomeia, cria um "
+"subconjunto ou apaga o seu objeto; clique em :guilabel:`Generate Plot` "
+"novamente para gerar o gráfico do objeto atual. Os botões de download "
+"aparecem depois que um gráfico é gerado."
+
 #: ../../Advanced_plots.rst:41 4fdd8ab2c14d493399dd05206ef68c54
 msgid "Stacked violin plot"
 msgstr "Stacked violin plot"

@@ -53,6 +53,10 @@ In the *QC Parameters per sample* card, for each declared sample set:
 - **Max mito %** — maximum percentage of mitochondrial transcripts
   allowed per cell.
 
+Suggested thresholds use each sample's **Mito pattern**. Entering a new
+data path suggests all three thresholds again; changing the pattern
+suggests a new **Max mito %** unless you typed your own value.
+
 Choosing the integration method
 ===============================
 
@@ -63,18 +67,22 @@ In the *Integration Method* card:
   ``SCTransform v2``.
 - **Number of PCs for integration**: principal components used by RPCA
   or Harmony (default ``30``; range 5–100). With Harmony, this is also
-  the maximum number of PCs available for clustering.
+  the maximum number of PCs available for clustering. Values that are
+  not whole numbers from 5 to 100 are refused with a warning.
 
 Click **Load & Integrate** to run the integration. The integrated
 object becomes available to the clustering, DE, and visualization
-modules below.
+modules below. If a run fails (for example, because a sample path is
+mistyped), the previous integration and everything computed from it
+are kept, and a notification explains the failure.
 
 Saving the integrated object for reuse
 ======================================
 
 Integration is the most time-consuming step in this tab. After it
-completes, an *Integration Summary* card lets you download the
-integrated Seurat object as an RDS file. To skip the integration step
+completes, an *Integration Summary* card reports the method,
+normalization, and number of PCs used by the last successful run and
+lets you download the integrated Seurat object as an RDS file. To skip the integration step
 later, load that RDS in the **Single Sample** tab using *Existing
 Seurat RDS* — the clustering and downstream steps will pick up from
 there.

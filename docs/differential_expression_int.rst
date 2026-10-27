@@ -82,7 +82,9 @@ Marker table
 After the search runs, Asc-Seurat displays an interactive marker table.
 The table can be searched, paged, and downloaded as CSV. The selected
 genes can also be passed directly to **Step 4: Gene Expression
-Visualization** without re-uploading a marker list.
+Visualization** without re-uploading a marker list. If clustering is
+re-run or clusters are renamed, the table and its download are hidden
+until :guilabel:`Find Markers` is clicked again.
 
 .. figure:: images/v3/v3_de_int_marker_table.png
    :alt: Asc-Seurat v3 integrated marker table.
