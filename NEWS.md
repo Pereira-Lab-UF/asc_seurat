@@ -1,3 +1,71 @@
+# ascseurat 3.0.9
+
+## Install and distribution
+
+* The Docker image builds again: Monocle 3's dependencies are installed
+  explicitly before it is built (the 3.0.8 image was never published).
+
+## Bug fixes: the session no longer closes
+
+* Blank or invalid inputs no longer close the session: a cleared Max
+  mitochondrial %, p-value, minimum fraction, or Log2FC field, an empty or
+  negative Top N, an invalid mitochondrial regex, metadata with duplicate or
+  missing barcodes, and hidden normalization options (cell-cycle regression
+  after unticking Score cell cycle) now show a message instead.
+* Reanalyzing or re-clustering a very small subset (fewer than 10 cells, or
+  every cluster excluded) is refused with a message.
+* A 0-byte marker file shows a warning instead of closing the session, and
+  one-gene dot plots now render.
+
+## Bug fixes: results
+
+* Conserved markers are filtered on the largest per-group adjusted p-value
+  (new column `max_p_val_adj`), use the selected test (`roc` is refused), and
+  explain when fewer than two groups can be tested. DE between conditions can
+  use any suitable metadata column.
+* Harmony uses "Number of PCs for integration", and the clustering PC input
+  is capped to the integrated reduction.
+* Recomputing a subset of an integrated object repeats the batch correction
+  (RPCA or Harmony) as far as the subset allows; samples too small to be
+  their own batch are grouped with the largest one, and the subset falls back
+  to plain normalization with a warning when integration is not possible.
+* Recomputing a subset repeats the Step 3 normalization settings (method,
+  variable features, scale factor, regressed variables, cell-cycle scoring),
+  and keeps no duplicate RNA layers.
+* Scaled expression plots keep the values of genes that were already scaled,
+  regress the same variables as normalization, and rescale all genes after a
+  subset that kept the current clusters. After SCTransform they no longer
+  show RNA scaled values carried in from an uploaded object.
+* Advanced Plots use normalized values for uploaded SCTransform objects whose
+  RNA assay was never normalized.
+* h5ad files: raw counts are read from `layers['counts']`,
+  `layers['raw_counts']`, `.raw`, or an integer `X`; normalized-only files are
+  rejected with an explanation, and gene names with underscores load.
+* Trajectory: Monocle 3 orders cells from a single root node, PAGA uses the
+  clustering reduction (Harmony or RPCA after integration), tradeSeq uses
+  whole-transcriptome library sizes and a fixed seed, PseudotimeDE-fast tests
+  each Slingshot lineage separately, gene tables are ranked consistently,
+  `pseudotime_PathN` is `NA` off-lineage, scMaSigPro failures are reported as
+  errors, and the Monocle 3 graph works on Integration-tab objects.
+* Re-normalizing an integrated `.rds` drops its stale Harmony/RPCA reduction.
+* tSNE runs only when its box is ticked and the object has one sample.
+
+## Bug fixes: inputs, stale results, and downloads
+
+* Results that no longer match the current object are cleared: QC,
+  normalization, clustering, DE tables and downloads, expression plots,
+  Advanced Plots, SingleR results, and trajectory DE, heatmaps and gene
+  tables. Re-runs that return the same object keep them.
+* A failed Load & Integrate keeps the previous integration; the Integration
+  Summary reports the method and PCs actually used, and Number of PCs for
+  integration must be a whole number from 5 to 100.
+* Integration-tab sample names, paths, and QC thresholds keep typed values
+  when samples are renamed or added, QC suggestions use each sample's Mito
+  pattern, and restored bookmarks keep their thresholds. The clustering PC
+  input is updated after the first integration.
+* The Session Report lists only steps that completed, and now records demo
+  cluster renaming and subset reanalysis and the post-integration filter.
+
 # ascseurat 3.0.8
 
 ## Bug fixes
