@@ -39,7 +39,10 @@ run_qc_filter <- function(obj, mito_pattern = "^MT-",
 #' @param cc_organism Character. "human" or "mouse" for cell-cycle genes.
 #' @param regress_cc Logical. Whether to regress out cell-cycle scores.
 #' @return A normalized Seurat object with PCA computed. The regressed
-#'   variables are recorded in `obj@misc$ascseurat_scale_regress`.
+#'   variables are recorded in `obj@misc$ascseurat_scale_regress`, the number
+#'   of cells scaled in `obj@misc$ascseurat_scale_cells` and the arguments in
+#'   `obj@misc$ascseurat_normalization`. Batch-corrected reductions and the
+#'   integration record are dropped, since they no longer match the new PCA.
 #' @keywords internal
 run_normalization <- function(obj, method = "lognorm",
                               nfeatures = 3000, scale_factor = 10000,
@@ -47,6 +50,17 @@ run_normalization <- function(obj, method = "lognorm",
                               score_cell_cycle = FALSE,
                               cc_organism = "human",
                               regress_cc = FALSE) {
+    # Kept in misc so a reanalyzed subset can repeat the same normalization.
+    normalization_record <- list(
+        method = method,
+        nfeatures = nfeatures,
+        scale_factor = scale_factor,
+        vars_to_regress = vars_to_regress,
+        score_cell_cycle = score_cell_cycle,
+        cc_organism = cc_organism,
+        regress_cc = regress_cc
+    )
+
     score_cc_metadata <- function(target_obj) {
         s_genes <- Seurat::cc.genes.updated.2019$s.genes
         g2m_genes <- Seurat::cc.genes.updated.2019$g2m.genes
@@ -120,12 +134,21 @@ run_normalization <- function(obj, method = "lognorm",
     }
     # Read by the visualization module to scale extra genes the same way.
     obj@misc$ascseurat_scale_regress <- as.character(vars_to_regress)
+    obj@misc$ascseurat_scale_cells <- as.integer(ncol(obj))
+    obj@misc$ascseurat_normalization <- normalization_record
 
     # PCA
     message("Running PCA...")
     # Small subsets cannot support the default 50 PCs.
     npcs <- min(50L, ncol(obj) - 1L, length(SeuratObject::VariableFeatures(obj)) - 1L)
     obj <- RunPCA(obj, npcs = npcs, verbose = FALSE)
+
+    # Batch correction carried in the object (e.g. an integrated .rds) does not
+    # match the new PCA; run_integration() adds it back after normalizing.
+    stale <- intersect(c("harmony", "integrated.rpca"), names(obj@reductions))
+    obj@reductions[stale] <- NULL
+    obj@misc$ascseurat_integration <- NULL
+    attr(obj, "ascseurat_default_reduction") <- NULL
 
     return(obj)
 }

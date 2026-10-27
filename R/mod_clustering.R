@@ -272,9 +272,133 @@ mod_clustering_server <- function(id, norm_result) {
             }
         }
 
+        # Repeats the normalization recorded by run_normalization(); objects
+        # without a record (e.g. uploaded files) use the defaults.
+        normalize_subset <- function(obj) {
+            settings <- obj@misc$ascseurat_normalization
+            meta_cols <- colnames(obj@meta.data)
+            vars <- intersect(settings$vars_to_regress, meta_cols)
+            # Regressing a variable with a single value fails for categorical
+            # variables (e.g. a subset of one batch) and does nothing otherwise.
+            single_value <- vapply(vars, function(v) {
+                length(unique(stats::na.omit(obj@meta.data[[v]]))) < 2L
+            }, logical(1))
+            if (any(single_value)) {
+                showNotification(
+                    paste0(
+                        "Not regressed in the subset because it has a single value: ",
+                        paste(vars[single_value], collapse = ", "), "."
+                    ),
+                    type = "warning",
+                    duration = 10
+                )
+                vars <- vars[!single_value]
+            }
+            regress_cc <- isTRUE(settings$regress_cc) &&
+                (isTRUE(settings$score_cell_cycle) ||
+                    all(c("S.Score", "G2M.Score") %in% meta_cols))
+            run_normalization(
+                obj,
+                method = settings$method %||% normalization_method_for_subset(obj),
+                nfeatures = settings$nfeatures %||% 3000,
+                scale_factor = settings$scale_factor %||% 10000,
+                vars_to_regress = if (length(vars)) vars,
+                score_cell_cycle = isTRUE(settings$score_cell_cycle),
+                cc_organism = settings$cc_organism %||% "human",
+                regress_cc = regress_cc
+            )
+        }
+
+        # Repeats the batch correction on a subset as far as its sample sizes
+        # allow: samples too small to be their own batch are grouped with the
+        # largest sample. Returns the integrated object, or a character
+        # reason when batch correction cannot be repeated.
+        reintegrate_subset <- function(obj, integration) {
+            sample_col <- integration$sample_col
+            # RPCA scores anchors on 30 neighbours within each sample; Harmony
+            # and per-sample SCTransform fail on a handful of cells.
+            min_batch_cells <- if (identical(integration$method, "rpca")) 31L else min_subset_cells
+            batches <- as.character(obj@meta.data[[sample_col]])
+            sizes <- table(batches[!is.na(batches) & nzchar(batches)])
+            usable <- names(sizes)[sizes >= min_batch_cells]
+            if (length(usable) < 2L) {
+                return(paste0("fewer than two samples have at least ", min_batch_cells, " cells"))
+            }
+            small <- setdiff(names(sizes), usable)
+            largest <- names(sizes)[which.max(sizes)]
+            batches[!batches %in% usable] <- largest
+            dims <- integration$dims
+            if (identical(integration$method, "rpca")) {
+                # Each sample needs more cells than RPCA dimensions.
+                dims <- dims[dims < min(table(batches))]
+            }
+            settings <- obj@misc$ascseurat_normalization
+
+            result <- tryCatch(
+                {
+                    obj$ascseurat_batch <- batches
+                    # run_integration() expects v5 RNA layers split by
+                    # sample; v3 assays (e.g. Seurat v4 .rds) have no layers.
+                    if (inherits(obj[["RNA"]], "StdAssay")) {
+                        obj[["RNA"]] <- split(
+                            SeuratObject::JoinLayers(obj[["RNA"]]),
+                            f = batches
+                        )
+                    }
+                    integrated <- run_integration(
+                        obj,
+                        method = integration$method,
+                        dims = dims,
+                        sample_col = "ascseurat_batch",
+                        normalization_method = integration$normalization_method,
+                        nfeatures = settings$nfeatures %||% 3000,
+                        scale_factor = settings$scale_factor %||% 10000
+                    )
+                    # RPCA on samples of a few dozen cells can return rows of
+                    # NA, which clustering cannot use.
+                    reduction <- attr(integrated, "ascseurat_default_reduction", exact = TRUE)
+                    if (anyNA(Seurat::Embeddings(integrated, reduction))) {
+                        stop("the integrated reduction has missing values", call. = FALSE)
+                    }
+                    integrated
+                },
+                error = function(e) conditionMessage(e)
+            )
+            if (is.character(result)) {
+                return(result)
+            }
+            result$ascseurat_batch <- NULL
+            # Later subsets repeat the original settings.
+            result@misc$ascseurat_integration <- integration
+            if (length(small)) {
+                showNotification(
+                    paste0(
+                        "Samples with fewer than ", min_batch_cells, " cells in the subset (",
+                        paste(small, collapse = ", "), ") were not batch-corrected separately; ",
+                        "their cells were grouped with the largest sample (", largest, ")."
+                    ),
+                    type = "warning",
+                    duration = 12
+                )
+            }
+            result
+        }
+
         prepare_subset_for_reclustering <- function(obj) {
+            # JoinLayers() keeps counts.<s>/data.<s> next to the joined layers
+            # when only one sample remains, so drop those copies.
             obj <- tryCatch(
-                SeuratObject::JoinLayers(obj),
+                {
+                    rna <- SeuratObject::JoinLayers(obj[["RNA"]])
+                    layers <- SeuratObject::Layers(rna)
+                    for (joined in intersect(c("counts", "data"), layers)) {
+                        for (layer in grep(paste0("^", joined, "\\."), layers, value = TRUE)) {
+                            SeuratObject::LayerData(rna, layer = layer) <- NULL
+                        }
+                    }
+                    obj[["RNA"]] <- rna
+                    obj
+                },
                 error = function(e) obj
             )
             obj@reductions <- list()
@@ -311,13 +435,23 @@ mod_clustering_server <- function(id, norm_result) {
         # NULL while the upstream is req()-blocked, so the reset also runs when
         # the previous object stops being available.
         upstream_obj <- reactive(tryCatch(get_obj(), error = function(e) NULL))
+        # The upstream re-runs whenever an input it reads changes, even when it
+        # returns the same object; only a different object resets the results.
+        last_upstream <- NULL
 
         observeEvent(upstream_obj(), {
+            previous <- last_upstream
+            last_upstream <<- upstream_obj()
+            # Nothing can be stored while no object is available, so there is
+            # nothing to clear when one (e.g. the initial one) appears.
+            if (is.null(previous) || identical(last_upstream, previous)) {
+                return(invisible(NULL))
+            }
             state_obj(NULL)
             pending_obj(NULL)
             subset_base(NULL)
             pending_reanalysis(FALSE)
-        }, ignoreInit = TRUE, ignoreNULL = FALSE)
+        }, ignoreNULL = FALSE)
 
         output$clustering_ready <- shiny::renderText({
             if (is.null(state_obj())) "false" else "true"
@@ -340,13 +474,21 @@ mod_clustering_server <- function(id, norm_result) {
                 withProgress(message = "Clustering...", value = 0.3, {
                     reduction <- default_reduction(obj_for_clustering)
                     n_dims <- selected_n_pcs(obj_for_clustering)
-                    tsne_requested <- is_single_sample(obj_for_clustering) &&
-                        !isFALSE(input$run_tsne)
+                    # The checkbox only exists in single-sample workflows.
+                    tsne_requested <- isTRUE(input$run_tsne)
+                    single_sample <- is_single_sample(obj_for_clustering)
+                    if (tsne_requested && !single_sample) {
+                        showNotification(
+                            "tSNE is skipped because the object has several samples; the UMAP split by sample is shown instead.",
+                            type = "message",
+                            duration = 8
+                        )
+                    }
                     obj <- run_clustering(
                         obj = obj_for_clustering,
                         dims = seq_len(n_dims),
                         resolution = input$resolution,
-                        run_tsne = tsne_requested,
+                        run_tsne = tsne_requested && single_sample,
                         reduction = reduction
                     )
                     attr(obj, "ascseurat_clustering_n_pcs") <- n_dims
@@ -438,42 +580,19 @@ mod_clustering_server <- function(id, norm_result) {
                         ))
                     }
 
+                    integrated <- NULL
                     if (n_samples >= 2L) {
                         setProgress(0.6, message = paste0(
                             "Re-integrating the subset with ", integration$method, "..."
                         ))
-                        subset_obj <- tryCatch(
-                            {
-                                # run_integration() expects v5 RNA layers split by
-                                # sample; v3 assays (e.g. Seurat v4 .rds) have no layers.
-                                if (inherits(subset_obj[["RNA"]], "StdAssay")) {
-                                    subset_obj[["RNA"]] <- split(
-                                        SeuratObject::JoinLayers(subset_obj[["RNA"]]),
-                                        f = subset_obj@meta.data[[integration$sample_col]]
-                                    )
-                                }
-                                run_integration(
-                                    subset_obj,
-                                    method = integration$method,
-                                    dims = integration$dims,
-                                    sample_col = integration$sample_col,
-                                    normalization_method = integration$normalization_method
-                                )
-                            },
-                            error = function(e) {
-                                stop(
-                                    "re-integration with ", integration$method, " failed (",
-                                    conditionMessage(e), "). Select more cells per sample, ",
-                                    "or keep the current reduction and clusters instead.",
-                                    call. = FALSE
-                                )
-                            }
-                        )
+                        integrated <- reintegrate_subset(subset_obj, integration)
+                    }
+                    # Without a usable batch correction the subset is
+                    # reprocessed like a single sample.
+                    subset_obj <- if (inherits(integrated, "Seurat")) {
+                        integrated
                     } else {
-                        subset_obj <- run_normalization(
-                            subset_obj,
-                            method = normalization_method_for_subset(subset_obj)
-                        )
+                        normalize_subset(subset_obj)
                     }
 
                     pending_obj(subset_obj)
@@ -488,8 +607,19 @@ mod_clustering_server <- function(id, norm_result) {
                             duration = 10
                         )
                     }
+                    if (is.character(integrated)) {
+                        showNotification(
+                            paste0(
+                                "Batch correction with ", integration$method,
+                                " could not be repeated for this subset (", integrated,
+                                "), so it was reprocessed without batch correction."
+                            ),
+                            type = "warning",
+                            duration = 12
+                        )
+                    }
                     showNotification(
-                        "Subset PCA updated. Review the new elbow plot, then run clustering again using the Step 3 PC setting.",
+                        "Subset PCA updated. Review the new elbow plot, then run clustering again using the selected number of PCs.",
                         type = "message",
                         duration = 8
                     )
