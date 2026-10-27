@@ -288,11 +288,31 @@ test_that("trajectory downloads stop with a message when no result exists", {
     })
 })
 
+# The fixture UMAP differs across platforms (BLAS, irlba), and so does the
+# number of lineages Slingshot finds on it. The clusters are therefore placed
+# on a fixed two-branch layout: the largest is the root and the others
+# alternate between the branches, so Slingshot always finds two lineages.
 slingshot_fixture <- local({
     cached <- NULL
     function() {
         if (is.null(cached)) {
-            cached <<- ascseurat:::run_slingshot_trajectory(clustered_fixture())
+            obj <- clustered_fixture()
+            clusters <- as.character(ascseurat:::seurat_clusters(obj)[colnames(obj)])
+            by_size <- names(sort(table(clusters), decreasing = TRUE))
+            stopifnot(length(by_size) >= 3)
+            branch <- rep_len(c(1, -1), length(by_size) - 1)
+            step <- ceiling(seq_along(branch) / 2)
+            centers <- rbind(c(0, 0), cbind(step, branch * step))
+            rownames(centers) <- by_size
+            jitter <- withr::with_seed(1, stats::rnorm(2 * ncol(obj), sd = 0.1))
+            embeddings <- centers[clusters, , drop = FALSE] + matrix(jitter, ncol = 2)
+            dimnames(embeddings) <- list(colnames(obj), c("umap_1", "umap_2"))
+            obj[["umap"]] <- SeuratObject::CreateDimReducObject(
+                embeddings = embeddings,
+                key = "umap_",
+                assay = SeuratObject::DefaultAssay(obj)
+            )
+            cached <<- ascseurat:::run_slingshot_trajectory(obj, start_cluster = by_size[[1]])
         }
         cached
     }
